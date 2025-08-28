@@ -1,18 +1,16 @@
-"use client"
-
-import React, { type PropsWithChildren } from "react"
+import { type PropsWithChildren } from "react"
 import { ThemeProvider } from "next-themes"
 import { Toaster } from "./sonner"
 
-export function CustomProvider(props: PropsWithChildren) {
+export function UIProvider({ children }: PropsWithChildren) {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="light"
+      defaultTheme="system"
       enableSystem
       disableTransitionOnChange
     >
-      {props.children}
+      {children}
       <Toaster />
     </ThemeProvider>
   )

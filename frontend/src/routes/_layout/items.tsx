@@ -7,6 +7,7 @@ import { ItemsService } from "@/client"
 import { ItemActionsMenu } from "@/components/Common/ItemActionsMenu"
 import AddItem from "@/components/Items/AddItem"
 import PendingItems from "@/components/Pending/PendingItems"
+import useAuth from "@/hooks/useAuth"
 import {
   EmptyState,
   EmptyStateDescription,
@@ -50,10 +51,12 @@ export const Route = createFileRoute("/_layout/items")({
 function ItemsTable() {
   const navigate = useNavigate({ from: Route.fullPath })
   const { page } = Route.useSearch()
+  const { user, isUserLoading } = useAuth()
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     ...getItemsQueryOptions({ page }),
-    placeholderData: (prevData) => prevData,
+    enabled: !!user && !isUserLoading, // Only run when user is authenticated
+    // Remove placeholderData to prevent showing stale data
   })
 
   const setPage = (page: number) =>
@@ -61,13 +64,26 @@ function ItemsTable() {
       search: (prev) => ({ ...prev, page }),
     })
 
+  // Don't process data until auth is complete
+  if (isUserLoading) {
+    return <PendingItems />
+  }
+
+  // If no user after loading, don't show anything (layout will handle redirect)
+  if (!user) {
+    return null
+  }
+
+  // Now we can safely process the data
   const items = data?.data.slice(0, PER_PAGE) ?? []
   const count = data?.count ?? 0
 
+  // Show loading for items query
   if (isLoading) {
     return <PendingItems />
   }
 
+  // Show empty state only after everything is loaded
   if (items.length === 0) {
     return (
       <EmptyState>
@@ -131,6 +147,18 @@ function ItemsTable() {
 }
 
 function Items() {
+  const { user, isUserLoading } = useAuth()
+
+  // Show loading while authenticating
+  if (isUserLoading) {
+    return <PendingItems />
+  }
+
+  // If no user after loading, don't show anything (layout will handle redirect)
+  if (!user) {
+    return null
+  }
+
   return (
     <div className="w-full max-w-full">
       <h1 className="text-2xl font-bold pt-12">

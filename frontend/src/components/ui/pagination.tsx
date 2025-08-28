@@ -2,7 +2,7 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "@/utils"
-import { Button, type ButtonProps } from "@/components/ui/button"
+import { type ButtonProps } from "@/components/ui/button"
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
     <nav
@@ -37,7 +37,7 @@ PaginationItem.displayName = "PaginationItem"
 type PaginationLinkProps = {
     isActive?: boolean
 } & Pick<ButtonProps, "size"> &
-    React.ComponentProps<"a">
+    Omit<React.ComponentProps<"button">, "type">
 
 const PaginationLink = ({
     className,
@@ -45,25 +45,27 @@ const PaginationLink = ({
     size = "icon",
     onClick,
     ...props
-}: PaginationLinkProps & { onClick?: () => void }) => (
-    <button
-        type="button"
-        aria-current={isActive ? "page" : undefined}
-        className={cn(
-            "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-            isActive
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "hover:bg-accent hover:text-accent-foreground",
-            size === "default" && "h-10 px-4 py-2",
-            size === "sm" && "h-9 rounded-md px-3",
-            size === "lg" && "h-11 rounded-md px-8",
-            size === "icon" && "h-10 w-10",
-            className
-        )}
-        onClick={onClick}
-        {...props}
-    />
-)
+}: PaginationLinkProps & { onClick?: () => void }) => {
+    return (
+        <button
+            type="button"
+            aria-current={isActive ? "page" : undefined}
+            className={cn(
+                "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+                isActive
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "hover:bg-accent hover:text-accent-foreground",
+                size === "default" && "h-10 px-4 py-2",
+                size === "sm" && "h-9 rounded-md px-3",
+                size === "lg" && "h-11 rounded-md px-8",
+                size === "icon" && "h-10 w-10",
+                className
+            )}
+            onClick={onClick}
+            {...props}
+        />
+    )
+}
 PaginationLink.displayName = "PaginationLink"
 
 const PaginationPrevious = ({
