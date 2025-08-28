@@ -1,10 +1,10 @@
-import { Container, Heading, Tabs } from "@chakra-ui/react"
 import { createFileRoute } from "@tanstack/react-router"
 
 import Appearance from "@/components/UserSettings/Appearance"
 import ChangePassword from "@/components/UserSettings/ChangePassword"
 import DeleteAccount from "@/components/UserSettings/DeleteAccount"
 import UserInformation from "@/components/UserSettings/UserInformation"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useAuth from "@/hooks/useAuth"
 
 const tabsConfig = [
@@ -29,25 +29,25 @@ function UserSettings() {
   }
 
   return (
-    <Container maxW="full">
-      <Heading size="lg" textAlign={{ base: "center", md: "left" }} py={12}>
+    <div className="w-full max-w-full">
+      <h1 className="text-2xl font-bold text-center md:text-left py-12">
         User Settings
-      </Heading>
+      </h1>
 
-      <Tabs.Root defaultValue="my-profile" variant="subtle">
-        <Tabs.List>
+      <Tabs defaultValue="my-profile">
+        <TabsList className="grid w-full grid-cols-4">
           {finalTabs.map((tab) => (
-            <Tabs.Trigger key={tab.value} value={tab.value}>
+            <TabsTrigger key={tab.value} value={tab.value}>
               {tab.title}
-            </Tabs.Trigger>
+            </TabsTrigger>
           ))}
-        </Tabs.List>
+        </TabsList>
         {finalTabs.map((tab) => (
-          <Tabs.Content key={tab.value} value={tab.value}>
+          <TabsContent key={tab.value} value={tab.value}>
             <tab.component />
-          </Tabs.Content>
+          </TabsContent>
         ))}
-      </Tabs.Root>
-    </Container>
+      </Tabs>
+    </div>
   )
 }
