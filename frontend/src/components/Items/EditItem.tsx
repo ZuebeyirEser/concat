@@ -1,11 +1,3 @@
-import {
-  Button,
-  ButtonGroup,
-  DialogActionTrigger,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
@@ -14,17 +6,17 @@ import { FaExchangeAlt } from "react-icons/fa"
 import { type ApiError, type ItemPublic, ItemsService } from "@/client"
 import useCustomToast from "@/hooks/useCustomToast"
 import { handleError } from "@/utils"
+import { Button } from "../ui/button"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog"
-import { Field } from "../ui/field"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 
 interface EditItemProps {
   item: ItemPublic
@@ -74,32 +66,25 @@ const EditItem = ({ item }: EditItemProps) => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost">
-          <FaExchangeAlt fontSize="16px" />
+          <FaExchangeAlt className="mr-2 h-4 w-4" />
           Edit Item
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Edit Item</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>Update the item details below.</Text>
-            <VStack gap={4}>
-              <Field
-                required
-                invalid={!!errors.title}
-                errorText={errors.title?.message}
-                label="Title"
-              >
+          <div className="grid gap-4 py-4">
+            <p className="text-sm text-muted-foreground mb-4">Update the item details below.</p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-right">
+                  Title *
+                </Label>
                 <Input
                   id="title"
                   {...register("title", {
@@ -107,44 +92,47 @@ const EditItem = ({ item }: EditItemProps) => {
                   })}
                   placeholder="Title"
                   type="text"
+                  className={errors.title ? "border-red-500" : ""}
                 />
-              </Field>
+                {errors.title && (
+                  <p className="text-sm text-red-500">{errors.title.message}</p>
+                )}
+              </div>
 
-              <Field
-                invalid={!!errors.description}
-                errorText={errors.description?.message}
-                label="Description"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-right">
+                  Description
+                </Label>
                 <Input
                   id="description"
                   {...register("description")}
                   placeholder="Description"
                   type="text"
+                  className={errors.description ? "border-red-500" : ""}
                 />
-              </Field>
-            </VStack>
-          </DialogBody>
+                {errors.description && (
+                  <p className="text-sm text-red-500">{errors.description.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <ButtonGroup>
-              <DialogActionTrigger asChild>
-                <Button
-                  variant="subtle"
-                  colorPalette="gray"
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-              </DialogActionTrigger>
-              <Button variant="solid" type="submit" loading={isSubmitting}>
-                Save
-              </Button>
-            </ButtonGroup>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
+            </Button>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 

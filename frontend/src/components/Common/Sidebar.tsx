@@ -1,4 +1,3 @@
-import { Box, Flex, IconButton, Text } from "@chakra-ui/react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { FaBars } from "react-icons/fa"
@@ -6,14 +5,12 @@ import { FiLogOut } from "react-icons/fi"
 
 import type { UserPublic } from "@/client"
 import useAuth from "@/hooks/useAuth"
+import { Button } from "../ui/button"
 import {
-  DrawerBackdrop,
-  DrawerBody,
-  DrawerCloseTrigger,
-  DrawerContent,
-  DrawerRoot,
-  DrawerTrigger,
-} from "../ui/drawer"
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "../ui/sheet"
 import SidebarItems from "./SidebarItems"
 
 const Sidebar = () => {
@@ -29,69 +26,44 @@ const Sidebar = () => {
   return (
     <>
       {/* Mobile */}
-      <DrawerRoot
-        placement="start"
-        open={open}
-        onOpenChange={(e) => setOpen(e.open)}
-      >
-        <DrawerBackdrop />
-        <DrawerTrigger asChild>
-          <IconButton
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button
             variant="ghost"
-            color="inherit"
-            display={{ base: "flex", md: "none" }}
+            size="icon"
+            className="md:hidden absolute z-50 m-4"
             aria-label="Open Menu"
-            position="absolute"
-            zIndex="100"
-            m={4}
           >
             <FaBars />
-          </IconButton>
-        </DrawerTrigger>
-        <DrawerContent maxW="280px">
-          <DrawerCloseTrigger />
-          <DrawerBody>
-            <Flex flexDir="column" justify="space-between">
-              <Box>
-                <SidebarItems />
-                <Flex
-                  as="button"
-                  onClick={handleLogout}
-                  alignItems="center"
-                  gap={4}
-                  px={4}
-                  py={2}
-                >
-                  <FiLogOut />
-                  <Text>Log Out</Text>
-                </Flex>
-              </Box>
-              {currentUser?.email && (
-                <Text fontSize="sm" p={2}>
-                  Logged in as: {currentUser.email}
-                </Text>
-              )}
-            </Flex>
-          </DrawerBody>
-          <DrawerCloseTrigger />
-        </DrawerContent>
-      </DrawerRoot>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[280px]">
+          <div className="flex flex-col justify-between h-full">
+            <div>
+              <SidebarItems />
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-4 px-4 py-2 w-full text-left hover:bg-accent rounded-md"
+              >
+                <FiLogOut />
+                <span>Log Out</span>
+              </button>
+            </div>
+            {currentUser?.email && (
+              <p className="text-sm p-2 text-muted-foreground">
+                Logged in as: {currentUser.email}
+              </p>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Desktop */}
-
-      <Box
-        display={{ base: "none", md: "flex" }}
-        position="sticky"
-        bg="bg.subtle"
-        top={0}
-        minW="280px"
-        h="100vh"
-        p={4}
-      >
-        <Box w="100%">
+      <div className="hidden md:flex sticky top-0 min-w-[280px] h-screen p-4 bg-muted/50">
+        <div className="w-full">
           <SidebarItems />
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   )
 }

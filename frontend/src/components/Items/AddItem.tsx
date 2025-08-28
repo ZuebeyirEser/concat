@@ -1,14 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { type SubmitHandler, useForm } from "react-hook-form"
-
-import {
-  Button,
-  DialogActionTrigger,
-  DialogTitle,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
 import { useState } from "react"
 import { FaPlus } from "react-icons/fa"
 
@@ -16,16 +7,17 @@ import { type ItemCreate, ItemsService } from "@/client"
 import type { ApiError } from "@/client/core/ApiError"
 import useCustomToast from "@/hooks/useCustomToast"
 import { handleError } from "@/utils"
+import { Button } from "../ui/button"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
+  DialogTitle,
   DialogTrigger,
 } from "../ui/dialog"
-import { Field } from "../ui/field"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 
 const AddItem = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -66,32 +58,25 @@ const AddItem = () => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button value="add-item" my={4}>
-          <FaPlus fontSize="16px" />
+        <Button className="my-4">
+          <FaPlus className="mr-2 h-4 w-4" />
           Add Item
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add Item</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>Fill in the details to add a new item.</Text>
-            <VStack gap={4}>
-              <Field
-                required
-                invalid={!!errors.title}
-                errorText={errors.title?.message}
-                label="Title"
-              >
+          <div className="grid gap-4 py-4">
+            <p className="text-sm text-muted-foreground mb-4">Fill in the details to add a new item.</p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-right">
+                  Title *
+                </Label>
                 <Input
                   id="title"
                   {...register("title", {
@@ -99,47 +84,50 @@ const AddItem = () => {
                   })}
                   placeholder="Title"
                   type="text"
+                  className={errors.title ? "border-red-500" : ""}
                 />
-              </Field>
+                {errors.title && (
+                  <p className="text-sm text-red-500">{errors.title.message}</p>
+                )}
+              </div>
 
-              <Field
-                invalid={!!errors.description}
-                errorText={errors.description?.message}
-                label="Description"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-right">
+                  Description
+                </Label>
                 <Input
                   id="description"
                   {...register("description")}
                   placeholder="Description"
                   type="text"
+                  className={errors.description ? "border-red-500" : ""}
                 />
-              </Field>
-            </VStack>
-          </DialogBody>
+                {errors.description && (
+                  <p className="text-sm text-red-500">{errors.description.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <DialogActionTrigger asChild>
-              <Button
-                variant="subtle"
-                colorPalette="gray"
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-            </DialogActionTrigger>
+          <DialogFooter>
             <Button
-              variant="solid"
-              type="submit"
-              disabled={!isValid}
-              loading={isSubmitting}
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isSubmitting}
             >
-              Save
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            >
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 

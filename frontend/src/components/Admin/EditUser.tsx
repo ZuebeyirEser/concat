@@ -1,16 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-
-import {
-  Button,
-  DialogActionTrigger,
-  DialogRoot,
-  DialogTrigger,
-  Flex,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
 import { useState } from "react"
 import { FaExchangeAlt } from "react-icons/fa"
 
@@ -18,16 +7,18 @@ import { type UserPublic, type UserUpdate, UsersService } from "@/client"
 import type { ApiError } from "@/client/core/ApiError"
 import useCustomToast from "@/hooks/useCustomToast"
 import { emailPattern, handleError } from "@/utils"
+import { Button } from "../ui/button"
 import { Checkbox } from "../ui/checkbox"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "../ui/dialog"
-import { Field } from "../ui/field"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 
 interface EditUserProps {
   user: UserPublic
@@ -78,32 +69,25 @@ const EditUser = ({ user }: EditUserProps) => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          <FaExchangeAlt fontSize="16px" />
+          <FaExchangeAlt className="mr-2 h-4 w-4" />
           Edit User
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>Update the user details below.</Text>
-            <VStack gap={4}>
-              <Field
-                required
-                invalid={!!errors.email}
-                errorText={errors.email?.message}
-                label="Email"
-              >
+          <div className="grid gap-4 py-4">
+            <p className="text-sm text-muted-foreground mb-4">Update the user details below.</p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-right">
+                  Email *
+                </Label>
                 <Input
                   id="email"
                   {...register("email", {
@@ -112,28 +96,33 @@ const EditUser = ({ user }: EditUserProps) => {
                   })}
                   placeholder="Email"
                   type="email"
+                  className={errors.email ? "border-red-500" : ""}
                 />
-              </Field>
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
+              </div>
 
-              <Field
-                invalid={!!errors.full_name}
-                errorText={errors.full_name?.message}
-                label="Full Name"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-right">
+                  Full Name
+                </Label>
                 <Input
                   id="name"
                   {...register("full_name")}
                   placeholder="Full name"
                   type="text"
+                  className={errors.full_name ? "border-red-500" : ""}
                 />
-              </Field>
+                {errors.full_name && (
+                  <p className="text-sm text-red-500">{errors.full_name.message}</p>
+                )}
+              </div>
 
-              <Field
-                required
-                invalid={!!errors.password}
-                errorText={errors.password?.message}
-                label="Set Password"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-right">
+                  Set Password
+                </Label>
                 <Input
                   id="password"
                   {...register("password", {
@@ -144,15 +133,17 @@ const EditUser = ({ user }: EditUserProps) => {
                   })}
                   placeholder="Password"
                   type="password"
+                  className={errors.password ? "border-red-500" : ""}
                 />
-              </Field>
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                )}
+              </div>
 
-              <Field
-                required
-                invalid={!!errors.confirm_password}
-                errorText={errors.confirm_password?.message}
-                label="Confirm Password"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="confirm_password" className="text-right">
+                  Confirm Password
+                </Label>
                 <Input
                   id="confirm_password"
                   {...register("confirm_password", {
@@ -162,60 +153,62 @@ const EditUser = ({ user }: EditUserProps) => {
                   })}
                   placeholder="Password"
                   type="password"
+                  className={errors.confirm_password ? "border-red-500" : ""}
                 />
-              </Field>
-            </VStack>
+                {errors.confirm_password && (
+                  <p className="text-sm text-red-500">{errors.confirm_password.message}</p>
+                )}
+              </div>
+            </div>
 
-            <Flex mt={4} direction="column" gap={4}>
+            <div className="mt-4 flex flex-col gap-4">
               <Controller
                 control={control}
                 name="is_superuser"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
+                  <div className="flex items-center space-x-2">
                     <Checkbox
+                      id="is_superuser"
                       checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is superuser?
-                    </Checkbox>
-                  </Field>
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="is_superuser">Is superuser?</Label>
+                  </div>
                 )}
               />
               <Controller
                 control={control}
                 name="is_active"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
+                  <div className="flex items-center space-x-2">
                     <Checkbox
+                      id="is_active"
                       checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is active?
-                    </Checkbox>
-                  </Field>
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="is_active">Is active?</Label>
+                  </div>
                 )}
               />
-            </Flex>
-          </DialogBody>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <DialogActionTrigger asChild>
-              <Button
-                variant="subtle"
-                colorPalette="gray"
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-            </DialogActionTrigger>
-            <Button variant="solid" type="submit" loading={isSubmitting}>
-              Save
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
-          <DialogCloseTrigger />
         </form>
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 
