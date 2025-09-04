@@ -1,133 +1,145 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import { FaExchangeAlt } from "react-icons/fa"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { type SubmitHandler, useForm } from 'react-hook-form'
+import { useEffect } from 'react'
 
-import { type ApiError, type ItemPublic, ItemsService } from "@/client"
-import useCustomToast from "@/hooks/useCustomToast"
-import { handleError } from "@/utils"
-import { Button } from "../ui/button"
+import { type ItemPublic, type ItemUpdate, ItemsService } from '@/client'
+import type { ApiError } from '@/client/core/ApiError'
+import useCustomToast from '@/hooks/useCustomToast'
+import { handleError } from '@/utils'
+import { Button } from '../ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
+} from '../ui/dialog'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
+import { Textarea } from '../ui/textarea'
 
 interface EditItemProps {
-  item: ItemPublic
+  item: ItemPublic | null
+  isOpen: boolean
+  onClose: () => void
 }
 
-interface ItemUpdateForm {
-  title: string
-  description?: string
-}
-
-const EditItem = ({ item }: EditItemProps) => {
-  const [isOpen, setIsOpen] = useState(false)
+export function EditItem({ item, isOpen, onClose }: EditItemProps) {
   const queryClient = useQueryClient()
   const { showSuccessToast } = useCustomToast()
+  
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
-  } = useForm<ItemUpdateForm>({
-    mode: "onBlur",
-    criteriaMode: "all",
-    defaultValues: {
-      ...item,
-      description: item.description ?? undefined,
-    },
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<ItemUpdate>({
+    mode: 'onBlur',
+    criteriaMode: 'all',
   })
 
+  // Reset form when item changes
+  useEffect(() => {
+    if (item) {
+      reset({
+        title: item.title,
+        description: item.description || '',
+      })
+    }
+  }, [item, reset])
+
   const mutation = useMutation({
-    mutationFn: (data: ItemUpdateForm) =>
-      ItemsService.updateItem({ id: item.id, requestBody: data }),
+    mutationFn: (data: ItemUpdate) =>
+      ItemsService.updateItem({ id: item!.id, requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Item updated successfully.")
-      reset()
-      setIsOpen(false)
+      showSuccessToast('Item updated successfully.')
+      onClose()
     },
     onError: (err: ApiError) => {
       handleError(err)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ['items'] })
     },
   })
 
-  const onSubmit: SubmitHandler<ItemUpdateForm> = async (data) => {
+  const onSubmit: SubmitHandler<ItemUpdate> = (data) => {
+    if (!item) return
     mutation.mutate(data)
   }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost">
-          <FaExchangeAlt className="mr-2 h-4 w-4" />
-          Edit Item
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Edit Item</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <p className="text-sm text-muted-foreground mb-4">Update the item details below.</p>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-right">
-                  Title *
-                </Label>
-                <Input
-                  id="title"
-                  {...register("title", {
-                    required: "Title is required",
-                  })}
-                  placeholder="Title"
-                  type="text"
-                  className={errors.title ? "border-red-500" : ""}
-                />
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
-                )}
-              </div>
+  const handleClose = () => {
+    reset()
+    onClose()
+  }
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Input
-                  id="description"
-                  {...register("description")}
-                  placeholder="Description"
-                  type="text"
-                  className={errors.description ? "border-red-500" : ""}
-                />
-                {errors.description && (
-                  <p className="text-sm text-red-500">{errors.description.message}</p>
-                )}
-              </div>
-            </div>
+  if (!item) return null
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Edit Item</DialogTitle>
+          <DialogDescription>
+            Make changes to your item here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="edit-title">
+              Title <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="edit-title"
+              {...register('title', {
+                required: 'Title is required.',
+                minLength: {
+                  value: 2,
+                  message: 'Title must be at least 2 characters long.',
+                },
+              })}
+              placeholder="Enter item title"
+              disabled={isSubmitting}
+            />
+            {errors.title && (
+              <p className="text-sm text-destructive">{errors.title.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-description">Description</Label>
+            <Textarea
+              id="edit-description"
+              {...register('description', {
+                maxLength: {
+                  value: 500,
+                  message: 'Description must be less than 500 characters.',
+                },
+              })}
+              placeholder="Enter item description (optional)"
+              disabled={isSubmitting}
+              rows={3}
+            />
+            {errors.description && (
+              <p className="text-sm text-destructive">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
+            <Button type="submit" disabled={!isValid || isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </form>
@@ -135,5 +147,3 @@ const EditItem = ({ item }: EditItemProps) => {
     </Dialog>
   )
 }
-
-export default EditItem
