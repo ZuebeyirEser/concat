@@ -41,14 +41,16 @@ function Login() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <LoginForm
-          className="w-full max-w-md"
-          onSubmit={handleSubmit(onSubmit)}
-          register={register}
-          errors={errors}
-          error={error || undefined}
-          isSubmitting={isSubmitting}
-        />
+        <div className="rounded-lg border border-border/60 bg-card p-8 shadow-lg ring-1 ring-border/20">
+          <LoginForm
+            className="w-full"
+            onSubmit={handleSubmit(onSubmit)}
+            register={register}
+            errors={errors}
+            error={error || undefined}
+            isSubmitting={isSubmitting}
+          />
+        </div>
       </div>
     </div>
   )

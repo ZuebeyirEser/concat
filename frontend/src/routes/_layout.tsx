@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router'
 
 import Navbar from '@/components/Common/Navbar'
 import Sidebar from '@/components/Common/Sidebar'
@@ -11,6 +11,10 @@ export const Route = createFileRoute('/_layout')({
 
 function Layout() {
   const { isUserLoading, user } = useAuth()
+  const routerState = useRouterState()
+
+  // Show footer only on dashboard/home page
+  const showFooter = routerState.location.pathname === '/'
 
   // If no token in localStorage, redirect immediately
   if (!isLoggedIn()) {
@@ -45,7 +49,8 @@ function Layout() {
           <main className="flex-1 p-4">
             <Outlet />
           </main>
-          <CompactFooter />
+          {/* Footer only on dashboard/home page */}
+          {showFooter && <CompactFooter />}
         </div>
       </div>
     </div>

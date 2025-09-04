@@ -89,10 +89,15 @@ export function LoginForm({
             </Button>
           </div>
 
-          <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-            <span className="relative z-10 bg-background px-2 text-muted-foreground">
-              Or
-            </span>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white dark:bg-gray-900 px-4 text-gray-500 dark:text-gray-400">
+                Or
+              </span>
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
