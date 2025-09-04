@@ -1,0 +1,184 @@
+
+import { FiGithub, FiTwitter, FiMail, FiHeart } from 'react-icons/fi'
+
+import Logo from '@/components/ui/logo'
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear()
+
+  return (
+    <footer className="border-t border-border bg-muted/30">
+      <div className="mx-auto max-w-7xl px-4 py-12">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          {/* Brand Section */}
+          <div className="space-y-4">
+            <Logo size="md" />
+            <p className="text-sm text-muted-foreground max-w-xs">
+              A modern platform for managing your items with style and efficiency.
+            </p>
+            <div className="flex space-x-4">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <FiGithub className="h-5 w-5" />
+                <span className="sr-only">GitHub</span>
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <FiTwitter className="h-5 w-5" />
+                <span className="sr-only">Twitter</span>
+              </a>
+              <a
+                href="mailto:contact@concat.app"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <FiMail className="h-5 w-5" />
+                <span className="sr-only">Email</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Product Links */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-foreground">Product</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="/items"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Items
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/settings"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Settings
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#features"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Features
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#pricing"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Pricing
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Company Links */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-foreground">Company</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="#about"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#blog"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#careers"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal Links */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-foreground">Legal</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="#privacy"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#terms"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#cookies"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Cookie Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#security"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Security
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="mt-12 border-t border-border pt-8">
+          <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <span>© {currentYear} concat. All rights reserved.</span>
+            </div>
+            <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+              <span>Made with</span>
+              <FiHeart className="h-4 w-4 text-red-500" />
+              <span>by the concat team</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default Footer
