@@ -1,6 +1,3 @@
-// This component is deprecated - use the new column-based approach in columns.tsx
-// Keeping for backward compatibility if needed elsewhere
-
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { Button } from "../ui/button"
 import {

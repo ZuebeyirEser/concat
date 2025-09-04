@@ -39,7 +39,6 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
     criteriaMode: 'all',
   })
 
-  // Reset form when item changes
   useEffect(() => {
     if (item) {
       reset({

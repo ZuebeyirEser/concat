@@ -11,7 +11,6 @@ export const Route = createFileRoute('/')({
 })
 
 function LandingPage() {
-  // If user is already logged in, redirect to dashboard
   if (isLoggedIn()) {
     window.location.href = '/items'
     return null
@@ -19,7 +18,6 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
       <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
@@ -36,7 +34,6 @@ function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section className="relative overflow-hidden py-20 sm:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -71,7 +68,6 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="py-20 sm:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -117,7 +113,6 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
       <section id="pricing" className="py-20 sm:py-32 bg-muted/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -130,7 +125,6 @@ function LandingPage() {
           </div>
 
           <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {/* Free Plan */}
             <div className="rounded-lg border border-border bg-card p-8">
               <h3 className="text-lg font-semibold text-foreground">Free</h3>
               <p className="mt-2 text-sm text-muted-foreground">Perfect for getting started</p>
@@ -159,7 +153,6 @@ function LandingPage() {
               </Link>
             </div>
 
-            {/* Pro Plan */}
             <div className="rounded-lg border border-primary/60 bg-card p-8 relative ring-1 ring-primary/20 shadow-lg">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                 <span className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-full shadow-md border border-primary/20">
@@ -197,7 +190,6 @@ function LandingPage() {
               </Link>
             </div>
 
-            {/* Enterprise Plan */}
             <div className="rounded-lg border border-border bg-card p-8">
               <h3 className="text-lg font-semibold text-foreground">Enterprise</h3>
               <p className="mt-2 text-sm text-muted-foreground">For large organizations</p>
@@ -230,7 +222,6 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 sm:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">

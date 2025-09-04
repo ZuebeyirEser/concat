@@ -119,7 +119,6 @@ const PaginationEllipsis = ({
 )
 PaginationEllipsis.displayName = "PaginationEllipsis"
 
-// Chakra UI compatibility component
 interface PaginationRootProps {
     count: number
     pageSize: number
@@ -180,7 +179,6 @@ const PaginationRoot = ({ count, pageSize, onPageChange, children }: PaginationR
     )
 }
 
-// Chakra UI compatibility aliases
 const PaginationItems = ({ className, ...props }: React.ComponentProps<"div">) => (
     <div className={cn("flex items-center gap-1", className)} {...props} />
 )
@@ -207,7 +205,6 @@ export {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-    // Chakra UI compatibility exports
     PaginationRoot,
     PaginationItems,
     PaginationPrevTrigger,

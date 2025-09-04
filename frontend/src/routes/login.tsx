@@ -34,7 +34,6 @@ function Login() {
     try {
       await loginMutation.mutateAsync(data)
     } catch {
-      // error handled in useAuth
     }
   }
 
