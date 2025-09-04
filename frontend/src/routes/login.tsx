@@ -1,10 +1,8 @@
 import { Body_login_login_access_token } from '@/client'
 import { LoginForm } from '@/components/login-form'
 import useAuth, { isLoggedIn } from '@/hooks/useAuth'
-import { emailPattern, passwordRules } from '@/utils'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 
 export const Route = createFileRoute('/login')({
   component: Login,

@@ -63,39 +63,23 @@ function UserSettings() {
       </div>
 
       <Tabs defaultValue="my-profile" className="w-full">
-        {/* Ultra Modern Tab Navigation */}
+        {/* Clean Professional Tab Navigation */}
         <div className="mb-8 flex justify-center">
-          <div className="relative rounded-2xl border border-white/10 bg-gradient-to-r from-purple-100 to-blue-100 p-1 shadow-sm dark:border-white/5 dark:from-purple-900/40 dark:to-blue-900/40">
-            {' '}
-            <TabsList className="flex h-auto space-x-1 bg-transparent p-0">
-              {finalTabs.map((tab, index) => {
-                const Icon = tab.icon
-                return (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="group relative flex min-w-[80px] transform flex-col items-center gap-2 rounded-xl border-0 px-6 py-4 text-xs font-medium transition-all duration-300 ease-out hover:scale-105 hover:bg-white/50 data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/20 dark:hover:bg-gray-800/50 dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-purple-300"
-                    style={{
-                      background:
-                        'data-[state=active]:linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%)',
-                    }}
-                  >
-                    <div className="relative">
-                      <Icon className="h-5 w-5 transition-all duration-300 group-hover:scale-110 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400" />
-                      <div className="absolute inset-0 -z-10 rounded-full bg-purple-500/20 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-100 data-[state=active]:opacity-100"></div>
-                    </div>
-                    <span className="text-xs font-semibold tracking-wide opacity-70 transition-opacity duration-300 group-hover:opacity-100 data-[state=active]:opacity-100">
-                      {tab.title}
-                    </span>
-                    {/* Active indicator */}
-                    <div className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 transform rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 data-[state=active]:w-8"></div>
-                  </TabsTrigger>
-                )
-              })}
-            </TabsList>
-            {/* Floating background effect */}
-            <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-purple-500/5 to-blue-500/5 blur-xl"></div>
-          </div>
+          <TabsList className="inline-flex rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+            {finalTabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm hover:bg-gray-50 dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{tab.title}</span>
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
         </div>
 
         {/* Tab Content */}
