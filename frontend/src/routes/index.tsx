@@ -4,6 +4,7 @@ import { FiArrowRight, FiCheck, FiUsers, FiZap, FiShield } from 'react-icons/fi'
 import Logo from '@/components/ui/logo'
 import Footer from '@/components/Common/Footer'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { isLoggedIn } from '@/hooks/useAuth'
 
 export const Route = createFileRoute('/')({
@@ -23,6 +24,7 @@ function LandingPage() {
           <div className="flex h-16 items-center justify-between">
             <Logo size="lg" />
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Link to="/login">
                 <Button variant="ghost">Sign In</Button>
               </Link>

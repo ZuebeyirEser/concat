@@ -2,7 +2,6 @@ import { useTheme } from 'next-themes'
 import { FiMonitor, FiSun, FiMoon } from 'react-icons/fi'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
 
 const Appearance = () => {
   const { theme, setTheme } = useTheme()
@@ -31,10 +30,10 @@ const Appearance = () => {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className="text-lg font-semibold text-foreground">
           Appearance
         </h3>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           Choose how concat looks and feels to you
         </p>
       </div>
@@ -46,30 +45,30 @@ const Appearance = () => {
             <div key={option.value} className="relative">
               <div
                 onClick={() => setTheme(option.value)}
-                className={`flex cursor-pointer items-center space-x-4 rounded-lg border-2 p-4 transition-all hover:bg-purple-50 dark:hover:bg-purple-900/20 ${theme === option.value
-                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30'
-                  : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'
+                className={`flex cursor-pointer items-center space-x-4 rounded-md border p-4 transition-all hover:bg-accent/50 ${theme === option.value
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border bg-background'
                   }`}
               >
                 <RadioGroupItem
                   value={option.value}
                   id={option.value}
-                  className="mt-1 pointer-events-none"
+                  className="pointer-events-none"
                 />
-                <div className="flex flex-1 items-start space-x-3">
+                <div className="flex flex-1 items-center space-x-3">
                   <div
-                    className={`mt-2 rounded-lg p-2 ${theme === option.value
-                      ? 'bg-purple-100 text-purple-600 dark:bg-purple-800 dark:text-purple-300'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    className={`rounded-md p-2 ${theme === option.value
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground'
                       }`}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-4 w-4" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-base font-medium text-gray-900 dark:text-gray-100">
+                    <div className="text-sm font-medium text-foreground">
                       {option.label}
                     </div>
-                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       {option.description}
                     </p>
                   </div>

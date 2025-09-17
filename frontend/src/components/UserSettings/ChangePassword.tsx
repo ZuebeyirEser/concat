@@ -44,18 +44,18 @@ const ChangePassword = () => {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className="text-lg font-semibold text-foreground">
           Security Settings
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Update your password to keep your account secure
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">
               Current Password
             </label>
             <PasswordInput
@@ -64,12 +64,11 @@ const ChangePassword = () => {
               {...register("current_password", passwordRules())}
               placeholder="Enter your current password"
               errors={errors}
-              className="bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">
               New Password
             </label>
             <PasswordInput
@@ -78,12 +77,11 @@ const ChangePassword = () => {
               {...register("new_password", passwordRules())}
               placeholder="Enter your new password"
               errors={errors}
-              className="bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">
               Confirm New Password
             </label>
             <PasswordInput
@@ -92,16 +90,15 @@ const ChangePassword = () => {
               {...register("confirm_password", confirmPasswordRules(getValues))}
               placeholder="Confirm your new password"
               errors={errors}
-              className="bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500"
             />
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-4 border-t border-border">
           <Button
             type="submit"
             disabled={!isValid || isSubmitting}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6"
+            className="px-6"
           >
             {isSubmitting ? "Updating Password..." : "Update Password"}
           </Button>
