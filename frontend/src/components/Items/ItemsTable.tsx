@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/table'
 
 interface ItemsTableProps {
-  data: ItemPublic[]
-  columns: ColumnDef<ItemPublic>[]
+  data: Omit<ItemPublic, "id">[]
+  columns: ColumnDef<Omit<ItemPublic, "id">>[]
   isLoading?: boolean
 }
 
