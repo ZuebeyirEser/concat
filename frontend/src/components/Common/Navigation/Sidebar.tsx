@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FaBars, FaTimes } from 'react-icons/fa'
 
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import SidebarItems from './SidebarItems'
 import UserInfoSection from './UserInfoSection'
 

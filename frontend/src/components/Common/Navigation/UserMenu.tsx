@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+} from "../../ui/dropdown-menu"
 
 const UserMenu = () => {
   const { user, logout } = useAuth()
@@ -23,18 +23,7 @@ const UserMenu = () => {
     setTheme(theme === "light" ? "dark" : "light")
   }
 
-  // Get user initials for avatar
-  const getInitials = (name?: string, email?: string) => {
-    if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    }
-    if (email) {
-      return email[0].toUpperCase()
-    }
-    return 'U'
-  }
 
-  const initials = getInitials(user?.full_name || undefined, user?.email || undefined)
 
   return (
     <div className="flex">
