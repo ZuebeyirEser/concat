@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { type ItemPublic, type ItemsPublic, ItemsService } from '@/client'
 import AddItem from '@/components/Items/AddItem'
 import { EditItem } from '@/components/Items/EditItem'
+import { DeleteItem } from '@/components/Items/DeleteItem'
 import { ItemsTable } from '@/components/Items/ItemsTable'
 import { createItemColumns } from '@/components/Items/columns'
 import PendingItems from '@/components/Pending/PendingItems'
@@ -51,43 +52,11 @@ function ItemsTableContainer() {
   const queryClient = useQueryClient()
   const { showSuccessToast } = useCustomToast()
   const [editingItem, setEditingItem] = useState<ItemPublic | null>(null)
+  const [deletingItem, setDeletingItem] = useState<ItemPublic | null>(null)
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     ...getItemsQueryOptions({ page }),
     enabled: !!user && !isUserLoading,
-  })
-
-  const deleteItemMutation = useMutation({
-    mutationFn: (itemId: string) => ItemsService.deleteItem({ id: itemId }),
-    onMutate: async (deletedItemId) => {
-      await queryClient.cancelQueries({ queryKey: ['items'] })
-
-      const previousItems = queryClient.getQueryData<ItemsPublic>([
-        'items',
-        { page },
-      ])
-
-      if (previousItems) {
-        queryClient.setQueryData<ItemsPublic>(['items', { page }], {
-          ...previousItems,
-          data: previousItems.data.filter((item) => item.id !== deletedItemId),
-          count: previousItems.count - 1,
-        })
-      }
-
-      return { previousItems }
-    },
-    onError: (_err, _deletedItemId, context) => {
-      if (context?.previousItems) {
-        queryClient.setQueryData(['items', { page }], context.previousItems)
-      }
-    },
-    onSuccess: () => {
-      showSuccessToast('Item deleted successfully.')
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['items'] })
-    },
   })
 
   const handleEdit = (item: ItemPublic) => {
@@ -95,7 +64,10 @@ function ItemsTableContainer() {
   }
 
   const handleDelete = (id: string) => {
-    deleteItemMutation.mutate(id)
+    const item = items.find(item => item.id === id)
+    if (item) {
+      setDeletingItem(item)
+    }
   }
 
   const columns = createItemColumns(handleEdit, handleDelete)
@@ -158,6 +130,12 @@ function ItemsTableContainer() {
         item={editingItem}
         isOpen={!!editingItem}
         onClose={() => setEditingItem(null)}
+      />
+
+      <DeleteItem
+        item={deletingItem}
+        isOpen={!!deletingItem}
+        onClose={() => setDeletingItem(null)}
       />
     </>
   )
