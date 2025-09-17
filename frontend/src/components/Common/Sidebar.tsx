@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { FaBars, FaTimes } from 'react-icons/fa'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
 import { Button } from '../ui/button'
 import SidebarItems from './SidebarItems'

@@ -44,7 +44,11 @@ const SidebarItems = ({ onClose, isCollapsed = false }: SidebarItemsProps) => {
         )}
 
         {isCollapsed && (
-          <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+          <div className="absolute left-full ml-3 px-3 py-2 bg-popover text-popover-foreground text-xs rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[100]"
+               style={{
+                 top: '50%',
+                 transform: 'translateY(-50%)'
+               }}>
             {title}
             <div className="absolute top-1/2 right-full transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-r-[4px] border-transparent border-r-popover"></div>
           </div>

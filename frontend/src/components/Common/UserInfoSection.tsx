@@ -1,6 +1,12 @@
 import { FiLogOut } from 'react-icons/fi'
 import useAuth from '@/hooks/useAuth'
 import { Button } from '../ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu'
 
 interface UserInfoSectionProps {
     onClose?: () => void
@@ -17,7 +23,7 @@ const UserInfoSection = ({ onClose, isCollapsed = false }: UserInfoSectionProps)
 
     if (!currentUser) return null
 
-    // Get user initials for avatar
+
     const getInitials = (name?: string, email?: string) => {
         if (name) {
             return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -33,27 +39,41 @@ const UserInfoSection = ({ onClose, isCollapsed = false }: UserInfoSectionProps)
     if (isCollapsed) {
         return (
             <div className="flex justify-center">
-                <div className="relative group">
-                    <button
-                        onClick={handleLogout}
-                        className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200 cursor-pointer"
-                    >
-                        {initials}
-                    </button>
-                    {/* Online indicator */}
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200 cursor-pointer relative">
+                            {initials}
+                            {/* Online indicator */}
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>
+                        </button>
+                    </DropdownMenuTrigger>
                     
-                    {/* Tooltip with user info and logout hint */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-popover text-popover-foreground text-xs rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                        <div className="text-center">
-                            <p className="font-medium">{currentUser.full_name || 'User'}</p>
-                            <p className="text-muted-foreground">{currentUser.email}</p>
-                            <p className="text-xs text-muted-foreground mt-1 border-t border-border pt-1">Click to logout</p>
+                    <DropdownMenuContent 
+                        side="right" 
+                        align="end" 
+                        className="w-56 bg-popover border border-border shadow-lg rounded-lg p-1"
+                        sideOffset={8}
+                    >
+                        {/* User Info Header */}
+                        <div className="px-3 py-2 border-b border-border/50">
+                            <p className="text-sm font-medium text-foreground">
+                                {currentUser.full_name || 'User'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {currentUser.email}
+                            </p>
                         </div>
-                        {/* Tooltip arrow */}
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[4px] border-transparent border-t-popover"></div>
-                    </div>
-                </div>
+                        
+                        {/* Logout Option */}
+                        <DropdownMenuItem 
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive rounded-md m-1"
+                        >
+                            <FiLogOut className="w-4 h-4" />
+                            <span>Logout</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         )
     }
