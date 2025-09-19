@@ -43,18 +43,19 @@ const ChangePassword = () => {
 
   return (
     <div className="p-6">
-      {/* Security Header */}
-      <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-orange-500/5 to-red-500/10 rounded-lg border border-orange-500/20">
-        <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center">
-          <FiLock className="h-6 w-6 text-orange-600" />
+      <div className="max-w-2xl">
+        {/* Security Header */}
+        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-orange-500/5 to-red-500/10 rounded-lg border border-orange-500/20">
+          <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center">
+            <FiLock className="h-6 w-6 text-orange-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Password Security</h3>
+            <p className="text-sm text-muted-foreground">Keep your account secure with a strong password</p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-semibold text-foreground">Password Security</h3>
-          <p className="text-sm text-muted-foreground">Keep your account secure with a strong password</p>
-        </div>
-      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-6">
             <PasswordInput
               type="current_password"
@@ -102,6 +103,7 @@ const ChangePassword = () => {
             </Button>
           </div>
         </form>
+      </div>
     </div>
   )
 }
