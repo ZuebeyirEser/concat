@@ -42,54 +42,55 @@ const Appearance = () => {
         </div>
 
         <div className="space-y-4">
-        <RadioGroup onValueChange={setTheme} value={theme} className="space-y-4">
-          {themeOptions.map(option => {
-            const Icon = option.icon
-            return (
-              <div key={option.value} className="relative">
-                <div
-                  onClick={() => setTheme(option.value)}
-                  className={`flex cursor-pointer items-center space-x-4 rounded-lg border p-4 transition-all duration-200 hover:border-border hover:bg-muted/20 ${theme === option.value
-                    ? 'border-primary bg-primary/5 shadow-sm'
-                    : 'border-border/60 bg-background'
-                    }`}
-                >
-                  <RadioGroupItem
-                    value={option.value}
-                    id={option.value}
-                    className="pointer-events-none"
-                  />
-                  <div className="flex flex-1 items-center space-x-4">
-                    <div
-                      className={`rounded-lg p-3 ${theme === option.value
-                        ? 'bg-primary/10 text-primary'
-                        : 'bg-muted/50 text-muted-foreground'
-                        }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-foreground">
-                        {option.label}
+          <RadioGroup onValueChange={setTheme} value={theme} className="space-y-4">
+            {themeOptions.map(option => {
+              const Icon = option.icon
+              return (
+                <div key={option.value} className="relative">
+                  <div
+                    onClick={() => setTheme(option.value)}
+                    className={`flex cursor-pointer items-center space-x-4 rounded-lg border p-4 transition-all duration-200 hover:border-border hover:bg-muted/20 ${theme === option.value
+                      ? 'border-primary bg-primary/5 shadow-sm'
+                      : 'border-border/60 bg-background'
+                      }`}
+                  >
+                    <RadioGroupItem
+                      value={option.value}
+                      id={option.value}
+                      className="pointer-events-none"
+                    />
+                    <div className="flex flex-1 items-center space-x-4">
+                      <div
+                        className={`rounded-lg p-3 ${theme === option.value
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-muted/50 text-muted-foreground'
+                          }`}
+                      >
+                        <Icon className="h-5 w-5" />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {option.description}
-                      </p>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-foreground">
+                          {option.label}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {option.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
-        </RadioGroup>
+              )
+            })}
+          </RadioGroup>
 
-        {/* Theme Info */}
-        <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-border/50">
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-            <div>
-              <p className="text-sm font-medium text-foreground">Current Theme: {themeOptions.find(opt => opt.value === theme)?.label}</p>
-              <p className="text-xs text-muted-foreground mt-1">Changes apply immediately across the entire application</p>
+          {/* Theme Info */}
+          <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-border/50">
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Current Theme: {themeOptions.find(opt => opt.value === theme)?.label}</p>
+                <p className="text-xs text-muted-foreground mt-1">Changes apply immediately across the entire application</p>
+              </div>
             </div>
           </div>
         </div>
