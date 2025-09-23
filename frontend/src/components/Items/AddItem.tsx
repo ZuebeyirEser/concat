@@ -1,15 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { zodResolver } from "@hookform/resolvers/zod"; // 1. Import the resolver
-import { z } from "zod";
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { type SubmitHandler, useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { FaPlus } from 'react-icons/fa'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-import { ItemsService } from "@/client";
-import type { ApiError } from "@/client/core/ApiError";
-import useCustomToast from "@/hooks/useCustomToast";
-import { handleError } from "@/utils";
-import { Button } from "../ui/button";
+import { ItemsService } from '@/client'
+import type { ApiError } from '@/client/core/ApiError'
+import useCustomToast from '@/hooks/useCustomToast'
+import { handleError } from '@/utils'
+import { Button } from '../ui/button'
 import {
   Dialog,
   DialogContent,
@@ -18,51 +17,50 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { ItemCreateInput, itemCreateSchema } from "@/lib/validations";
-
+} from '../ui/dialog'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
+import { Textarea } from '../ui/textarea'
+import { ItemCreateInput, itemCreateSchema } from '@/lib/validations'
 
 const AddItem = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const { showSuccessToast } = useCustomToast();
+  const [isOpen, setIsOpen] = useState(false)
+  const queryClient = useQueryClient()
+  const { showSuccessToast } = useCustomToast()
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<ItemCreateInput>({
-    mode: "onBlur",
-    criteriaMode: "all",
-    resolver: zodResolver(itemCreateSchema), 
+    mode: 'onBlur',
+    criteriaMode: 'all',
+    resolver: zodResolver(itemCreateSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
     },
-  });
+  })
 
   const mutation = useMutation({
     mutationFn: (data: ItemCreateInput) =>
       ItemsService.createItem({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Item created successfully.");
-      reset();
-      setIsOpen(false);
+      showSuccessToast('Item created successfully.')
+      reset()
+      setIsOpen(false)
     },
     onError: (err: ApiError) => {
-      handleError(err);
+      handleError(err)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
+      queryClient.invalidateQueries({ queryKey: ['items'] })
     },
-  });
+  })
 
-  const onSubmit: SubmitHandler<ItemCreateInput> = (data) => {
-    mutation.mutate(data);
-  };
+  const onSubmit: SubmitHandler<ItemCreateInput> = data => {
+    mutation.mutate(data)
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -72,8 +70,8 @@ const AddItem = () => {
           Add Item
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-lg">
-        <DialogHeader className="space-y-3 pb-4 border-b border-gray-200 dark:border-gray-700">
+      <DialogContent className="rounded-lg border border-gray-200 bg-white text-gray-900 shadow-2xl dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 sm:max-w-[500px]">
+        <DialogHeader className="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
             Add New Item
           </DialogTitle>
@@ -94,17 +92,17 @@ const AddItem = () => {
               </Label>
               <Input
                 id="title"
-                {...register("title")} 
+                {...register('title')}
                 placeholder="Enter item title"
-                className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${
                   errors.title
-                    ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                    : ""
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : ''
                 }`}
                 disabled={isSubmitting}
               />
               {errors.title && (
-                <p className="text-sm text-red-500 flex items-center gap-1">
+                <p className="flex items-center gap-1 text-sm text-red-500">
                   {errors.title.message}
                 </p>
               )}
@@ -119,49 +117,49 @@ const AddItem = () => {
               </Label>
               <Textarea
                 id="description"
-                {...register("description")} 
+                {...register('description')}
                 placeholder="Enter item description (optional)"
-                className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${
                   errors.description
-                    ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                    : ""
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : ''
                 }`}
                 disabled={isSubmitting}
                 rows={3}
               />
               {errors.description && (
-                <p className="text-sm text-red-500 flex items-center gap-1">
+                <p className="flex items-center gap-1 text-sm text-red-500">
                   {errors.description.message}
                 </p>
               )}
             </div>
           </div>
 
-          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <DialogFooter className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-6 dark:border-gray-700 sm:flex-row sm:justify-end">
             <Button
               type="button"
               variant="outline"
               onClick={() => {
-                setIsOpen(false);
-                reset();
+                setIsOpen(false)
+                reset()
               }}
               disabled={isSubmitting}
-              className="w-full sm:w-auto bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="w-full border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="w-full sm:w-auto min-w-[120px] bg-blue-600 hover:bg-blue-700 text-white font-medium"
+              className="w-full min-w-[120px] bg-blue-600 font-medium text-white hover:bg-blue-700 sm:w-auto"
             >
-              {isSubmitting ? "Creating..." : "Create Item"}
+              {isSubmitting ? 'Creating...' : 'Create Item'}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default AddItem;
+export default AddItem

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type SubmitHandler, useForm } from 'react-hook-form'
-import { useEffect } from 'react'
 
 import { type ItemPublic, type ItemUpdate, ItemsService } from '@/client'
 import type { ApiError } from '@/client/core/ApiError'
@@ -40,16 +39,11 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
     resolver: zodResolver(itemUpdateSchema),
     mode: 'onBlur',
     criteriaMode: 'all',
+    defaultValues: {
+      title: item?.title,
+      description: item?.description ?? '',
+    },
   })
-
-  useEffect(() => {
-    if (item) {
-      reset({
-        title: item.title,
-        description: item.description || '',
-      })
-    }
-  }, [item, reset])
 
   const mutation = useMutation({
     mutationFn: (data: ItemUpdate) =>
