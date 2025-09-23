@@ -1,13 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import { useState } from "react"
-import { FaPlus } from "react-icons/fa"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import { zodResolver } from "@hookform/resolvers/zod"; // 1. Import the resolver
+import { z } from "zod";
 
-import { type ItemCreate, ItemsService } from "@/client"
-import type { ApiError } from "@/client/core/ApiError"
-import useCustomToast from "@/hooks/useCustomToast"
-import { handleError } from "@/utils"
-import { Button } from "../ui/button"
+import { ItemsService } from "@/client";
+import type { ApiError } from "@/client/core/ApiError";
+import useCustomToast from "@/hooks/useCustomToast";
+import { handleError } from "@/utils";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,48 +18,51 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import { Textarea } from "../ui/textarea"
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { ItemCreateInput, itemCreateSchema } from "@/lib/validations";
+
 
 const AddItem = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const queryClient = useQueryClient()
-  const { showSuccessToast } = useCustomToast()
+  const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { showSuccessToast } = useCustomToast();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<ItemCreate>({
+  } = useForm<ItemCreateInput>({
     mode: "onBlur",
     criteriaMode: "all",
+    resolver: zodResolver(itemCreateSchema), 
     defaultValues: {
       title: "",
       description: "",
     },
-  })
+  });
 
   const mutation = useMutation({
-    mutationFn: (data: ItemCreate) =>
+    mutationFn: (data: ItemCreateInput) =>
       ItemsService.createItem({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Item created successfully.")
-      reset()
-      setIsOpen(false)
+      showSuccessToast("Item created successfully.");
+      reset();
+      setIsOpen(false);
     },
     onError: (err: ApiError) => {
-      handleError(err)
+      handleError(err);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     },
-  })
+  });
 
-  const onSubmit: SubmitHandler<ItemCreate> = (data) => {
-    mutation.mutate(data)
-  }
+  const onSubmit: SubmitHandler<ItemCreateInput> = (data) => {
+    mutation.mutate(data);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -69,29 +74,33 @@ const AddItem = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-lg">
         <DialogHeader className="space-y-3 pb-4 border-b border-gray-200 dark:border-gray-700">
-          <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">Add New Item</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+            Add New Item
+          </DialogTitle>
           <DialogDescription className="text-gray-600 dark:text-gray-400">
-            Create a new item by filling out the form below. All fields marked with * are required.
+            Create a new item by filling out the form below. All fields marked
+            with * are required.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="title"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Title <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="title"
-                {...register("title", {
-                  required: "Title is required.",
-                  minLength: {
-                    value: 2,
-                    message: "Title must be at least 2 characters long."
-                  }
-                })}
+                {...register("title")} 
                 placeholder="Enter item title"
-                className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.title ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""}`}
+                className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.title
+                    ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                    : ""
+                }`}
                 disabled={isSubmitting}
               />
               {errors.title && (
@@ -102,17 +111,21 @@ const AddItem = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</Label>
+              <Label
+                htmlFor="description"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Description
+              </Label>
               <Textarea
                 id="description"
-                {...register("description", {
-                  maxLength: {
-                    value: 500,
-                    message: "Description must be less than 500 characters."
-                  }
-                })}
+                {...register("description")} 
                 placeholder="Enter item description (optional)"
-                className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.description ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""}`}
+                className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.description
+                    ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                    : ""
+                }`}
                 disabled={isSubmitting}
                 rows={3}
               />
@@ -129,8 +142,8 @@ const AddItem = () => {
               type="button"
               variant="outline"
               onClick={() => {
-                setIsOpen(false)
-                reset()
+                setIsOpen(false);
+                reset();
               }}
               disabled={isSubmitting}
               className="w-full sm:w-auto bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -148,7 +161,7 @@ const AddItem = () => {
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default AddItem
+export default AddItem;
