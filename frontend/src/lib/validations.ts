@@ -35,7 +35,7 @@ export const userInformationUpdateSchema = z
     email: emailSchema.optional(),
   })
   .refine(data => data.full_name !== undefined || data.email !== undefined, {
-    message: 'At least one field must be provided',
+    error: 'At least one field must be provided',
   })
 
 export const changePasswordSchema = z
@@ -45,20 +45,20 @@ export const changePasswordSchema = z
     confirm_password: z.string().min(1, 'Password confirmation is required'),
   })
   .refine(data => data.new_password === data.confirm_password, {
-    message: 'Passwords do not match',
+    error: 'Passwords do not match',
     path: ['confirm_password'],
   })
 
 export const deleteAccountSchema = z.object({
   password: z.string().min(1, 'Password is required to delete account'),
   confirmation: z.literal('DELETE', {
-    message: 'Please type "DELETE" to confirm',
+    error: 'Please type "DELETE" to confirm',
   }),
 })
 
 export const appearanceSchema = z.object({
   theme: z.enum(['light', 'dark', 'system'], {
-    message: 'Please select a valid theme',
+    error: 'Please select a valid theme',
   }),
 })
 
@@ -75,7 +75,7 @@ export const registrationSchema = z
     confirm_password: z.string().min(1, 'Password confirmation is required'),
   })
   .refine(data => data.password === data.confirm_password, {
-    message: 'Passwords do not match',
+    error: 'Passwords do not match',
     path: ['confirm_password'],
   })
 
@@ -89,7 +89,7 @@ export const resetPasswordSchema = z
     confirm_password: z.string().min(1, 'Password confirmation is required'),
   })
   .refine(data => data.new_password === data.confirm_password, {
-    message: 'Passwords do not match',
+    error: 'Passwords do not match',
     path: ['confirm_password'],
   })
 
@@ -103,8 +103,7 @@ export const itemCreateSchema = z.object({
     .string()
     .max(500, 'Description must be 500 characters or less')
     .transform(val => val?.trim())
-    .optional()
-,
+    .optional(),
 })
 
 export const itemUpdateSchema = z.object({
@@ -129,7 +128,7 @@ export const adminUserCreateSchema = z
     is_superuser: z.boolean().default(false),
   })
   .refine(data => data.password === data.confirm_password, {
-    message: 'Passwords do not match',
+    error: 'Passwords do not match',
     path: ['confirm_password'],
   })
 
@@ -162,7 +161,7 @@ export const adminUserUpdateSchema = z
 
 export const adminUserDeleteSchema = z.object({
   confirmation: z.literal('DELETE', {
-    message: 'Please type "DELETE" to confirm',
+    error: 'Please type "DELETE" to confirm',
   }),
 })
 
