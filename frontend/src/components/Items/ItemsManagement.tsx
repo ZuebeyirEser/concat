@@ -23,10 +23,7 @@ export function ItemsManagement({ page, onPageChange }: ItemsManagementProps) {
     <div className="w-full max-w-full">
       <ItemsHeader />
       <div className="mt-6">
-        <ItemsTableContainer 
-          page={page}
-          onPageChange={onPageChange}
-        />
+        <ItemsTableContainer page={page} onPageChange={onPageChange} />
       </div>
     </div>
   )

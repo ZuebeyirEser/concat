@@ -16,12 +16,16 @@ import {
 } from '@/components/ui/table'
 
 interface ItemsTableProps {
-  data: Omit<ItemPublic, "id">[]
-  columns: ColumnDef<Omit<ItemPublic, "id">>[]
+  data: Omit<ItemPublic, 'id'>[]
+  columns: ColumnDef<Omit<ItemPublic, 'id'>>[]
   isLoading?: boolean
 }
 
-export function ItemsTable({ data, columns, isLoading = false }: ItemsTableProps) {
+export function ItemsTable({
+  data,
+  columns,
+  isLoading = false,
+}: ItemsTableProps) {
   const table = useReactTable({
     data,
     columns,
@@ -32,9 +36,9 @@ export function ItemsTable({ data, columns, isLoading = false }: ItemsTableProps
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
+              {headerGroup.headers.map(header => (
                 <TableHead key={header.id}>
                   {header.isPlaceholder
                     ? null
@@ -49,13 +53,13 @@ export function ItemsTable({ data, columns, isLoading = false }: ItemsTableProps
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+            table.getRowModel().rows.map(row => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
                 className={isLoading ? 'opacity-50' : ''}
               >
-                {row.getVisibleCells().map((cell) => (
+                {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>

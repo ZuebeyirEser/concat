@@ -1,13 +1,17 @@
 /* CSS Language Server: Ignore Tailwind directives */
 /* @tailwind base; @tailwind components; @tailwind utilities; */
 
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 /* CSS Variables for theming */
 :root {
-  --background: linear-gradient(135deg, hsl(0, 0%, 100%) 0%, hsl(262, 83%, 98%) 100%);
+  --background: linear-gradient(
+    135deg,
+    hsl(0, 0%, 100%) 0%,
+    hsl(262, 83%, 98%) 100%
+  );
   --foreground: hsl(222.2, 84%, 4.9%);
   --card: hsl(0, 0%, 100%);
   --card-foreground: hsl(222.2, 84%, 4.9%);
@@ -30,7 +34,11 @@
 }
 
 .dark {
-  --background: linear-gradient(135deg, hsl(262, 84%, 8%) 0%, hsl(222.2, 84%, 4.9%) 100%);
+  --background: linear-gradient(
+    135deg,
+    hsl(262, 84%, 8%) 0%,
+    hsl(222.2, 84%, 4.9%) 100%
+  );
   --foreground: hsl(210, 40%, 98%);
   --card: hsl(262, 50%, 10%);
   --card-foreground: hsl(210, 40%, 98%);
@@ -66,8 +74,6 @@ html {
 html.dark {
   background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
 }
-
-
 
 @layer base {
   :root {
@@ -124,8 +130,6 @@ html.dark {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {

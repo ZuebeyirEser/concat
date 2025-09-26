@@ -1,18 +1,18 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { z } from "zod"
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { z } from 'zod'
 
-import { type UserPublic, UsersService } from "@/client"
-import AddUser from "@/components/Admin/AddUser"
-import { UserActionsMenu } from "@/components/Common/Actions/UserActionsMenu"
-import PendingUsers from "@/components/Pending/PendingUsers"
-import { Badge } from "@/components/ui/badge"
+import { type UserPublic, UsersService } from '@/client'
+import AddUser from '@/components/Admin/AddUser'
+import { UserActionsMenu } from '@/components/Common/Actions/UserActionsMenu'
+import PendingUsers from '@/components/Pending/PendingUsers'
+import { Badge } from '@/components/ui/badge'
 import {
   PaginationItems,
   PaginationNextTrigger,
   PaginationPrevTrigger,
   PaginationRoot,
-} from "@/components/ui/pagination"
+} from '@/components/ui/pagination'
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table'
 
 const usersSearchSchema = z.object({
   page: z.number().catch(1),
@@ -32,29 +32,29 @@ function getUsersQueryOptions({ page }: { page: number }) {
   return {
     queryFn: () =>
       UsersService.readUsers({ skip: (page - 1) * PER_PAGE, limit: PER_PAGE }),
-    queryKey: ["users", { page }],
+    queryKey: ['users', { page }],
   }
 }
 
-export const Route = createFileRoute("/_layout/admin")({
+export const Route = createFileRoute('/_layout/admin')({
   component: Admin,
-  validateSearch: (search) => usersSearchSchema.parse(search),
+  validateSearch: search => usersSearchSchema.parse(search),
 })
 
 function UsersTable() {
   const queryClient = useQueryClient()
-  const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"])
+  const currentUser = queryClient.getQueryData<UserPublic>(['currentUser'])
   const navigate = useNavigate({ from: Route.fullPath })
   const { page } = Route.useSearch()
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     ...getUsersQueryOptions({ page }),
-    placeholderData: (prevData) => prevData,
+    placeholderData: prevData => prevData,
   })
 
   const setPage = (page: number) =>
     navigate({
-      search: (prev) => ({ ...prev, page }),
+      search: prev => ({ ...prev, page }),
     })
 
   const users = data?.data.slice(0, PER_PAGE) ?? []
@@ -77,11 +77,16 @@ function UsersTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users?.map((user) => (
-            <TableRow key={user.id} className={isPlaceholderData ? "opacity-50" : ""}>
-              <TableCell className={`w-[20%] ${!user.full_name ? "text-muted-foreground" : ""}`}>
+          {users?.map(user => (
+            <TableRow
+              key={user.id}
+              className={isPlaceholderData ? 'opacity-50' : ''}
+            >
+              <TableCell
+                className={`w-[20%] ${!user.full_name ? 'text-muted-foreground' : ''}`}
+              >
                 <div className="flex items-center gap-2">
-                  {user.full_name || "N/A"}
+                  {user.full_name || 'N/A'}
                   {currentUser?.id === user.id && (
                     <Badge variant="secondary" className="ml-1">
                       You
@@ -91,10 +96,10 @@ function UsersTable() {
               </TableCell>
               <TableCell className="w-[25%]">{user.email}</TableCell>
               <TableCell className="w-[15%]">
-                {user.is_superuser ? "Superuser" : "User"}
+                {user.is_superuser ? 'Superuser' : 'User'}
               </TableCell>
               <TableCell className="w-[20%]">
-                {user.is_active ? "Active" : "Inactive"}
+                {user.is_active ? 'Active' : 'Inactive'}
               </TableCell>
               <TableCell className="w-[20%]">
                 <UserActionsMenu
@@ -106,7 +111,7 @@ function UsersTable() {
           ))}
         </TableBody>
       </Table>
-      <div className="flex justify-end mt-4">
+      <div className="mt-4 flex justify-end">
         <PaginationRoot
           count={count}
           pageSize={PER_PAGE}
@@ -124,9 +129,7 @@ function UsersTable() {
 function Admin() {
   return (
     <div className="w-full max-w-full">
-      <h1 className="text-2xl font-bold pt-12">
-        Users Management
-      </h1>
+      <h1 className="pt-12 text-2xl font-bold">Users Management</h1>
 
       <AddUser />
       <UsersTable />

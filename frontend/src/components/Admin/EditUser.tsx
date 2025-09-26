@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { useState } from "react"
-import { FaExchangeAlt } from "react-icons/fa"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { FaExchangeAlt } from 'react-icons/fa'
 
-import { type UserPublic, type UserUpdate, UsersService } from "@/client"
-import type { ApiError } from "@/client/core/ApiError"
-import useCustomToast from "@/hooks/useCustomToast"
-import { emailPattern, handleError } from "@/utils"
-import { Button } from "../ui/button"
-import { Checkbox } from "../ui/checkbox"
+import { type UserPublic, type UserUpdate, UsersService } from '@/client'
+import type { ApiError } from '@/client/core/ApiError'
+import useCustomToast from '@/hooks/useCustomToast'
+import { emailPattern, handleError } from '@/utils'
+import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -16,9 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
+} from '../ui/dialog'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
 
 interface EditUserProps {
   user: UserPublic
@@ -40,8 +40,8 @@ const EditUser = ({ user }: EditUserProps) => {
     getValues,
     formState: { errors, isSubmitting },
   } = useForm<UserUpdateForm>({
-    mode: "onBlur",
-    criteriaMode: "all",
+    mode: 'onBlur',
+    criteriaMode: 'all',
     defaultValues: user,
   })
 
@@ -49,7 +49,7 @@ const EditUser = ({ user }: EditUserProps) => {
     mutationFn: (data: UserUpdateForm) =>
       UsersService.updateUser({ userId: user.id, requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("User updated successfully.")
+      showSuccessToast('User updated successfully.')
       reset()
       setIsOpen(false)
     },
@@ -57,12 +57,12 @@ const EditUser = ({ user }: EditUserProps) => {
       handleError(err)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] })
+      queryClient.invalidateQueries({ queryKey: ['users'] })
     },
   })
 
-  const onSubmit: SubmitHandler<UserUpdateForm> = async (data) => {
-    if (data.password === "") {
+  const onSubmit: SubmitHandler<UserUpdateForm> = async data => {
+    if (data.password === '') {
       data.password = undefined
     }
     mutation.mutate(data)
@@ -82,7 +82,9 @@ const EditUser = ({ user }: EditUserProps) => {
             <DialogTitle>Edit User</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <p className="text-sm text-muted-foreground mb-4">Update the user details below.</p>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Update the user details below.
+            </p>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-right">
@@ -90,13 +92,13 @@ const EditUser = ({ user }: EditUserProps) => {
                 </Label>
                 <Input
                   id="email"
-                  {...register("email", {
-                    required: "Email is required",
+                  {...register('email', {
+                    required: 'Email is required',
                     pattern: emailPattern,
                   })}
                   placeholder="Email"
                   type="email"
-                  className={errors.email ? "border-red-500" : ""}
+                  className={errors.email ? 'border-red-500' : ''}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -109,13 +111,15 @@ const EditUser = ({ user }: EditUserProps) => {
                 </Label>
                 <Input
                   id="name"
-                  {...register("full_name")}
+                  {...register('full_name')}
                   placeholder="Full name"
                   type="text"
-                  className={errors.full_name ? "border-red-500" : ""}
+                  className={errors.full_name ? 'border-red-500' : ''}
                 />
                 {errors.full_name && (
-                  <p className="text-sm text-red-500">{errors.full_name.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.full_name.message}
+                  </p>
                 )}
               </div>
 
@@ -125,18 +129,20 @@ const EditUser = ({ user }: EditUserProps) => {
                 </Label>
                 <Input
                   id="password"
-                  {...register("password", {
+                  {...register('password', {
                     minLength: {
                       value: 8,
-                      message: "Password must be at least 8 characters",
+                      message: 'Password must be at least 8 characters',
                     },
                   })}
                   placeholder="Password"
                   type="password"
-                  className={errors.password ? "border-red-500" : ""}
+                  className={errors.password ? 'border-red-500' : ''}
                 />
                 {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
@@ -146,17 +152,19 @@ const EditUser = ({ user }: EditUserProps) => {
                 </Label>
                 <Input
                   id="confirm_password"
-                  {...register("confirm_password", {
-                    validate: (value) =>
+                  {...register('confirm_password', {
+                    validate: value =>
                       value === getValues().password ||
-                      "The passwords do not match",
+                      'The passwords do not match',
                   })}
                   placeholder="Password"
                   type="password"
-                  className={errors.confirm_password ? "border-red-500" : ""}
+                  className={errors.confirm_password ? 'border-red-500' : ''}
                 />
                 {errors.confirm_password && (
-                  <p className="text-sm text-red-500">{errors.confirm_password.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.confirm_password.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -203,7 +211,7 @@ const EditUser = ({ user }: EditUserProps) => {
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
+              {isSubmitting ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
         </form>

@@ -102,8 +102,9 @@ export const itemCreateSchema = z.object({
   description: z
     .string()
     .max(500, 'Description must be 500 characters or less')
+    .transform(val => val?.trim())
     .optional()
-    .transform(val => val?.trim()),
+,
 })
 
 export const itemUpdateSchema = z.object({
