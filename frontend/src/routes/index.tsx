@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { FiArrowRight, FiCheck, FiUsers, FiZap, FiShield } from 'react-icons/fi'
+import { FiArrowRight, FiCheck, FiCode, FiHeart, FiGithub } from 'react-icons/fi'
 
 import Logo from '@/components/ui/logo'
 import Footer from '@/components/Common/Layout/Footer'
@@ -29,7 +29,7 @@ function LandingPage() {
                 <Button variant="ghost">Sign In</Button>
               </Link>
               <Link to="/signup">
-                <Button>Get Started</Button>
+                <Button>Try It Out</Button>
               </Link>
             </div>
           </div>
@@ -37,10 +37,10 @@ function LandingPage() {
       </nav>
 
       <section className="relative overflow-hidden py-20 sm:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-              Manage your items with{' '}
+              Just a simple{' '}
               <span
                 className="text-transparent bg-clip-text"
                 style={{
@@ -49,199 +49,113 @@ function LandingPage() {
                 }}
               >
                 concat
-              </span>
+              </span>{' '}
+              for your stuff
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-              A modern, efficient platform for organizing and managing your items.
-              Built with cutting-edge technology for the best user experience.
+              I built this to organize my own items and thought you might find it useful too. 
+              It's nothing fancy, but it works pretty well.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link to="/signup">
                 <Button size="lg" className="flex items-center gap-2">
-                  Get Started
+                  Give it a try
                   <FiArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg">
-                View Demo
-              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" className="py-20 sm:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
+      <section className="py-20 sm:py-32 bg-muted/30">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Everything you need to manage items
+              What it does
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              Powerful features designed to make item management effortless and efficient.
+              Pretty straightforward stuff, honestly.
             </p>
           </div>
 
-          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-lg border border-border bg-card p-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <FiZap className="h-6 w-6 text-primary" />
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-lg border border-border bg-card p-6">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4">
+                <FiCode className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-foreground">Lightning Fast</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Built with modern technology for blazing fast performance and smooth user experience.
+              <h3 className="text-lg font-semibold text-foreground mb-2">Add & organize items</h3>
+              <p className="text-sm text-muted-foreground">
+                Create items, categorize them, add notes. The basics you'd expect.
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-card p-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <FiShield className="h-6 w-6 text-primary" />
+            <div className="rounded-lg border border-border bg-card p-6">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4">
+                <FiHeart className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-foreground">Secure & Private</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Your data is protected with enterprise-grade security and privacy measures.
+              <h3 className="text-lg font-semibold text-foreground mb-2">Actually works</h3>
+              <p className="text-sm text-muted-foreground">
+                I use this myself daily, so I try to keep the bugs to a minimum.
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-card p-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <FiUsers className="h-6 w-6 text-primary" />
+            <div className="rounded-lg border border-border bg-card p-6">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4">
+                <FiGithub className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-foreground">Team Collaboration</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Work together seamlessly with your team members and share items effortlessly.
+              <h3 className="text-lg font-semibold text-foreground mb-2">Open source</h3>
+              <p className="text-sm text-muted-foreground">
+                Code is available if you want to see how it works or suggest improvements.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="pricing" className="py-20 sm:py-32 bg-muted/30">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Simple, transparent pricing
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              Choose the plan that works best for you and your team.
-            </p>
-          </div>
-
-          <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="rounded-lg border border-border bg-card p-8">
-              <h3 className="text-lg font-semibold text-foreground">Free</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Perfect for getting started</p>
-              <div className="mt-4">
-                <span className="text-4xl font-bold text-foreground">$0</span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <ul className="mt-6 space-y-3">
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Up to 100 items
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Basic features
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Community support
-                </li>
-              </ul>
-              <Link to="/signup" className="mt-8 block">
-                <Button variant="outline" className="w-full">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-
-            <div className="rounded-lg border border-primary/60 bg-card p-8 relative ring-1 ring-primary/20 shadow-lg">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                <span className="bg-white text-primary-foreground px-3 py-1 text-xs font-medium rounded-full shadow-md border border-primary/20">
-                  Most Popular
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">Pro</h3>
-              <p className="mt-2 text-sm text-muted-foreground">For growing teams</p>
-              <div className="mt-4">
-                <span className="text-4xl font-bold text-foreground">$19</span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <ul className="mt-6 space-y-3">
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Unlimited items
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Advanced features
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Priority support
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Team collaboration
-                </li>
-              </ul>
-              <Link to="/signup" className="mt-8 block">
-                <Button className="w-full">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-
-            <div className="rounded-lg border border-border bg-card p-8">
-              <h3 className="text-lg font-semibold text-foreground">Enterprise</h3>
-              <p className="mt-2 text-sm text-muted-foreground">For large organizations</p>
-              <div className="mt-4">
-                <span className="text-4xl font-bold text-foreground">Custom</span>
-              </div>
-              <ul className="mt-6 space-y-3">
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Everything in Pro
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Custom integrations
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  Dedicated support
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <FiCheck className="h-4 w-4 text-green-500" />
-                  SLA guarantee
-                </li>
-              </ul>
-              <Button variant="outline" className="mt-8 w-full">
-                Contact Sales
-              </Button>
             </div>
           </div>
         </div>
       </section>
 
       <section className="py-20 sm:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Ready to get started?
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-lg border border-border bg-card p-8 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-4">
+              It's free
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              Join thousands of users who trust concat to manage their items efficiently.
+            <p className="text-muted-foreground mb-6">
+              This is a personal project, not a business. No subscriptions, no premium tiers, 
+              no "contact sales" nonsense. Just sign up and use it.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link to="/signup">
-                <Button size="lg" className="flex items-center gap-2">
-                  Start Free Trial
-                  <FiArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+            <div className="space-y-3 mb-8">
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <FiCheck className="h-4 w-4 text-green-500" />
+                No limits on items
+              </div>
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <FiCheck className="h-4 w-4 text-green-500" />
+                All features included
+              </div>
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <FiCheck className="h-4 w-4 text-green-500" />
+                No ads or tracking
+              </div>
             </div>
+            <Link to="/signup">
+              <Button size="lg" className="flex items-center gap-2 mx-auto">
+                Start using it
+                <FiArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-muted/30">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
+            Questions or issues?
+          </h2>
+          <p className="text-muted-foreground">
+            Drop me a line if something's broken or you have suggestions. 
+            I can't promise enterprise-level support, but I'll do my best to help.
+          </p>
         </div>
       </section>
 
