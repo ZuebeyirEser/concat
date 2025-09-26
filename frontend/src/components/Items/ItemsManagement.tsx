@@ -1,7 +1,7 @@
-import { ItemsHeader } from '@/components/Items/ItemsHeader'
-import { ItemsTableContainer } from '@/components/Items/ItemsTableContainer'
+import { ItemsTableContainer } from '@/components/Items/ItemTable/ItemsTableContainer'
 import PendingItems from '@/components/Pending/PendingItems'
 import useAuth from '@/hooks/useAuth'
+import { ItemsHeader } from './ItemTable/ItemsHeader'
 
 interface ItemsManagementProps {
   page: number
