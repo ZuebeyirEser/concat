@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { FaBars, FaTimes } from 'react-icons/fa'
 
 import { Button } from '../../ui/button'
+import UserInfoSection from '../User/UserInfoSection'
 import SidebarItems from './SidebarItems'
-import UserInfoSection from './UserInfoSection'
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)

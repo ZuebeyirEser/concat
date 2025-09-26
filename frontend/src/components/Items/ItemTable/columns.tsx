@@ -47,7 +47,7 @@ function ItemActions({ item, onEdit, onDelete }: ItemActionsProps) {
 }
 
 export function createItemColumns(
-  onEdit: (item: Omit<ItemPublic, 'id'>) => void,
+  onEdit: (item: ItemPublic) => void,
   onDelete: (id: string) => void
 ): ColumnDef<ItemPublic>[] {
   return [

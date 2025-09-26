@@ -1,4 +1,4 @@
-import AddItem from '@/components/Items/AddItem'
+import AddItem from '@/components/Items/ItemActions/AddItem'
 
 export function ItemsHeader() {
   return (

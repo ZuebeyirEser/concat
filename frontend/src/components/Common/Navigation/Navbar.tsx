@@ -1,6 +1,6 @@
-import { Link } from '@tanstack/react-router'
 import Logo from '@/components/ui/logo'
-import UserMenu from './UserMenu'
+import { Link } from '@tanstack/react-router'
+import UserMenu from '../User/UserMenu'
 
 function Navbar() {
   return (
