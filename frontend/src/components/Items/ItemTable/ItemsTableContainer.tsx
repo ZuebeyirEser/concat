@@ -22,7 +22,7 @@ import {
 import useAuth from '@/hooks/useAuth'
 import { ItemsTable } from './ItemsTable'
 
-const PER_PAGE = 5
+const PER_PAGE = 100
 
 function getItemsQueryOptions({ page }: { page: number }) {
   return {
