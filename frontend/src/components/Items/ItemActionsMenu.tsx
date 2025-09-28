@@ -1,12 +1,12 @@
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { FiEdit, FiTrash2 } from 'react-icons/fi'
-import { Button } from '../../ui/button'
+import { Button } from '../ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../ui/dropdown-menu'
+} from '../ui/dropdown-menu'
 
 import type { ItemPublic } from '@/client'
 
