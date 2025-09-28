@@ -5,8 +5,7 @@ import { FiSearch } from 'react-icons/fi'
 import { type ItemPublic, ItemsService } from '@/client'
 import { DeleteItem } from '@/components/Items/ItemActions/DeleteItem'
 import { EditItem } from '@/components/Items/ItemActions/EditItem'
-import { ItemsTable } from '@/components/Items/ItemsTable'
-import { createItemColumns } from '@/components/Items/columns'
+import { createItemColumns } from '@/components/Items/ItemTable/columns'
 import PendingItems from '@/components/Pending/PendingItems'
 import {
   EmptyState,
@@ -21,6 +20,7 @@ import {
   PaginationRoot,
 } from '@/components/ui/pagination'
 import useAuth from '@/hooks/useAuth'
+import { ItemsTable } from './ItemsTable'
 
 const PER_PAGE = 5
 
