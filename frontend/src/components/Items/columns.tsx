@@ -76,18 +76,6 @@ export function createItemColumns(
             },
         },
         {
-            accessorKey: 'id',
-            header: 'ID',
-            cell: ({ row }) => {
-                const id = row.getValue('id') as string
-                return (
-                    <div className="max-w-[100px] truncate font-mono text-sm">
-                        {id}
-                    </div>
-                )
-            },
-        },
-        {
             id: 'actions',
             header: () => <div className="text-right">Actions</div>,
             cell: ({ row }) => (
