@@ -1,8 +1,8 @@
 import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router'
 
-import Navbar from '@/components/Common/Navbar'
-import Sidebar from '@/components/Common/Sidebar'
-import CompactFooter from '@/components/Common/CompactFooter'
+import Navbar from '@/components/Common/Navigation/Navbar'
+import Sidebar from '@/components/Common/Navigation/Sidebar'
+import CompactFooter from '@/components/Common/Layout/CompactFooter'
 import useAuth, { isLoggedIn } from '@/hooks/useAuth'
 
 export const Route = createFileRoute('/_layout')({

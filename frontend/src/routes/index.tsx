@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { FiArrowRight, FiCheck, FiUsers, FiZap, FiShield } from 'react-icons/fi'
 
 import Logo from '@/components/ui/logo'
-import Footer from '@/components/Common/Footer'
+import Footer from '@/components/Common/Layout/Footer'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { isLoggedIn } from '@/hooks/useAuth'

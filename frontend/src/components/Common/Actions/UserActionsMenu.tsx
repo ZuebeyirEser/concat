@@ -1,14 +1,14 @@
 import { BsThreeDotsVertical } from "react-icons/bs"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+} from "../../ui/dropdown-menu"
 
 import type { UserPublic } from "@/client"
-import DeleteUser from "../Admin/DeleteUser"
-import EditUser from "../Admin/EditUser"
+import DeleteUser from "../../Admin/DeleteUser"
+import EditUser from "../../Admin/EditUser"
 
 interface UserActionsMenuProps {
   user: UserPublic
