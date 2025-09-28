@@ -1,33 +1,29 @@
-import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { FiSearch } from "react-icons/fi"
-import { z } from "zod"
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { FiSearch } from 'react-icons/fi'
+import { useState } from 'react'
+import { z } from 'zod'
 
-import { ItemsService } from "@/client"
-import { ItemActionsMenu } from "@/components/Common/ItemActionsMenu"
-import AddItem from "@/components/Items/AddItem"
-import PendingItems from "@/components/Pending/PendingItems"
-import useAuth from "@/hooks/useAuth"
+import { type ItemPublic, type ItemsPublic, ItemsService } from '@/client'
+import AddItem from '@/components/Items/AddItem'
+import { EditItem } from '@/components/Items/EditItem'
+import { ItemsTable } from '@/components/Items/ItemsTable'
+import { createItemColumns } from '@/components/Items/columns'
+import PendingItems from '@/components/Pending/PendingItems'
+import useAuth from '@/hooks/useAuth'
+import useCustomToast from '@/hooks/useCustomToast'
 import {
   EmptyState,
   EmptyStateDescription,
   EmptyStateIcon,
   EmptyStateTitle,
-} from "@/components/ui/empty-state"
+} from '@/components/ui/empty-state'
 import {
   PaginationItems,
   PaginationNextTrigger,
   PaginationPrevTrigger,
   PaginationRoot,
-} from "@/components/ui/pagination"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/pagination'
 
 const itemsSearchSchema = z.object({
   page: z.number().catch(1),
@@ -39,25 +35,71 @@ function getItemsQueryOptions({ page }: { page: number }) {
   return {
     queryFn: () =>
       ItemsService.readItems({ skip: (page - 1) * PER_PAGE, limit: PER_PAGE }),
-    queryKey: ["items", { page }],
+    queryKey: ['items', { page }] as const,
   }
 }
 
-export const Route = createFileRoute("/_layout/items")({
+export const Route = createFileRoute('/_layout/items')({
   component: Items,
-  validateSearch: (search) => itemsSearchSchema.parse(search),
+  validateSearch: search => itemsSearchSchema.parse(search),
 })
 
-function ItemsTable() {
+function ItemsTableContainer() {
   const navigate = useNavigate({ from: Route.fullPath })
   const { page } = Route.useSearch()
   const { user, isUserLoading } = useAuth()
+  const queryClient = useQueryClient()
+  const { showSuccessToast } = useCustomToast()
+  const [editingItem, setEditingItem] = useState<ItemPublic | null>(null)
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     ...getItemsQueryOptions({ page }),
-    enabled: !!user && !isUserLoading, // Only run when user is authenticated
-    // Remove placeholderData to prevent showing stale data
+    enabled: !!user && !isUserLoading,
   })
+
+  // Delete mutation with optimistic updates
+  const deleteItemMutation = useMutation({
+    mutationFn: (itemId: string) => ItemsService.deleteItem({ id: itemId }),
+    onMutate: async (deletedItemId) => {
+      await queryClient.cancelQueries({ queryKey: ['items'] })
+
+      const previousItems = queryClient.getQueryData<ItemsPublic>([
+        'items',
+        { page },
+      ])
+
+      if (previousItems) {
+        queryClient.setQueryData<ItemsPublic>(['items', { page }], {
+          ...previousItems,
+          data: previousItems.data.filter((item) => item.id !== deletedItemId),
+          count: previousItems.count - 1,
+        })
+      }
+
+      return { previousItems }
+    },
+    onError: (_err, _deletedItemId, context) => {
+      if (context?.previousItems) {
+        queryClient.setQueryData(['items', { page }], context.previousItems)
+      }
+    },
+    onSuccess: () => {
+      showSuccessToast('Item deleted successfully.')
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['items'] })
+    },
+  })
+
+  const handleEdit = (item: ItemPublic) => {
+    setEditingItem(item)
+  }
+
+  const handleDelete = (id: string) => {
+    deleteItemMutation.mutate(id)
+  }
+
+  const columns = createItemColumns(handleEdit, handleDelete)
 
   const setPage = (page: number) =>
     navigate({
@@ -74,8 +116,8 @@ function ItemsTable() {
     return null
   }
 
-  // Now we can safely process the data
-  const items = data?.data.slice(0, PER_PAGE) ?? []
+  // Process the data
+  const items = data?.data ?? []
   const count = data?.count ?? 0
 
   // Show loading for items query
@@ -100,38 +142,13 @@ function ItemsTable() {
 
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[30%]">ID</TableHead>
-            <TableHead className="w-[30%]">Title</TableHead>
-            <TableHead className="w-[30%]">Description</TableHead>
-            <TableHead className="w-[10%]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items?.map((item) => (
-            <TableRow key={item.id} className={isPlaceholderData ? "opacity-50" : ""}>
-              <TableCell className="truncate max-w-[30%]">
-                {item.id}
-              </TableCell>
-              <TableCell className="truncate max-w-[30%]">
-                {item.title}
-              </TableCell>
-              <TableCell
-                className={`truncate max-w-[30%] ${!item.description ? "text-muted-foreground" : ""
-                  }`}
-              >
-                {item.description || "N/A"}
-              </TableCell>
-              <TableCell className="w-[10%]">
-                <ItemActionsMenu item={item} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <div className="flex justify-end mt-4">
+      <ItemsTable
+        data={items}
+        columns={columns}
+        isLoading={isPlaceholderData}
+      />
+      
+      <div className="mt-4 flex justify-end">
         <PaginationRoot
           count={count}
           pageSize={PER_PAGE}
@@ -142,6 +159,12 @@ function ItemsTable() {
           <PaginationNextTrigger />
         </PaginationRoot>
       </div>
+
+      <EditItem
+        item={editingItem}
+        isOpen={!!editingItem}
+        onClose={() => setEditingItem(null)}
+      />
     </>
   )
 }
@@ -161,11 +184,15 @@ function Items() {
 
   return (
     <div className="w-full max-w-full">
-      <h1 className="text-2xl font-bold pt-12">
-        Items Management
-      </h1>
-      <AddItem />
-      <ItemsTable />
+      <div className="flex items-center justify-between">
+        <h1 className="pt-12 text-2xl font-bold">Items Management</h1>
+      </div>
+      <div className="mt-4">
+        <AddItem />
+      </div>
+      <div className="mt-6">
+        <ItemsTableContainer />
+      </div>
     </div>
   )
 }

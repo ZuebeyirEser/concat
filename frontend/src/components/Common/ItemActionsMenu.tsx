@@ -1,3 +1,6 @@
+// This component is deprecated - use the new column-based approach in columns.tsx
+// Keeping for backward compatibility if needed elsewhere
+
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { Button } from "../ui/button"
 import {
@@ -8,7 +11,6 @@ import {
 
 import type { ItemPublic } from "@/client"
 import DeleteItem from "../Items/DeleteItem"
-import EditItem from "../Items/EditItem"
 
 interface ItemActionsMenuProps {
   item: ItemPublic
@@ -23,7 +25,6 @@ export const ItemActionsMenu = ({ item }: ItemActionsMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <EditItem item={item} />
         <DeleteItem id={item.id} />
       </DropdownMenuContent>
     </DropdownMenu>
