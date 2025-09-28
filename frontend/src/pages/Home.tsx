@@ -3,20 +3,20 @@ import {
   FiArrowRight,
   FiCheck,
   FiCode,
-  FiHeart,
   FiGithub,
+  FiHeart,
 } from 'react-icons/fi'
 
-import Logo from '@/components/ui/logo'
 import Footer from '@/components/Common/Layout/Footer'
 import { Button } from '@/components/ui/button'
+import Logo from '@/components/ui/logo'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Logo size="lg" />
             <div className="flex items-center space-x-4">

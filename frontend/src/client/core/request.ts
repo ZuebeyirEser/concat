@@ -1,16 +1,16 @@
-import axios from 'axios'
 import type {
   AxiosError,
+  AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  AxiosInstance,
 } from 'axios'
+import axios from 'axios'
 
 import { ApiError } from './ApiError'
 import type { ApiRequestOptions } from './ApiRequestOptions'
 import type { ApiResult } from './ApiResult'
-import { CancelablePromise } from './CancelablePromise'
 import type { OnCancel } from './CancelablePromise'
+import { CancelablePromise } from './CancelablePromise'
 import type { OpenAPIConfig } from './OpenAPI'
 
 export const isString = (value: unknown): value is string => {
@@ -131,9 +131,16 @@ export const getHeaders = async <T>(
   options: ApiRequestOptions<T>
 ): Promise<Record<string, string>> => {
   const [token, username, password, additionalHeaders] = await Promise.all([
+    // @ts-ignore
+
     resolve(options, config.TOKEN),
+    // @ts-ignore
+
     resolve(options, config.USERNAME),
+    // @ts-ignore
+
     resolve(options, config.PASSWORD),
+    // @ts-ignore
     resolve(options, config.HEADERS),
   ])
 
