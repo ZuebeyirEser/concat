@@ -1,5 +1,5 @@
 import { useTheme } from 'next-themes'
-import { FiMonitor, FiSun, FiMoon } from 'react-icons/fi'
+import { FiCheck, FiMonitor, FiMoon, FiSun } from 'react-icons/fi'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
@@ -26,6 +26,8 @@ const Appearance = () => {
       icon: FiMoon,
     },
   ]
+
+  const currentTheme = themeOptions.find(opt => opt.value === theme)
 
   return (
     <div className="p-6">
@@ -91,19 +93,36 @@ const Appearance = () => {
             })}
           </RadioGroup>
 
-          {/* Theme Info */}
-          <div className="mt-8 rounded-lg border border-border/50 bg-muted/30 p-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-purple-500"></div>
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  Current Theme:{' '}
-                  {themeOptions.find(opt => opt.value === theme)?.label}
-                </p>
+          {/* Enhanced Current Theme Status */}
+          <div className="mt-8 rounded-xl border border-purple-200/30 bg-gradient-to-r from-purple-50/40 to-pink-50/20 p-5 shadow-sm dark:border-purple-800/20 dark:from-purple-950/10 dark:to-pink-950/5">
+            <div className="flex items-center gap-4">
+              {/* Status Icon */}
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100/60 dark:bg-purple-900/30">
+                <FiCheck className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+
+              {/* Theme Info */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-foreground">
+                    Active Theme
+                  </span>
+                  <span className="rounded-full bg-purple-100/80 px-3 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                    {currentTheme?.label}
+                  </span>
+                </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Changes apply immediately across the entire application
+                  Theme changes are applied instantly across your entire
+                  workspace
                 </p>
               </div>
+
+              {/* Current Theme Icon */}
+              {currentTheme && (
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-100/50 dark:bg-purple-900/20">
+                  <currentTheme.icon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                </div>
+              )}
             </div>
           </div>
         </div>
