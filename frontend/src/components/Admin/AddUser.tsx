@@ -1,35 +1,32 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { useState } from "react"
+import { FaPlus } from "react-icons/fa"
 
 import { type UserCreate, UsersService } from "@/client"
 import type { ApiError } from "@/client/core/ApiError"
 import useCustomToast from "@/hooks/useCustomToast"
 import { emailPattern, handleError } from "@/utils"
-import {
-  Button,
-  DialogActionTrigger,
-  DialogTitle,
-  Flex,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
-import { useState } from "react"
-import { FaPlus } from "react-icons/fa"
+import { Button } from "../ui/button"
 import { Checkbox } from "../ui/checkbox"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
+  DialogTitle,
   DialogTrigger,
 } from "../ui/dialog"
-import { Field } from "../ui/field"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 
-interface UserCreateForm extends UserCreate {
+interface UserCreateForm {
+  email: string
+  full_name: string
+  password: string
   confirm_password: string
+  is_superuser: boolean
+  is_active: boolean
 }
 
 const AddUser = () => {
@@ -77,34 +74,27 @@ const AddUser = () => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button value="add-user" my={4}>
-          <FaPlus fontSize="16px" />
+        <Button className="my-4">
+          <FaPlus className="mr-2" />
           Add User
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add User</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>
+
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Fill in the form below to add a new user to the system.
-            </Text>
-            <VStack gap={4}>
-              <Field
-                required
-                invalid={!!errors.email}
-                errorText={errors.email?.message}
-                label="Email"
-              >
+            </p>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   {...register("email", {
@@ -114,27 +104,26 @@ const AddUser = () => {
                   placeholder="Email"
                   type="email"
                 />
-              </Field>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
+              </div>
 
-              <Field
-                invalid={!!errors.full_name}
-                errorText={errors.full_name?.message}
-                label="Full Name"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
                   {...register("full_name")}
                   placeholder="Full name"
                   type="text"
                 />
-              </Field>
+                {errors.full_name && (
+                  <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                )}
+              </div>
 
-              <Field
-                required
-                invalid={!!errors.password}
-                errorText={errors.password?.message}
-                label="Set Password"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="password">Set Password *</Label>
                 <Input
                   id="password"
                   {...register("password", {
@@ -147,14 +136,13 @@ const AddUser = () => {
                   placeholder="Password"
                   type="password"
                 />
-              </Field>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
+              </div>
 
-              <Field
-                required
-                invalid={!!errors.confirm_password}
-                errorText={errors.confirm_password?.message}
-                label="Confirm Password"
-              >
+              <div className="space-y-2">
+                <Label htmlFor="confirm_password">Confirm Password *</Label>
                 <Input
                   id="confirm_password"
                   {...register("confirm_password", {
@@ -166,64 +154,62 @@ const AddUser = () => {
                   placeholder="Password"
                   type="password"
                 />
-              </Field>
-            </VStack>
+                {errors.confirm_password && (
+                  <p className="text-sm text-destructive">{errors.confirm_password.message}</p>
+                )}
+              </div>
+            </div>
 
-            <Flex mt={4} direction="column" gap={4}>
+            <div className="mt-4 space-y-4">
               <Controller
                 control={control}
                 name="is_superuser"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
+                  <div className="flex items-center space-x-2">
                     <Checkbox
+                      id="is_superuser"
                       checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is superuser?
-                    </Checkbox>
-                  </Field>
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="is_superuser">Is superuser?</Label>
+                  </div>
                 )}
               />
               <Controller
                 control={control}
                 name="is_active"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
+                  <div className="flex items-center space-x-2">
                     <Checkbox
+                      id="is_active"
                       checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is active?
-                    </Checkbox>
-                  </Field>
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="is_active">Is active?</Label>
+                  </div>
                 )}
               />
-            </Flex>
-          </DialogBody>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <DialogActionTrigger asChild>
-              <Button
-                variant="subtle"
-                colorPalette="gray"
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-            </DialogActionTrigger>
+          <DialogFooter className="gap-2">
             <Button
-              variant="solid"
-              type="submit"
-              disabled={!isValid}
-              loading={isSubmitting}
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isSubmitting}
             >
-              Save
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            >
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 
