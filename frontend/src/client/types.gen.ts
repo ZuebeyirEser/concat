@@ -19,6 +19,7 @@ export type ItemCreate = {
 }
 
 export type ItemPublic = {
+  id: string
   title: string
   description?: string | null
   owner_id: string
