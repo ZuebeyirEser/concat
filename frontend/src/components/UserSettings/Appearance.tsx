@@ -29,18 +29,19 @@ const Appearance = () => {
 
   return (
     <div className="p-6">
-      {/* Appearance Header */}
-      <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-purple-500/5 to-pink-500/10 rounded-lg border border-purple-500/20">
-        <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
-          <FiMonitor className="h-6 w-6 text-purple-600" />
+      <div className="max-w-2xl">
+        {/* Appearance Header */}
+        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-purple-500/5 to-pink-500/10 rounded-lg border border-purple-500/20">
+          <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
+            <FiMonitor className="h-6 w-6 text-purple-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Theme Preferences</h3>
+            <p className="text-sm text-muted-foreground">Choose how the interface looks and feels</p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-semibold text-foreground">Theme Preferences</h3>
-          <p className="text-sm text-muted-foreground">Choose how the interface looks and feels</p>
-        </div>
-      </div>
 
-      <div className="space-y-4">
+        <div className="space-y-4">
         <RadioGroup onValueChange={setTheme} value={theme} className="space-y-4">
           {themeOptions.map(option => {
             const Icon = option.icon

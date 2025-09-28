@@ -4,18 +4,19 @@ import DeleteConfirmation from "./DeleteConfirmation"
 const DeleteAccount = () => {
   return (
     <div className="p-6">
-      {/* Danger Zone Header */}
-      <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-red-500/5 to-red-600/10 rounded-lg border border-red-500/20">
-        <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
-          <FiAlertTriangle className="h-6 w-6 text-red-600" />
+      <div className="max-w-2xl">
+        {/* Danger Zone Header */}
+        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-red-500/5 to-red-600/10 rounded-lg border border-red-500/20">
+          <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+            <FiAlertTriangle className="h-6 w-6 text-red-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Account Deletion</h3>
+            <p className="text-sm text-muted-foreground">Permanently remove your account and all data</p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-semibold text-foreground">Account Deletion</h3>
-          <p className="text-sm text-muted-foreground">Permanently remove your account and all data</p>
-        </div>
-      </div>
 
-      <div className="space-y-6">
+        <div className="space-y-6">
         {/* Warning Section */}
         <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/30 rounded-lg">
           <div className="flex items-start gap-3">

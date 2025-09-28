@@ -1,5 +1,5 @@
 import { FiUser, FiLock, FiMonitor, FiAlertTriangle } from 'react-icons/fi'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 
 import Appearance from '@/components/UserSettings/Appearance'
 import ChangePassword from '@/components/UserSettings/ChangePassword'
@@ -7,7 +7,7 @@ import DeleteAccount from '@/components/UserSettings/DeleteAccount'
 import UserInformation from '@/components/UserSettings/UserInformation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+
 import useAuth from '@/hooks/useAuth'
 
 const tabsConfig = [
@@ -16,39 +16,52 @@ const tabsConfig = [
     title: 'Profile',
     icon: FiUser,
     component: UserInformation,
+    color: 'blue',
+    bgColor: 'bg-blue-500/10',
+    textColor: 'text-blue-600',
+    borderColor: 'border-blue-500/30',
   },
   {
     value: 'password',
     title: 'Security',
     icon: FiLock,
     component: ChangePassword,
+    color: 'orange',
+    bgColor: 'bg-orange-500/10',
+    textColor: 'text-orange-600',
+    borderColor: 'border-orange-500/30',
   },
   {
     value: 'appearance',
     title: 'Appearance',
     icon: FiMonitor,
     component: Appearance,
+    color: 'purple',
+    bgColor: 'bg-purple-500/10',
+    textColor: 'text-purple-600',
+    borderColor: 'border-purple-500/30',
   },
   {
     value: 'danger-zone',
     title: 'Account',
     icon: FiAlertTriangle,
     component: DeleteAccount,
+    color: 'red',
+    bgColor: 'bg-red-500/10',
+    textColor: 'text-red-600',
+    borderColor: 'border-red-500/30',
   },
 ]
 
 export function Settings() {
   const { user: currentUser } = useAuth()
   const [activeTab, setActiveTab] = useState('my-profile')
-  const [isPending, startTransition] = useTransition()
   const finalTabs = currentUser?.is_superuser
     ? tabsConfig.slice(0, 3)
     : tabsConfig
 
   const handleTabChange = (value: string) => {
-    startTransition(() => {
-      setActiveTab(value)
-    })
+    setActiveTab(value)
   }
 
   if (!currentUser) {
@@ -77,8 +90,8 @@ export function Settings() {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className={`relative flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 ${isActive
-                      ? 'bg-background text-foreground shadow-sm border border-primary/30 font-semibold'
+                    className={`relative flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 ${isActive
+                      ? `${tab.bgColor} ${tab.textColor} shadow-sm border ${tab.borderColor} font-semibold`
                       : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                       }`}
                   >
@@ -88,47 +101,13 @@ export function Settings() {
                 )
               })}
             </TabsList>
-
-            {/* Clean sliding indicator */}
-            <div
-              className="absolute bottom-0 left-1 h-0.5 bg-primary transition-all duration-300 ease-out"
-              style={{
-                width: `calc(${100 / finalTabs.length}% - 8px)`,
-                transform: `translateX(calc(${finalTabs.findIndex(tab => tab.value === activeTab) * 100}% + 4px))`
-              }}
-            />
           </div>
         </div>
 
         {finalTabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="mt-0">
-            <Card className="overflow-hidden rounded-lg border bg-card shadow-sm">
-              {isPending ? (
-                <div className="p-6 space-y-6">
-                  <div className="space-y-3">
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-96" />
-                  </div>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-10 w-full" />
-                    </div>
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-20 w-full" />
-                    </div>
-                    <div className="flex gap-3 pt-4">
-                      <Skeleton className="h-10 w-24" />
-                      <Skeleton className="h-10 w-32" />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="animate-in fade-in-50 duration-300">
-                  <tab.component />
-                </div>
-              )}
+            <Card className="overflow-hidden rounded-lg border bg-card shadow-sm min-h-[600px]">
+              <tab.component />
             </Card>
           </TabsContent>
         ))}
