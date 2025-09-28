@@ -55,24 +55,31 @@ const DeleteItem = ({ id }: { id: string }) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Delete Item</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              This item will be permanently deleted. Are you sure? You will not
-              be able to undo this action.
-            </p>
+      <DialogContent className="sm:max-w-[450px] bg-popover text-popover-foreground border-2 border-border shadow-2xl backdrop-blur-sm">
+        <DialogHeader className="space-y-3">
+          <DialogTitle className="text-xl font-semibold text-destructive flex items-center gap-2">
+            <FiTrash2 className="h-5 w-5" />
+            Delete Item
+          </DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-4">
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4">
+              <p className="text-sm text-muted-foreground">
+                This item will be permanently deleted. Are you sure? You will not
+                be able to undo this action.
+              </p>
+            </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsOpen(false)}
               disabled={isSubmitting}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -80,8 +87,9 @@ const DeleteItem = ({ id }: { id: string }) => {
               type="submit"
               variant="destructive"
               disabled={isSubmitting}
+              className="w-full sm:w-auto min-w-[100px]"
             >
-              {isSubmitting ? "Deleting..." : "Delete"}
+              {isSubmitting ? "Deleting..." : "Delete Item"}
             </Button>
           </DialogFooter>
         </form>

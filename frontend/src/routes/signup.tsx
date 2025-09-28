@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PasswordInput } from "../components/ui/password-input"
+import Logo from "@/components/ui/logo"
 import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 import { confirmPasswordRules, emailPattern, passwordRules } from "@/utils"
-import Logo from "/assets/images/fastapi-logo.svg"
 
 export const Route = createFileRoute("/signup")({
   component: SignUp,
@@ -58,11 +58,9 @@ function SignUp() {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-sm h-screen flex flex-col items-stretch justify-center gap-4 p-6"
       >
-        <img
-          src={Logo}
-          alt="FastAPI logo"
-          className="h-auto max-w-xs self-center mb-4"
-        />
+        <div className="flex justify-center mb-4">
+          <Logo size="xl" />
+        </div>
         
         <div className="space-y-2">
           <Label htmlFor="full_name">Full Name</Label>

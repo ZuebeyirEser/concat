@@ -25,16 +25,16 @@ const UserMenu = () => {
           <Button
             data-testid="user-menu"
             variant="default"
-            className="max-w-[150px] truncate p-2"
+            className="flex items-center gap-2 max-w-[150px] truncate"
           >
             <FaUserAstronaut className="text-lg" />
-            <span>{user?.full_name || "User"}</span>
+            <span className="hidden md:inline">{user?.full_name || "User"}</span>
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
           <Link to="/settings">
-            <DropdownMenuItem className="gap-2 py-2 cursor-pointer">
+            <DropdownMenuItem className="gap-2 gray py-2 cursor-pointer">
               <FiUser className="text-lg" />
               <div className="flex-1">My Profile</div>
             </DropdownMenuItem>
