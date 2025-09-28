@@ -53,11 +53,13 @@ function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row justify-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-sm h-screen flex flex-col items-stretch justify-center gap-4 p-6"
-      >
+    <div className="min-h-screen flex flex-col md:flex-row justify-center items-center p-6">
+      <div className="w-full max-w-sm">
+        <div className="rounded-lg border border-border/60 bg-card p-8 shadow-lg ring-1 ring-border/20">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
         <div className="flex justify-center mb-4">
           <Logo size="xl" />
         </div>
@@ -122,13 +124,15 @@ function SignUp() {
           {isSubmitting ? "Signing Up..." : "Sign Up"}
         </Button>
         
-        <p className="text-center text-sm">
-          Already have an account?{" "}
-          <RouterLink to="/login" className="text-primary hover:underline">
-            Log In
-          </RouterLink>
-        </p>
-      </form>
+            <p className="text-center text-sm">
+              Already have an account?{" "}
+              <RouterLink to="/login" className="text-primary hover:underline">
+                Log In
+              </RouterLink>
+            </p>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }

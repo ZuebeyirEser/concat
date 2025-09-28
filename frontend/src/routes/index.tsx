@@ -42,7 +42,7 @@ function LandingPage() {
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
               Manage your items with{' '}
-              <span 
+              <span
                 className="text-transparent bg-clip-text"
                 style={{
                   backgroundImage: 'linear-gradient(45deg, #3b82f6, #6366f1, #8b5cf6)',
@@ -53,7 +53,7 @@ function LandingPage() {
               </span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-              A modern, efficient platform for organizing and managing your items. 
+              A modern, efficient platform for organizing and managing your items.
               Built with cutting-edge technology for the best user experience.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -160,9 +160,9 @@ function LandingPage() {
             </div>
 
             {/* Pro Plan */}
-            <div className="rounded-lg border-2 border-primary bg-card p-8 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-full">
+            <div className="rounded-lg border border-primary/60 bg-card p-8 relative ring-1 ring-primary/20 shadow-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                <span className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-full shadow-md border border-primary/20">
                   Most Popular
                 </span>
               </div>
