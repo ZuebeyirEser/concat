@@ -155,7 +155,7 @@ function LandingPage() {
 
             <div className="rounded-lg border border-primary/60 bg-card p-8 relative ring-1 ring-primary/20 shadow-lg">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                <span className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-full shadow-md border border-primary/20">
+                <span className="bg-white text-primary-foreground px-3 py-1 text-xs font-medium rounded-full shadow-md border border-primary/20">
                   Most Popular
                 </span>
               </div>
