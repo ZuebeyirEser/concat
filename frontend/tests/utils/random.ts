@@ -9,5 +9,5 @@ export const randomPassword = () => `${Math.random().toString(36).substring(2)}`
 export const slugify = (text: string) =>
   text
     .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "")
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')

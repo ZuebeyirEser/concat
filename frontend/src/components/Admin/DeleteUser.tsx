@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { FiTrash2 } from "react-icons/fi"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { FiTrash2 } from 'react-icons/fi'
 
-import { UsersService } from "@/client"
-import { Button } from "@/components/ui/button"
+import { UsersService } from '@/client'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import useCustomToast from "@/hooks/useCustomToast"
+} from '@/components/ui/dialog'
+import useCustomToast from '@/hooks/useCustomToast'
 
 const DeleteUser = ({ id }: { id: string }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,11 +31,11 @@ const DeleteUser = ({ id }: { id: string }) => {
   const mutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      showSuccessToast("The user was deleted successfully")
+      showSuccessToast('The user was deleted successfully')
       setIsOpen(false)
     },
     onError: () => {
-      showErrorToast("An error occurred while deleting the user")
+      showErrorToast('An error occurred while deleting the user')
     },
     onSettled: () => {
       queryClient.invalidateQueries()
@@ -49,7 +49,11 @@ const DeleteUser = ({ id }: { id: string }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive"
+        >
           <FiTrash2 className="mr-2" />
           Delete User
         </Button>
@@ -59,10 +63,10 @@ const DeleteUser = ({ id }: { id: string }) => {
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
           </DialogHeader>
-          
+
           <div className="py-4">
             <p className="mb-4">
-              All items associated with this user will also be{" "}
+              All items associated with this user will also be{' '}
               <strong>permanently deleted.</strong> Are you sure? You will not
               be able to undo this action.
             </p>
@@ -76,12 +80,8 @@ const DeleteUser = ({ id }: { id: string }) => {
             >
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Deleting..." : "Delete"}
+            <Button variant="destructive" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </form>

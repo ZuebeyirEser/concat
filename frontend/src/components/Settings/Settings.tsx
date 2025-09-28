@@ -79,21 +79,26 @@ export function Settings() {
         </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
         <div className="mb-8 flex justify-center">
           <div className="relative">
             <TabsList className="inline-flex h-12 items-center justify-center rounded-lg bg-muted p-1">
-              {finalTabs.map((tab) => {
+              {finalTabs.map(tab => {
                 const Icon = tab.icon
                 const isActive = activeTab === tab.value
                 return (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className={`relative flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 ${isActive
-                      ? `${tab.bgColor} ${tab.textColor} shadow-sm border ${tab.borderColor} font-semibold`
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                      }`}
+                    className={`relative flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                      isActive
+                        ? `${tab.bgColor} ${tab.textColor} border shadow-sm ${tab.borderColor} font-semibold`
+                        : 'text-muted-foreground hover:bg-background/50 hover:text-foreground'
+                    }`}
                   >
                     <Icon className="h-4 w-4" />
                     <span className="hidden sm:inline">{tab.title}</span>
@@ -104,9 +109,9 @@ export function Settings() {
           </div>
         </div>
 
-        {finalTabs.map((tab) => (
+        {finalTabs.map(tab => (
           <TabsContent key={tab.value} value={tab.value} className="mt-0">
-            <Card className="overflow-hidden rounded-lg border bg-card shadow-sm min-h-[600px]">
+            <Card className="min-h-[600px] overflow-hidden rounded-lg border bg-card shadow-sm">
               <tab.component />
             </Card>
           </TabsContent>

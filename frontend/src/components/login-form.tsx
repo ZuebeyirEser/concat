@@ -8,7 +8,7 @@ import { Body_login_login_access_token } from '@/client'
 import { emailPattern, passwordRules } from '@/utils'
 import useAuth from '@/hooks/useAuth'
 
-interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> { }
+interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> {}
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
   const { loginMutation, error, resetError } = useAuth()
@@ -25,7 +25,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     },
   })
 
-  const onSubmit: SubmitHandler<Body_login_login_access_token> = async (data) => {
+  const onSubmit: SubmitHandler<Body_login_login_access_token> = async data => {
     if (isSubmitting) return
     resetError()
     try {

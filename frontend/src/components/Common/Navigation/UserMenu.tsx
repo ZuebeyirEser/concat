@@ -1,15 +1,15 @@
-import { Link } from "@tanstack/react-router"
-import { FiLogOut, FiUser, FiMoon, FiSun } from "react-icons/fi"
-import { useTheme } from "next-themes"
+import { Link } from '@tanstack/react-router'
+import { FiLogOut, FiUser, FiMoon, FiSun } from 'react-icons/fi'
+import { useTheme } from 'next-themes'
 
-import useAuth from "@/hooks/useAuth"
+import useAuth from '@/hooks/useAuth'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu"
+} from '../../ui/dropdown-menu'
 
 const UserMenu = () => {
   const { user, logout } = useAuth()
@@ -20,10 +20,8 @@ const UserMenu = () => {
   }
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light")
+    setTheme(theme === 'light' ? 'dark' : 'light')
   }
-
-
 
   return (
     <div className="flex">
@@ -31,39 +29,39 @@ const UserMenu = () => {
         <DropdownMenuTrigger asChild>
           <button
             data-testid="user-menu"
-            className="px-3 py-1.5 text-sm font-medium text-foreground hover:text-foreground/80 transition-all duration-200 rounded-md border border-border/30 hover:border-border/60 hover:bg-accent/50"
+            className="rounded-md border border-border/30 px-3 py-1.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-border/60 hover:bg-accent/50 hover:text-foreground/80"
           >
-            {user?.full_name || user?.email || "User"}
+            {user?.full_name || user?.email || 'User'}
           </button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
           align="end"
-          className="w-48 bg-background/80 backdrop-blur-md border border-border/50 shadow-lg rounded-lg p-1"
+          className="w-48 rounded-lg border border-border/50 bg-background/80 p-1 shadow-lg backdrop-blur-md"
           sideOffset={4}
         >
           <Link to="/settings">
-            <DropdownMenuItem className="gap-2 py-2 cursor-pointer rounded-md hover:bg-accent/50 transition-colors">
-              <FiUser className="w-4 h-4" />
+            <DropdownMenuItem className="cursor-pointer gap-2 rounded-md py-2 transition-colors hover:bg-accent/50">
+              <FiUser className="h-4 w-4" />
               <span>Settings</span>
             </DropdownMenuItem>
           </Link>
 
           <DropdownMenuItem
-            className="gap-2 py-2 cursor-pointer rounded-md hover:bg-accent/50 transition-colors"
-            onSelect={(e) => {
+            className="cursor-pointer gap-2 rounded-md py-2 transition-colors hover:bg-accent/50"
+            onSelect={e => {
               e.preventDefault()
               toggleTheme()
             }}
           >
-            {theme === "light" ? (
+            {theme === 'light' ? (
               <>
-                <FiMoon className="w-4 h-4" />
+                <FiMoon className="h-4 w-4" />
                 <span>Dark Mode</span>
               </>
             ) : (
               <>
-                <FiSun className="w-4 h-4" />
+                <FiSun className="h-4 w-4" />
                 <span>Light Mode</span>
               </>
             )}
@@ -72,10 +70,10 @@ const UserMenu = () => {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
-            className="gap-2 py-2 cursor-pointer text-muted-foreground hover:text-foreground rounded-md hover:bg-accent/50 transition-colors"
+            className="cursor-pointer gap-2 rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
             onClick={handleLogout}
           >
-            <FiLogOut className="w-4 h-4" />
+            <FiLogOut className="h-4 w-4" />
             <span>Logout</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

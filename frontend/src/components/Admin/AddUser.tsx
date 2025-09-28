@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { useState } from "react"
-import { FaPlus } from "react-icons/fa"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Controller, type SubmitHandler, useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { FaPlus } from 'react-icons/fa'
 
-import { type UserCreate, UsersService } from "@/client"
-import type { ApiError } from "@/client/core/ApiError"
-import useCustomToast from "@/hooks/useCustomToast"
-import { emailPattern, handleError } from "@/utils"
-import { Button } from "../ui/button"
-import { Checkbox } from "../ui/checkbox"
+import { type UserCreate, UsersService } from '@/client'
+import type { ApiError } from '@/client/core/ApiError'
+import useCustomToast from '@/hooks/useCustomToast'
+import { emailPattern, handleError } from '@/utils'
+import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -16,9 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
+} from '../ui/dialog'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
 
 interface UserCreateForm {
   email: string
@@ -41,13 +41,13 @@ const AddUser = () => {
     getValues,
     formState: { errors, isValid, isSubmitting },
   } = useForm<UserCreateForm>({
-    mode: "onBlur",
-    criteriaMode: "all",
+    mode: 'onBlur',
+    criteriaMode: 'all',
     defaultValues: {
-      email: "",
-      full_name: "",
-      password: "",
-      confirm_password: "",
+      email: '',
+      full_name: '',
+      password: '',
+      confirm_password: '',
       is_superuser: false,
       is_active: false,
     },
@@ -57,7 +57,7 @@ const AddUser = () => {
     mutationFn: (data: UserCreate) =>
       UsersService.createUser({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("User created successfully.")
+      showSuccessToast('User created successfully.')
       reset()
       setIsOpen(false)
     },
@@ -65,11 +65,11 @@ const AddUser = () => {
       handleError(err)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] })
+      queryClient.invalidateQueries({ queryKey: ['users'] })
     },
   })
 
-  const onSubmit: SubmitHandler<UserCreateForm> = (data) => {
+  const onSubmit: SubmitHandler<UserCreateForm> = data => {
     mutation.mutate(data)
   }
 
@@ -88,7 +88,7 @@ const AddUser = () => {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="mb-4 text-sm text-muted-foreground">
               Fill in the form below to add a new user to the system.
             </p>
 
@@ -97,15 +97,17 @@ const AddUser = () => {
                 <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
-                  {...register("email", {
-                    required: "Email is required",
+                  {...register('email', {
+                    required: 'Email is required',
                     pattern: emailPattern,
                   })}
                   placeholder="Email"
                   type="email"
                 />
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -113,12 +115,14 @@ const AddUser = () => {
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
-                  {...register("full_name")}
+                  {...register('full_name')}
                   placeholder="Full name"
                   type="text"
                 />
                 {errors.full_name && (
-                  <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.full_name.message}
+                  </p>
                 )}
               </div>
 
@@ -126,18 +130,20 @@ const AddUser = () => {
                 <Label htmlFor="password">Set Password *</Label>
                 <Input
                   id="password"
-                  {...register("password", {
-                    required: "Password is required",
+                  {...register('password', {
+                    required: 'Password is required',
                     minLength: {
                       value: 8,
-                      message: "Password must be at least 8 characters",
+                      message: 'Password must be at least 8 characters',
                     },
                   })}
                   placeholder="Password"
                   type="password"
                 />
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
@@ -145,17 +151,19 @@ const AddUser = () => {
                 <Label htmlFor="confirm_password">Confirm Password *</Label>
                 <Input
                   id="confirm_password"
-                  {...register("confirm_password", {
-                    required: "Please confirm your password",
-                    validate: (value) =>
+                  {...register('confirm_password', {
+                    required: 'Please confirm your password',
+                    validate: value =>
                       value === getValues().password ||
-                      "The passwords do not match",
+                      'The passwords do not match',
                   })}
                   placeholder="Password"
                   type="password"
                 />
                 {errors.confirm_password && (
-                  <p className="text-sm text-destructive">{errors.confirm_password.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.confirm_password.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -200,11 +208,8 @@ const AddUser = () => {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!isValid || isSubmitting}
-            >
-              {isSubmitting ? "Saving..." : "Save"}
+            <Button type="submit" disabled={!isValid || isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
         </form>

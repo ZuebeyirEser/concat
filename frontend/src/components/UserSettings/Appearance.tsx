@@ -31,28 +31,35 @@ const Appearance = () => {
     <div className="p-6">
       <div className="max-w-2xl">
         {/* Appearance Header */}
-        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-purple-500/5 to-pink-500/10 rounded-lg border border-purple-500/20">
-          <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
+        <div className="mb-6 flex items-center gap-4 rounded-lg border border-purple-500/20 bg-gradient-to-r from-purple-500/5 to-pink-500/10 p-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
             <FiMonitor className="h-6 w-6 text-purple-600" />
           </div>
           <div>
             <h3 className="font-semibold text-foreground">Theme Preferences</h3>
-            <p className="text-sm text-muted-foreground">Choose how the interface looks and feels</p>
+            <p className="text-sm text-muted-foreground">
+              Choose how the interface looks and feels
+            </p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <RadioGroup onValueChange={setTheme} value={theme} className="space-y-4">
+          <RadioGroup
+            onValueChange={setTheme}
+            value={theme}
+            className="space-y-4"
+          >
             {themeOptions.map(option => {
               const Icon = option.icon
               return (
                 <div key={option.value} className="relative">
                   <div
                     onClick={() => setTheme(option.value)}
-                    className={`flex cursor-pointer items-center space-x-4 rounded-lg border p-4 transition-all duration-200 hover:border-border hover:bg-muted/20 ${theme === option.value
-                      ? 'border-primary bg-primary/5 shadow-sm'
-                      : 'border-border/60 bg-background'
-                      }`}
+                    className={`flex cursor-pointer items-center space-x-4 rounded-lg border p-4 transition-all duration-200 hover:border-border hover:bg-muted/20 ${
+                      theme === option.value
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-border/60 bg-background'
+                    }`}
                   >
                     <RadioGroupItem
                       value={option.value}
@@ -61,10 +68,11 @@ const Appearance = () => {
                     />
                     <div className="flex flex-1 items-center space-x-4">
                       <div
-                        className={`rounded-lg p-3 ${theme === option.value
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-muted/50 text-muted-foreground'
-                          }`}
+                        className={`rounded-lg p-3 ${
+                          theme === option.value
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-muted/50 text-muted-foreground'
+                        }`}
                       >
                         <Icon className="h-5 w-5" />
                       </div>
@@ -72,7 +80,7 @@ const Appearance = () => {
                         <div className="text-sm font-medium text-foreground">
                           {option.label}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {option.description}
                         </p>
                       </div>
@@ -84,12 +92,17 @@ const Appearance = () => {
           </RadioGroup>
 
           {/* Theme Info */}
-          <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-border/50">
+          <div className="mt-8 rounded-lg border border-border/50 bg-muted/30 p-4">
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+              <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-purple-500"></div>
               <div>
-                <p className="text-sm font-medium text-foreground">Current Theme: {themeOptions.find(opt => opt.value === theme)?.label}</p>
-                <p className="text-xs text-muted-foreground mt-1">Changes apply immediately across the entire application</p>
+                <p className="text-sm font-medium text-foreground">
+                  Current Theme:{' '}
+                  {themeOptions.find(opt => opt.value === theme)?.label}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Changes apply immediately across the entire application
+                </p>
               </div>
             </div>
           </div>

@@ -18,7 +18,7 @@ function Items() {
 
   const setPage = (page: number) =>
     navigate({
-      search: (prev) => ({ ...prev, page }),
+      search: prev => ({ ...prev, page }),
     })
 
   return <ItemsManagement page={page} onPageChange={setPage} />

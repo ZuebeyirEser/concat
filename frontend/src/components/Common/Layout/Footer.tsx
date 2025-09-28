@@ -1,4 +1,3 @@
-
 import { FiGithub, FiTwitter, FiMail, FiHeart } from 'react-icons/fi'
 
 import Logo from '@/components/ui/logo'
@@ -12,15 +11,16 @@ const Footer = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <Logo size="md" />
-            <p className="text-sm text-muted-foreground max-w-xs">
-              A modern platform for managing your items with style and efficiency.
+            <p className="max-w-xs text-sm text-muted-foreground">
+              A modern platform for managing your items with style and
+              efficiency.
             </p>
             <div className="flex space-x-4">
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground transition-colors hover:text-foreground"
               >
                 <FiGithub className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
@@ -29,14 +29,14 @@ const Footer = () => {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground transition-colors hover:text-foreground"
               >
                 <FiTwitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </a>
               <a
                 href="mailto:contact@concat.app"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground transition-colors hover:text-foreground"
               >
                 <FiMail className="h-5 w-5" />
                 <span className="sr-only">Email</span>
@@ -50,7 +50,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/items"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Items
                 </a>
@@ -58,7 +58,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/settings"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Settings
                 </a>
@@ -66,7 +66,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#features"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Features
                 </a>
@@ -74,7 +74,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#pricing"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Pricing
                 </a>
@@ -88,7 +88,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#about"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   About
                 </a>
@@ -96,7 +96,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#blog"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Blog
                 </a>
@@ -104,7 +104,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#careers"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Careers
                 </a>
@@ -112,7 +112,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#contact"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Contact
                 </a>
@@ -126,7 +126,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#privacy"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Privacy Policy
                 </a>
@@ -134,7 +134,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#terms"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Terms of Service
                 </a>
@@ -142,7 +142,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#cookies"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Cookie Policy
                 </a>
@@ -150,7 +150,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#security"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Security
                 </a>
