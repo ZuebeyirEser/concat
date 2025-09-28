@@ -1,101 +1,104 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { FiTrash2 } from "react-icons/fi"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FiTrash2 } from 'react-icons/fi'
 
-import { ItemsService } from "@/client"
-import { Button } from "@/components/ui/button"
+import { type ItemPublic, ItemsService } from '@/client'
+import type { ApiError } from '@/client/core/ApiError'
+import useCustomToast from '@/hooks/useCustomToast'
+import { handleError } from '@/utils'
+import { Button } from '../ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import useCustomToast from "@/hooks/useCustomToast"
+} from '../ui/dialog'
 
-const DeleteItem = ({ id }: { id: string }) => {
-  const [isOpen, setIsOpen] = useState(false)
+interface DeleteItemProps {
+  item: ItemPublic | null
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function DeleteItem({ item, isOpen, onClose }: DeleteItemProps) {
   const queryClient = useQueryClient()
-  const { showSuccessToast, showErrorToast } = useCustomToast()
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm()
-
-  const deleteItem = async (id: string) => {
-    await ItemsService.deleteItem({ id: id })
-  }
+  const { showSuccessToast } = useCustomToast()
 
   const mutation = useMutation({
-    mutationFn: deleteItem,
+    mutationFn: (itemId: string) => ItemsService.deleteItem({ id: itemId }),
     onSuccess: () => {
-      showSuccessToast("The item was deleted successfully")
-      setIsOpen(false)
+      showSuccessToast('Item deleted successfully.')
+      onClose()
     },
-    onError: () => {
-      showErrorToast("An error occurred while deleting the item")
+    onError: (err: ApiError) => {
+      handleError(err)
     },
     onSettled: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['items'] })
     },
   })
 
-  const onSubmit = async () => {
-    mutation.mutate(id)
+  const handleDelete = () => {
+    if (!item) return
+    mutation.mutate(item.id)
   }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-          <FiTrash2 className="mr-2 h-4 w-4" />
-          Delete Item
-        </Button>
-      </DialogTrigger>
+  if (!item) return null
 
-      <DialogContent className="sm:max-w-[450px] bg-popover text-popover-foreground border-2 border-border shadow-2xl backdrop-blur-sm">
-        <DialogHeader className="space-y-3">
-          <DialogTitle className="text-xl font-semibold text-destructive flex items-center gap-2">
-            <FiTrash2 className="h-5 w-5" />
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[500px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-lg">
+        <DialogHeader className="space-y-3 pb-4 border-b border-gray-200 dark:border-gray-700">
+          <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <FiTrash2 className="h-6 w-6 text-red-500" />
             Delete Item
           </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
+            This action cannot be undone. This will permanently delete the item from your account.
+          </DialogDescription>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4">
-              <p className="text-sm text-muted-foreground">
-                This item will be permanently deleted. Are you sure? You will not
-                be able to undo this action.
+
+        <div className="space-y-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                You are about to delete:
               </p>
+              <div className="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-700 rounded p-3">
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {item.title}
+                </p>
+                {item.description && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {item.description}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
+        </div>
 
-          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsOpen(false)}
-              disabled={isSubmitting}
-              className="w-full sm:w-auto"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="destructive"
-              disabled={isSubmitting}
-              className="w-full sm:w-auto min-w-[100px]"
-            >
-              {isSubmitting ? "Deleting..." : "Delete Item"}
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={mutation.isPending}
+            className="w-full sm:w-auto bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            onClick={handleDelete}
+            disabled={mutation.isPending}
+            className="w-full sm:w-auto min-w-[120px] bg-red-600 hover:bg-red-700 text-white font-medium"
+          >
+            {mutation.isPending ? 'Deleting...' : 'Delete Item'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-
-export default DeleteItem
