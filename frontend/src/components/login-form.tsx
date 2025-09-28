@@ -3,30 +3,40 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Logo from './ui/logo'
-import { FieldErrors, UseFormRegister } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { Body_login_login_access_token } from '@/client'
 import { emailPattern, passwordRules } from '@/utils'
+import useAuth from '@/hooks/useAuth'
 
-interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> {
-  onSubmit: (e: React.FormEvent) => void
-  register: UseFormRegister<Body_login_login_access_token>
-  errors: FieldErrors<Body_login_login_access_token>
-  error?: string
-  isSubmitting: boolean
-}
+interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> { }
 
-export function LoginForm({
-  className,
-  onSubmit,
-  register,
-  errors,
-  error,
-  isSubmitting,
-  ...props
-}: LoginFormProps) {
+export function LoginForm({ className, ...props }: LoginFormProps) {
+  const { loginMutation, error, resetError } = useAuth()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Body_login_login_access_token>({
+    mode: 'onBlur',
+    criteriaMode: 'all',
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  })
+
+  const onSubmit: SubmitHandler<Body_login_login_access_token> = async (data) => {
+    if (isSubmitting) return
+    resetError()
+    try {
+      await loginMutation.mutateAsync(data)
+    } catch {
+      // Error is handled by useAuth hook
+    }
+  }
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <a
