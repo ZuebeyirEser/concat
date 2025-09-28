@@ -1,11 +1,15 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
+import { FaPlus } from 'react-icons/fa'
 
-import { type ItemPublic, type ItemUpdate, ItemsService } from '@/client'
+import { ItemsService } from '@/client'
 import type { ApiError } from '@/client/core/ApiError'
 import useCustomToast from '@/hooks/useCustomToast'
+import { type ItemCreateInput, itemCreateSchema } from '@/lib/validations'
 import { handleError } from '@/utils'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import {
   Dialog,
   DialogContent,
@@ -13,44 +17,38 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
-import { Textarea } from '../ui/textarea'
-import { itemUpdateSchema } from '@/lib/validations'
-import { zodResolver } from '@hookform/resolvers/zod'
+  DialogTrigger,
+} from '../../ui/dialog'
+import { Input } from '../../ui/input'
+import { Label } from '../../ui/label'
+import { Textarea } from '../../ui/textarea'
 
-interface EditItemProps {
-  item: ItemPublic | null
-  isOpen: boolean
-  onClose: () => void
-}
-
-export function EditItem({ item, isOpen, onClose }: EditItemProps) {
+const AddItem = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
   const { showSuccessToast } = useCustomToast()
-
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<ItemUpdate>({
-    resolver: zodResolver(itemUpdateSchema),
+  } = useForm<ItemCreateInput>({
     mode: 'onBlur',
     criteriaMode: 'all',
+    resolver: zodResolver(itemCreateSchema),
     defaultValues: {
-      title: item?.title,
-      description: item?.description ?? '',
+      title: '',
+      description: '',
     },
   })
 
   const mutation = useMutation({
-    mutationFn: (data: ItemUpdate) =>
-      ItemsService.updateItem({ id: item!.id, requestBody: data }),
+    mutationFn: (data: ItemCreateInput) =>
+      ItemsService.createItem({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast('Item updated successfully.')
-      onClose()
+      showSuccessToast('Item created successfully.')
+      reset()
+      setIsOpen(false)
     },
     onError: (err: ApiError) => {
       handleError(err)
@@ -60,28 +58,26 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
     },
   })
 
-  const onSubmit: SubmitHandler<ItemUpdate> = data => {
-    if (!item) return
+  const onSubmit: SubmitHandler<ItemCreateInput> = data => {
     mutation.mutate(data)
   }
 
-  const handleClose = () => {
-    reset()
-    onClose()
-  }
-
-  if (!item) return null
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="my-4">
+          <FaPlus className="mr-2 h-4 w-4" />
+          Add Item
+        </Button>
+      </DialogTrigger>
       <DialogContent className="rounded-lg border border-gray-200 bg-white text-gray-900 shadow-2xl dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 sm:max-w-[500px]">
         <DialogHeader className="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-            Edit Item
+            Add New Item
           </DialogTitle>
           <DialogDescription className="text-gray-600 dark:text-gray-400">
-            Make changes to your item here. All fields marked with * are
-            required.
+            Create a new item by filling out the form below. All fields marked
+            with * are required.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,16 +85,20 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label
-                htmlFor="edit-title"
+                htmlFor="title"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 Title <span className="text-red-500">*</span>
               </Label>
               <Input
-                id="edit-title"
+                id="title"
                 {...register('title')}
                 placeholder="Enter item title"
-                className={`border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${errors.title ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+                className={`border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${
+                  errors.title
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : ''
+                }`}
                 disabled={isSubmitting}
               />
               {errors.title && (
@@ -110,16 +110,20 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
 
             <div className="space-y-2">
               <Label
-                htmlFor="edit-description"
+                htmlFor="description"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 Description
               </Label>
               <Textarea
-                id="edit-description"
+                id="description"
                 {...register('description')}
                 placeholder="Enter item description (optional)"
-                className={`border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+                className={`border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${
+                  errors.description
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : ''
+                }`}
                 disabled={isSubmitting}
                 rows={3}
               />
@@ -135,7 +139,10 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={handleClose}
+              onClick={() => {
+                setIsOpen(false)
+                reset()
+              }}
               disabled={isSubmitting}
               className="w-full border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:w-auto"
             >
@@ -146,7 +153,7 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
               disabled={!isValid || isSubmitting}
               className="w-full min-w-[120px] bg-blue-600 font-medium text-white hover:bg-blue-700 sm:w-auto"
             >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? 'Creating...' : 'Create Item'}
             </Button>
           </DialogFooter>
         </form>
@@ -154,3 +161,5 @@ export function EditItem({ item, isOpen, onClose }: EditItemProps) {
     </Dialog>
   )
 }
+
+export default AddItem

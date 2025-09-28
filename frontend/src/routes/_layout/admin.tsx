@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { type UserPublic, UsersService } from '@/client'
 import AddUser from '@/components/Admin/AddUser'
-import { UserActionsMenu } from '@/components/Common/Actions/UserActionsMenu'
+import { UserActionsMenu } from '@/components/Common/User/UserActionsMenu'
 import PendingUsers from '@/components/Pending/PendingUsers'
 import { Badge } from '@/components/ui/badge'
 import {

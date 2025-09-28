@@ -1,14 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { FiSearch } from 'react-icons/fi'
 import { useState } from 'react'
+import { FiSearch } from 'react-icons/fi'
 
 import { type ItemPublic, ItemsService } from '@/client'
-import { EditItem } from '@/components/Items/EditItem'
-import { DeleteItem } from '@/components/Items/DeleteItem'
+import { DeleteItem } from '@/components/Items/ItemActions/DeleteItem'
+import { EditItem } from '@/components/Items/ItemActions/EditItem'
 import { ItemsTable } from '@/components/Items/ItemsTable'
 import { createItemColumns } from '@/components/Items/columns'
 import PendingItems from '@/components/Pending/PendingItems'
-import useAuth from '@/hooks/useAuth'
 import {
   EmptyState,
   EmptyStateDescription,
@@ -21,6 +20,7 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from '@/components/ui/pagination'
+import useAuth from '@/hooks/useAuth'
 
 const PER_PAGE = 5
 

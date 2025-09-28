@@ -5,7 +5,7 @@ import { type ItemPublic, ItemsService } from '@/client'
 import type { ApiError } from '@/client/core/ApiError'
 import useCustomToast from '@/hooks/useCustomToast'
 import { handleError } from '@/utils'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog'
+} from '../../ui/dialog'
 
 interface DeleteItemProps {
   item: ItemPublic | null
