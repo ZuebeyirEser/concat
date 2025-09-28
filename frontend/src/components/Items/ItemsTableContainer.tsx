@@ -37,7 +37,10 @@ interface ItemsTableContainerProps {
   onPageChange: (page: number) => void
 }
 
-export function ItemsTableContainer({ page, onPageChange }: ItemsTableContainerProps) {
+export function ItemsTableContainer({
+  page,
+  onPageChange,
+}: ItemsTableContainerProps) {
   const { user, isUserLoading } = useAuth()
   const [editingItem, setEditingItem] = useState<ItemPublic | null>(null)
   const [deletingItem, setDeletingItem] = useState<ItemPublic | null>(null)
@@ -96,7 +99,7 @@ export function ItemsTableContainer({ page, onPageChange }: ItemsTableContainerP
         columns={columns}
         isLoading={isPlaceholderData}
       />
-      
+
       <div className="mt-4 flex justify-end">
         <PaginationRoot
           count={count}
