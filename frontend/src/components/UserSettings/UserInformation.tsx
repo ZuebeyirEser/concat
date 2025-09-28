@@ -111,21 +111,21 @@ const UserInformation = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-foreground">
           Profile Information
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Double-click any field to edit. Changes save automatically.
         </p>
       </div>
 
-      <div className="space-y-6 max-w-2xl">
+      <div className="space-y-4 max-w-2xl">
         {/* Full Name Field */}
-        <div className="group">
-          <div className="flex items-center gap-3 mb-2">
-            <FiUser className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <FiUser className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
               Full Name
             </label>
           </div>
@@ -136,30 +136,29 @@ const UserInformation = () => {
                 value={tempValues.full_name}
                 onChange={(e) => handleInputChange('full_name', e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500"
+                className="w-full"
                 placeholder="Enter your full name"
                 maxLength={30}
               />
             ) : (
               <div
                 onDoubleClick={() => handleDoubleClick('full_name')}
-                className="group/field flex items-center justify-between w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="group/field flex items-center justify-between w-full p-3 bg-muted/50 border border-border rounded-md cursor-pointer hover:bg-muted transition-colors"
               >
-                <span className={`${!currentUser?.full_name ? "text-gray-500 dark:text-gray-400 italic" : "text-gray-900 dark:text-gray-100"
-                  }`}>
+                <span className={`${!currentUser?.full_name ? "text-muted-foreground italic" : "text-foreground"}`}>
                   {currentUser?.full_name || "Not provided"}
                 </span>
-                <FiEdit2 className="h-4 w-4 text-gray-400 opacity-0 group-hover/field:opacity-100 transition-opacity" />
+                <FiEdit2 className="h-4 w-4 text-muted-foreground opacity-0 group-hover/field:opacity-100 transition-opacity" />
               </div>
             )}
           </div>
         </div>
 
         {/* Email Field */}
-        <div className="group">
-          <div className="flex items-center gap-3 mb-2">
-            <FiMail className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <FiMail className="h-4 w-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
               Email Address
             </label>
           </div>
@@ -171,34 +170,32 @@ const UserInformation = () => {
                 value={tempValues.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500"
+                className="w-full"
                 placeholder="Enter your email address"
               />
             ) : (
               <div
                 onDoubleClick={() => handleDoubleClick('email')}
-                className="group/field flex items-center justify-between w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="group/field flex items-center justify-between w-full p-3 bg-muted/50 border border-border rounded-md cursor-pointer hover:bg-muted transition-colors"
               >
-                <span className="text-gray-900 dark:text-gray-100">
+                <span className="text-foreground">
                   {currentUser?.email}
                 </span>
-                <FiEdit2 className="h-4 w-4 text-gray-400 opacity-0 group-hover/field:opacity-100 transition-opacity" />
+                <FiEdit2 className="h-4 w-4 text-muted-foreground opacity-0 group-hover/field:opacity-100 transition-opacity" />
               </div>
             )}
           </div>
         </div>
 
         {/* Help Text */}
-        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div className="mt-6 p-4 bg-muted/30 border border-border/50 rounded-md">
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-5 h-5 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mt-0.5">
-              <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
-            </div>
+            <div className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-2"></div>
             <div>
-              <p className="text-sm font-medium text-purple-900 dark:text-purple-100">
+              <p className="text-sm font-medium text-foreground">
                 Quick Edit Tips
               </p>
-              <ul className="mt-1 text-sm text-purple-700 dark:text-purple-200 space-y-1">
+              <ul className="mt-1 text-sm text-muted-foreground space-y-1">
                 <li>• Double-click any field to start editing</li>
                 <li>• Press Enter to save or Escape to cancel</li>
                 <li>• Click outside the field to auto-save</li>
