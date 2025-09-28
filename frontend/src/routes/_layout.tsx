@@ -1,7 +1,8 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 import Navbar from '@/components/Common/Navbar'
 import Sidebar from '@/components/Common/Sidebar'
+import CompactFooter from '@/components/Common/CompactFooter'
 import useAuth, { isLoggedIn } from '@/hooks/useAuth'
 
 export const Route = createFileRoute('/_layout')({
@@ -38,10 +39,13 @@ function Layout() {
   return (
     <div className="flex h-screen flex-col">
       <Navbar />
-      <div className="flex-2 flex overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div className="flex flex-1 flex-col overflow-y-auto p-4">
-          <Outlet />
+        <div className="flex flex-1 flex-col overflow-y-auto">
+          <main className="flex-1 p-4">
+            <Outlet />
+          </main>
+          <CompactFooter />
         </div>
       </div>
     </div>
