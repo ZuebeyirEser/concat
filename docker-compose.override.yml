@@ -95,12 +95,17 @@ services:
   frontend:
     restart: "no"
     ports:
-      - "5173:80"
-    build:
-      context: ./frontend
-      args:
-        - VITE_API_URL=http://localhost:8000
-        - NODE_ENV=development
+      - "5173:5173"
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["sh", "-c", "yarn install && yarn dev --host 0.0.0.0"]
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_API_URL=http://localhost:8000
 
   playwright:
     build:

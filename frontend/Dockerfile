@@ -3,15 +3,19 @@ FROM node:20 AS build-stage
 
 WORKDIR /app
 
-COPY package*.json /app/
+# Copy package.json and yarn.lock for better caching
+COPY package.json yarn.lock /app/
 
-RUN npm install
+# Install dependencies using yarn
+RUN yarn install --frozen-lockfile
 
+# Copy the rest of the application
 COPY ./ /app/
 
 ARG VITE_API_URL=${VITE_API_URL}
 
-RUN npm run build
+# Build the application using yarn
+RUN yarn build
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
