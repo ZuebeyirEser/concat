@@ -63,38 +63,50 @@ const UserInformation = () => {
   }
 
   return (
-    <div className="w-full max-w-full">
-      <h3 className="text-lg font-semibold py-4">
-        User Information
-      </h3>
-      <form
-        className="w-full md:w-1/2"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="space-y-2">
-          <Label htmlFor="full_name">Full name</Label>
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Profile Information
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Update your personal details and contact information
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Full Name Field */}
+        <div className="space-y-3">
+          <Label htmlFor="full_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Full Name
+          </Label>
           {editMode ? (
             <Input
               id="full_name"
               {...register("full_name", { maxLength: 30 })}
               type="text"
-              className="w-auto"
+              className="max-w-md bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500"
+              placeholder="Enter your full name"
             />
           ) : (
-            <p
-              className={`text-sm py-2 truncate max-w-[250px] ${
-                !currentUser?.full_name ? "text-muted-foreground" : ""
-              }`}
-            >
-              {currentUser?.full_name || "N/A"}
-            </p>
+            <div className="flex items-center justify-between max-w-md">
+              <p className={`text-sm py-3 px-4 bg-gray-50 dark:bg-gray-800 rounded-lg border ${
+                !currentUser?.full_name ? "text-gray-500 dark:text-gray-400" : "text-gray-900 dark:text-gray-100"
+              }`}>
+                {currentUser?.full_name || "Not provided"}
+              </p>
+            </div>
           )}
         </div>
         
-        <div className="space-y-2 mt-4">
-          <Label htmlFor="email">Email</Label>
+        {/* Email Field */}
+        <div className="space-y-3">
+          <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Email Address
+          </Label>
           {editMode ? (
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Input
                 id="email"
                 {...register("email", {
@@ -102,26 +114,33 @@ const UserInformation = () => {
                   pattern: emailPattern,
                 })}
                 type="email"
-                className={`w-auto ${errors.email ? "border-red-500" : ""}`}
+                className={`max-w-md bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 ${
+                  errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                }`}
+                placeholder="Enter your email address"
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
               )}
             </div>
           ) : (
-            <p className="text-sm py-2 truncate max-w-[250px]">
-              {currentUser?.email}
-            </p>
+            <div className="flex items-center justify-between max-w-md">
+              <p className="text-sm py-3 px-4 bg-gray-50 dark:bg-gray-800 rounded-lg border text-gray-900 dark:text-gray-100">
+                {currentUser?.email}
+              </p>
+            </div>
           )}
         </div>
         
-        <div className="flex mt-4 gap-3">
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
             onClick={toggleEditMode}
             type={editMode ? "button" : "submit"}
             disabled={editMode ? (!isDirty || !getValues("email") || isSubmitting) : false}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6"
           >
-            {editMode ? (isSubmitting ? "Saving..." : "Save") : "Edit"}
+            {editMode ? (isSubmitting ? "Saving..." : "Save Changes") : "Edit Profile"}
           </Button>
           {editMode && (
             <Button
@@ -129,6 +148,7 @@ const UserInformation = () => {
               variant="outline"
               onClick={onCancel}
               disabled={isSubmitting}
+              className="border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               Cancel
             </Button>

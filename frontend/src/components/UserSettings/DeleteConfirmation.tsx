@@ -48,8 +48,8 @@ const DeleteConfirmation = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" className="mt-4">
-          Delete
+        <Button variant="destructive" className="bg-red-600 hover:bg-red-700 text-white">
+          Delete Account
         </Button>
       </DialogTrigger>
 
