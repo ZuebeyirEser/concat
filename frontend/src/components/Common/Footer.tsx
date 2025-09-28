@@ -10,7 +10,6 @@ const Footer = () => {
     <footer className="border-t border-border bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          {/* Brand Section */}
           <div className="space-y-4">
             <Logo size="md" />
             <p className="text-sm text-muted-foreground max-w-xs">
@@ -45,7 +44,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Product Links */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Product</h3>
             <ul className="space-y-2 text-sm">
@@ -84,7 +82,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company Links */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Company</h3>
             <ul className="space-y-2 text-sm">
@@ -123,7 +120,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal Links */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Legal</h3>
             <ul className="space-y-2 text-sm">
@@ -163,7 +159,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Section */}
         <div className="mt-12 border-t border-border pt-8">
           <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">

@@ -23,7 +23,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
@@ -59,7 +58,6 @@ const Sidebar = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Desktop */}
       <div className="sticky top-0 hidden h-screen min-w-[280px] border-r border-border bg-muted p-4 md:flex">
         <div className="flex h-full w-full flex-col justify-between">
           <div>

@@ -57,7 +57,6 @@ function ItemsTableContainer() {
     enabled: !!user && !isUserLoading,
   })
 
-  // Delete mutation with optimistic updates
   const deleteItemMutation = useMutation({
     mutationFn: (itemId: string) => ItemsService.deleteItem({ id: itemId }),
     onMutate: async (deletedItemId) => {
@@ -106,26 +105,21 @@ function ItemsTableContainer() {
       search: (prev) => ({ ...prev, page }),
     })
 
-  // Don't process data until auth is complete
   if (isUserLoading) {
     return <PendingItems />
   }
 
-  // If no user after loading, don't show anything (layout will handle redirect)
   if (!user) {
     return null
   }
 
-  // Process the data
   const items = data?.data ?? []
   const count = data?.count ?? 0
 
-  // Show loading for items query
   if (isLoading) {
     return <PendingItems />
   }
 
-  // Show empty state only after everything is loaded
   if (items.length === 0) {
     return (
       <EmptyState>
@@ -172,12 +166,10 @@ function ItemsTableContainer() {
 function Items() {
   const { user, isUserLoading } = useAuth()
 
-  // Show loading while authenticating
   if (isUserLoading) {
     return <PendingItems />
   }
 
-  // If no user after loading, don't show anything (layout will handle redirect)
   if (!user) {
     return null
   }

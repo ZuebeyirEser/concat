@@ -13,16 +13,13 @@ function Layout() {
   const { isUserLoading, user } = useAuth()
   const routerState = useRouterState()
 
-  // Show footer only on dashboard/home page
   const showFooter = routerState.location.pathname === '/'
 
-  // If no token in localStorage, redirect immediately
   if (!isLoggedIn()) {
     window.location.href = '/login'
     return null
   }
 
-  // Show loading state while verifying token with server
   if (isUserLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -49,7 +46,6 @@ function Layout() {
           <main className="flex-1 p-4">
             <Outlet />
           </main>
-          {/* Footer only on dashboard/home page */}
           {showFooter && <CompactFooter />}
         </div>
       </div>

@@ -76,7 +76,6 @@ const UserInformation = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Full Name Field */}
         <div className="space-y-3">
           <Label htmlFor="full_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Full Name
@@ -100,7 +99,6 @@ const UserInformation = () => {
           )}
         </div>
         
-        {/* Email Field */}
         <div className="space-y-3">
           <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Email Address
@@ -132,7 +130,6 @@ const UserInformation = () => {
           )}
         </div>
         
-        {/* Action Buttons */}
         <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
             onClick={toggleEditMode}

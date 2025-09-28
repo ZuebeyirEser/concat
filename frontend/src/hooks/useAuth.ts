@@ -25,7 +25,7 @@ const useAuth = () => {
     queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   })
 
   const signUpMutation = useMutation({
@@ -64,9 +64,6 @@ const useAuth = () => {
     localStorage.removeItem("access_token")
     navigate({ to: "/login" })
   }
-
-  // Handle authentication errors - but don't redirect here to avoid conflicts
-  // The Layout component will handle the redirect
 
   return {
     signUpMutation,
