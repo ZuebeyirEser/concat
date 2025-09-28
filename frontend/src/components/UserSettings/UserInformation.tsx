@@ -14,7 +14,7 @@ import { Input } from "../ui/input"
 
 const UserInformation = () => {
   const queryClient = useQueryClient()
-  const { showSuccessToast } = useCustomToast()
+  const { showSuccessToast, showErrorToast } = useCustomToast()
   const { user: currentUser } = useAuth()
   const [editingField, setEditingField] = useState<string | null>(null)
   const [tempValues, setTempValues] = useState({
@@ -50,7 +50,6 @@ const UserInformation = () => {
     },
     onError: (err: ApiError) => {
       handleError(err)
-      // Reset temp values on error
       setTempValues({
         full_name: currentUser?.full_name || "",
         email: currentUser?.email || "",
@@ -72,10 +71,9 @@ const UserInformation = () => {
     const currentValue = tempValues[editingField as keyof typeof tempValues]
     const originalValue = editingField === 'full_name' ? currentUser?.full_name : currentUser?.email
 
-    // Only save if value changed and is valid
     if (currentValue !== originalValue && currentValue.trim()) {
-      if (editingField === 'email' && !emailPattern.pattern.test(currentValue)) {
-        handleError({ detail: "Please enter a valid email address" } as ApiError)
+      if (editingField === 'email' && !emailPattern.value.test(currentValue)) {
+        showErrorToast("Please enter a valid email address")
         setTempValues({
           full_name: currentUser?.full_name || "",
           email: currentUser?.email || "",
@@ -147,9 +145,8 @@ const UserInformation = () => {
                 onDoubleClick={() => handleDoubleClick('full_name')}
                 className="group/field flex items-center justify-between w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <span className={`${
-                  !currentUser?.full_name ? "text-gray-500 dark:text-gray-400 italic" : "text-gray-900 dark:text-gray-100"
-                }`}>
+                <span className={`${!currentUser?.full_name ? "text-gray-500 dark:text-gray-400 italic" : "text-gray-900 dark:text-gray-100"
+                  }`}>
                   {currentUser?.full_name || "Not provided"}
                 </span>
                 <FiEdit2 className="h-4 w-4 text-gray-400 opacity-0 group-hover/field:opacity-100 transition-opacity" />
