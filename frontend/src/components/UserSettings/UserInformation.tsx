@@ -111,25 +111,25 @@ const UserInformation = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-foreground">
-          Profile Information
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Double-click any field to edit. Changes save automatically.
-        </p>
-      </div>
+      <div className="max-w-2xl">
+        {/* Profile Header */}
+        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-blue-500/5 to-indigo-500/10 rounded-lg border border-blue-500/20">
+          <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center">
+            <FiUser className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Personal Information</h3>
+            <p className="text-sm text-muted-foreground">Manage your profile details</p>
+          </div>
+        </div>
 
-      <div className="space-y-4 max-w-2xl">
-        {/* Full Name Field */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <FiUser className="h-4 w-4 text-muted-foreground" />
-            <label className="text-sm font-medium text-foreground">
+        <div className="space-y-6">
+          {/* Full Name Field */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground flex items-center gap-2">
+              <FiUser className="h-4 w-4" />
               Full Name
             </label>
-          </div>
-          <div className="relative">
             {editingField === 'full_name' ? (
               <Input
                 ref={inputRef}
@@ -143,26 +143,23 @@ const UserInformation = () => {
             ) : (
               <div
                 onDoubleClick={() => handleDoubleClick('full_name')}
-                className="group/field flex items-center justify-between w-full p-3 bg-muted/50 border border-border rounded-md cursor-pointer hover:bg-muted transition-colors"
+                className="group/field flex items-center justify-between w-full p-4 border border-border/60 rounded-lg cursor-pointer hover:border-border hover:bg-muted/20 transition-all duration-200"
               >
                 <span className={`${!currentUser?.full_name ? "text-muted-foreground italic" : "text-foreground"}`}>
                   {currentUser?.full_name || "Not provided"}
                 </span>
-                <FiEdit2 className="h-4 w-4 text-muted-foreground opacity-0 group-hover/field:opacity-100 transition-opacity" />
+                <FiEdit2 className="h-4 w-4 text-muted-reground opacity-0 group-hover/field:opacity-100 transition-opacity" />
               </div>
             )}
+            <p className="text-xs text-muted-foreground">This is how your name will appear to other users</p>
           </div>
-        </div>
 
-        {/* Email Field */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <FiMail className="h-4 w-4 text-muted-foreground" />
-            <label className="text-sm font-medium text-foreground">
+          {/* Email Field */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground flex items-center gap-2">
+              <FiMail className="h-4 w-4" />
               Email Address
             </label>
-          </div>
-          <div className="relative">
             {editingField === 'email' ? (
               <Input
                 ref={inputRef}
@@ -176,7 +173,7 @@ const UserInformation = () => {
             ) : (
               <div
                 onDoubleClick={() => handleDoubleClick('email')}
-                className="group/field flex items-center justify-between w-full p-3 bg-muted/50 border border-border rounded-md cursor-pointer hover:bg-muted transition-colors"
+                className="group/field flex items-center justify-between w-full p-4 border border-border/60 rounded-lg cursor-pointer hover:border-border hover:bg-muted/20 transition-all duration-200"
               >
                 <span className="text-foreground">
                   {currentUser?.email}
@@ -184,22 +181,17 @@ const UserInformation = () => {
                 <FiEdit2 className="h-4 w-4 text-muted-foreground opacity-0 group-hover/field:opacity-100 transition-opacity" />
               </div>
             )}
+            <p className="text-xs text-muted-foreground">Used for login and important notifications</p>
           </div>
-        </div>
 
-        {/* Help Text */}
-        <div className="mt-6 p-4 bg-muted/30 border border-border/50 rounded-md">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-2"></div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Quick Edit Tips
-              </p>
-              <ul className="mt-1 text-sm text-muted-foreground space-y-1">
-                <li>• Double-click any field to start editing</li>
-                <li>• Press Enter to save or Escape to cancel</li>
-                <li>• Click outside the field to auto-save</li>
-              </ul>
+          {/* Quick Tips */}
+          <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-border/50">
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">Quick Edit</p>
+                <p className="text-xs text-muted-foreground">Double-click any field to edit • Press Enter to save • Escape to cancel</p>
+              </div>
             </div>
           </div>
         </div>

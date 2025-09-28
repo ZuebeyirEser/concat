@@ -43,67 +43,65 @@ const ChangePassword = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-foreground">
-          Security Settings
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Update your password to keep your account secure
-        </p>
+      {/* Security Header */}
+      <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-orange-500/5 to-red-500/10 rounded-lg border border-orange-500/20">
+        <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center">
+          <FiLock className="h-6 w-6 text-orange-600" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-foreground">Password Security</h3>
+          <p className="text-sm text-muted-foreground">Keep your account secure with a strong password</p>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              Current Password
-            </label>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-6">
             <PasswordInput
               type="current_password"
               startElement={<FiLock className="h-4 w-4" />}
               {...register("current_password", passwordRules())}
-              placeholder="Enter your current password"
+              placeholder="••••••••"
               errors={errors}
             />
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              New Password
-            </label>
             <PasswordInput
               type="new_password"
               startElement={<FiLock className="h-4 w-4" />}
               {...register("new_password", passwordRules())}
-              placeholder="Enter your new password"
+              placeholder="••••••••"
               errors={errors}
             />
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              Confirm New Password
-            </label>
             <PasswordInput
               type="confirm_password"
               startElement={<FiLock className="h-4 w-4" />}
               {...register("confirm_password", confirmPasswordRules(getValues))}
-              placeholder="Confirm your new password"
+              placeholder="••••••••"
               errors={errors}
             />
           </div>
-        </div>
 
-        <div className="pt-4 border-t border-border">
-          <Button
-            type="submit"
-            disabled={!isValid || isSubmitting}
-            className="px-6"
-          >
-            {isSubmitting ? "Updating Password..." : "Update Password"}
-          </Button>
-        </div>
-      </form>
+          {/* Password Requirements */}
+          <div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+            <h4 className="text-sm font-medium text-foreground mb-3">Password Requirements</h4>
+            <ul className="space-y-1 text-xs text-muted-foreground">
+              <li>• At least 8 characters long</li>
+              <li>• Include uppercase and lowercase letters</li>
+              <li>• Include at least one number</li>
+              <li>• Include at least one special character</li>
+            </ul>
+          </div>
+
+          <div className="pt-2">
+            <Button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+              className="px-8"
+            >
+              {isSubmitting ? "Updating Password..." : "Update Password"}
+            </Button>
+          </div>
+        </form>
     </div>
   )
 }
