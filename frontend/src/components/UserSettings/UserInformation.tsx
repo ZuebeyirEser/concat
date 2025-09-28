@@ -25,7 +25,7 @@ const UserInformation = () => {
     handleSubmit,
     reset,
     getValues,
-    formState: { isSubmitting, errors, isDirty },
+    formState: { isSubmitting, errors },
   } = useForm<UserPublic>({
     mode: "onBlur",
     criteriaMode: "all",
@@ -42,8 +42,14 @@ const UserInformation = () => {
   const mutation = useMutation({
     mutationFn: (data: UserUpdateMe) =>
       UsersService.updateUserMe({ requestBody: data }),
-    onSuccess: () => {
+    onSuccess: (updatedUser) => {
       showSuccessToast("User updated successfully.")
+      // Reset form with new values as the new defaults
+      reset({
+        full_name: updatedUser.full_name,
+        email: updatedUser.email,
+      })
+      setEditMode(false)
     },
     onError: (err: ApiError) => {
       handleError(err)
@@ -54,7 +60,11 @@ const UserInformation = () => {
   })
 
   const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
-    mutation.mutate(data)
+    if (editMode) {
+      mutation.mutate(data)
+    } else {
+      toggleEditMode()
+    }
   }
 
   const onCancel = () => {
@@ -132,9 +142,8 @@ const UserInformation = () => {
         
         <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
-            onClick={toggleEditMode}
-            type={editMode ? "button" : "submit"}
-            disabled={editMode ? (!isDirty || !getValues("email") || isSubmitting) : false}
+            type="submit"
+            disabled={editMode ? (!getValues("email") || isSubmitting) : false}
             className="bg-purple-600 hover:bg-purple-700 text-white px-6"
           >
             {editMode ? (isSubmitting ? "Saving..." : "Save Changes") : "Edit Profile"}
