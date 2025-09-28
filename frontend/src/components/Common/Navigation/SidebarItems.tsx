@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { Link as RouterLink } from '@tanstack/react-router'
-import { FiBriefcase, FiSettings, FiUsers } from 'react-icons/fi'
+import { FiBarChart, FiBriefcase, FiSettings, FiUsers } from 'react-icons/fi'
 import type { IconType } from 'react-icons/lib'
 
 import type { UserPublic } from '@/client'
@@ -8,6 +8,7 @@ import type { UserPublic } from '@/client'
 const items = [
   { icon: FiBriefcase, title: 'Items', path: '/items' },
   { icon: FiSettings, title: 'User Settings', path: '/settings' },
+  { icon: FiBarChart, title: 'Analyics', path: '/analytics' },
 ]
 
 interface SidebarItemsProps {
@@ -47,6 +48,19 @@ const SidebarItems = ({ onClose, isCollapsed = false }: SidebarItemsProps) => {
           <span className="font-medium text-foreground transition-all duration-200">
             {title}
           </span>
+        )}
+
+        {isCollapsed && (
+          <div
+            className="pointer-events-none absolute left-full z-[100] ml-3 whitespace-nowrap rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100"
+            style={{
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+          >
+            {title}
+            <div className="absolute right-full top-1/2 h-0 w-0 -translate-y-1/2 transform border-b-[4px] border-r-[4px] border-t-[4px] border-transparent border-r-popover"></div>
+          </div>
         )}
 
         {isCollapsed && (
