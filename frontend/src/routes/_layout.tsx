@@ -1,4 +1,3 @@
-import { Flex } from "@chakra-ui/react"
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
 
 import Navbar from "@/components/Common/Navbar"
@@ -18,15 +17,15 @@ export const Route = createFileRoute("/_layout")({
 
 function Layout() {
   return (
-    <Flex direction="column" h="100vh">
+    <div className="flex flex-col h-screen">
       <Navbar />
-      <Flex flex="1" overflow="hidden">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <Flex flex="1" direction="column" p={4} overflowY="auto">
+        <div className="flex-1 flex flex-col p-4 overflow-y-auto">
           <Outlet />
-        </Flex>
-      </Flex>
-    </Flex>
+        </div>
+      </div>
+    </div>
   )
 }
 

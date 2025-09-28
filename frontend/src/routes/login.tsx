@@ -1,4 +1,3 @@
-import { Container, Image, Input, Text } from "@chakra-ui/react"
 import {
   Link as RouterLink,
   createFileRoute,
@@ -9,9 +8,9 @@ import { FiLock, FiMail } from "react-icons/fi"
 
 import type { Body_login_login_access_token as AccessToken } from "@/client"
 import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
-import { InputGroup } from "@/components/ui/input-group"
-import { PasswordInput } from "@/components/ui/password-input"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 import Logo from "/assets/images/fastapi-logo.svg"
 import { emailPattern, passwordRules } from "../utils"
@@ -55,61 +54,82 @@ function Login() {
   }
 
   return (
-    <>
-      <Container
-        as="form"
-        onSubmit={handleSubmit(onSubmit)}
-        h="100vh"
-        maxW="sm"
-        alignItems="stretch"
-        justifyContent="center"
-        gap={4}
-        centerContent
-      >
-        <Image
-          src={Logo}
-          alt="FastAPI logo"
-          height="auto"
-          maxW="2xs"
-          alignSelf="center"
-          mb={4}
-        />
-        <Field
-          invalid={!!errors.username}
-          errorText={errors.username?.message || !!error}
-        >
-          <InputGroup w="100%" startElement={<FiMail />}>
-            <Input
-              id="username"
-              {...register("username", {
-                required: "Username is required",
-                pattern: emailPattern,
-              })}
-              placeholder="Email"
-              type="email"
-            />
-          </InputGroup>
-        </Field>
-        <PasswordInput
-          type="password"
-          startElement={<FiLock />}
-          {...register("password", passwordRules())}
-          placeholder="Password"
-          errors={errors}
-        />
-        <RouterLink to="/recover-password" className="main-link">
-          Forgot Password?
-        </RouterLink>
-        <Button variant="solid" type="submit" loading={isSubmitting} size="md">
-          Log In
-        </Button>
-        <Text>
-          Don't have an account?{" "}
-          <RouterLink to="/signup" className="main-link">
-            Sign Up
-          </RouterLink>
-        </Text>
-      </Container>
-    </>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="text-center">
+          <img
+            src={Logo}
+            alt="FastAPI logo"
+            className="h-auto max-w-xs mx-auto mb-4"
+          />
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Email</Label>
+              <div className="relative">
+                <FiMail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="username"
+                  {...register("username", {
+                    required: "Username is required",
+                    pattern: emailPattern,
+                  })}
+                  placeholder="Email"
+                  type="email"
+                  className="pl-10"
+                />
+              </div>
+              {errors.username && (
+                <p className="text-sm text-destructive">{errors.username.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <FiLock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  {...register("password", passwordRules())}
+                  placeholder="Password"
+                  type="password"
+                  className="pl-10"
+                />
+              </div>
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
+            </div>
+
+            {error && (
+              <p className="text-sm text-destructive text-center">{error}</p>
+            )}
+
+            <RouterLink 
+              to="/recover-password" 
+              className="text-primary hover:underline text-sm block text-center"
+            >
+              Forgot Password?
+            </RouterLink>
+
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="w-full"
+            >
+              {isSubmitting ? "Logging in..." : "Log In"}
+            </Button>
+
+            <p className="text-center text-sm">
+              Don't have an account?{" "}
+              <RouterLink to="/signup" className="text-primary hover:underline">
+                Sign Up
+              </RouterLink>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
