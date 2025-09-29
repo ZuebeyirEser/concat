@@ -1,77 +1,83 @@
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
-const mockData = [
+import { DollarSign, ShoppingCart, Target, Users } from 'lucide-react'
+import { ChartCard } from './ChartCard'
+import { DashboardHeader } from './DashboardHeader'
+import { RevenueChart } from './RevenueChart'
+import { StatCard } from './StatsCard'
+import { UserGrowthChart } from './UserGrowthChart'
+
+export type ChartDataPoint = {
+  month: string
+  users: number
+  revenue: number
+}
+
+const mockData: ChartDataPoint[] = [
   { month: 'Jan', users: 400, revenue: 2400 },
-  { month: 'Jan', users: 300, revenue: 1340 },
-  { month: 'Jan', users: 200, revenue: 9400 },
-  { month: 'Jan', users: 278, revenue: 4400 },
-  { month: 'Jan', users: 189, revenue: 5400 },
-  { month: 'Jan', users: 239, revenue: 3400 },
+  { month: 'Feb', users: 300, revenue: 1340 },
+  { month: 'Mar', users: 500, revenue: 3200 },
+  { month: 'Apr', users: 278, revenue: 4400 },
+  { month: 'May', users: 589, revenue: 5400 },
+  { month: 'Jun', users: 639, revenue: 6100 },
 ]
 
-export function AnalyticsDashboardDemo() {
+export default function AnalyticsDashboard() {
   return (
-    <div className="space-y-6 p-6">
-      <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <h3 className="text-3xl font-medium text-gray-500">Total Users</h3>
-        <p>123,4</p>
-        <p className="text-sm text-green-400">12 percent up</p>
-      </div>
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
-        <h3 className="text-sm font-medium text-gray-500">Revenue</h3>
-        <p className="text-3xl font-bold text-green-600">$12,345</p>
-        <p className="text-sm text-green-600">↑ 8% from last month</p>
-      </div>
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
-        <h3 className="text-sm font-medium text-gray-500">Orders</h3>
-        <p className="text-3xl font-bold text-purple-600">456</p>
-        <p className="text-sm text-red-600">↓ 3% from last month</p>
-      </div>
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
-        <h3 className="text-sm font-medium text-gray-500">Conversion</h3>
-        <p className="text-3xl font-bold text-orange-600">3.2%</p>
-        <p className="text-sm text-green-600">↑ 0.5% from last month</p>
-      </div>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <h3 className="mb-4 text-lg font-semibold">User Growth</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={mockData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="users"
-                stroke="#3B82F6"
-                strokeWidth={2}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <DashboardHeader />
 
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <h3 className="mb-4 text-lg font-semibold">Revenue</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={mockData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="revenue" fill="#10B981" />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ChartCard
+            title="User Growth"
+            badgeText="6 months"
+            badgeColor="blue"
+            stats={
+              <>
+                <StatCard
+                  title="Total Users"
+                  value="12,345"
+                  change="+12%"
+                  icon={Users}
+                  positive={true}
+                />
+                <StatCard
+                  title="Conversion"
+                  value="3.2%"
+                  change="+0.5%"
+                  icon={Target}
+                  positive={true}
+                />
+              </>
+            }
+          >
+            <UserGrowthChart data={mockData} />
+          </ChartCard>
+
+          <ChartCard
+            title="Revenue"
+            badgeText="6 months"
+            badgeColor="emerald"
+            stats={
+              <>
+                <StatCard
+                  title="Revenue"
+                  value="$23,456"
+                  change="+8%"
+                  icon={DollarSign}
+                  positive={true}
+                />
+                <StatCard
+                  title="Orders"
+                  value="456"
+                  change="-3%"
+                  icon={ShoppingCart}
+                  positive={false}
+                />
+              </>
+            }
+          >
+            <RevenueChart data={mockData} />
+          </ChartCard>
         </div>
       </div>
     </div>

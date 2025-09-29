@@ -17,10 +17,10 @@ import { Route as RecoverPasswordImport } from './routes/recover-password'
 import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
-import { Route as LayoutAnalyticsImport } from './routes/_layout/analytics'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutItemsImport } from './routes/_layout/items'
+import { Route as LayoutAnalyticsImport } from './routes/_layout/analytics'
 import { Route as LayoutAdminImport } from './routes/_layout/admin'
 
 // Create/Update Routes
@@ -55,11 +55,6 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutAnalyticsRoute = LayoutAnalyticsImport.update({
-  path: '/analytics',
-  getParentRoute: () => LayoutRoute,
-} as any)
-
 const LayoutIndexRoute = LayoutIndexImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
@@ -72,6 +67,11 @@ const LayoutSettingsRoute = LayoutSettingsImport.update({
 
 const LayoutItemsRoute = LayoutItemsImport.update({
   path: '/items',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutAnalyticsRoute = LayoutAnalyticsImport.update({
+  path: '/analytics',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -112,6 +112,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/analytics': {
+      preLoaderRoute: typeof LayoutAnalyticsImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/items': {
       preLoaderRoute: typeof LayoutItemsImport
       parentRoute: typeof LayoutImport
@@ -124,10 +128,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
     }
-    '/_layout/analytics': {
-      preLoaderRoute: typeof LayoutAnalyticsImport
-      parentRoute: typeof LayoutImport
-    }
   }
 }
 
@@ -137,10 +137,10 @@ export const routeTree = rootRoute.addChildren([
   IndexRoute,
   LayoutRoute.addChildren([
     LayoutAdminRoute,
+    LayoutAnalyticsRoute,
     LayoutItemsRoute,
     LayoutSettingsRoute,
     LayoutIndexRoute,
-    LayoutAnalyticsRoute,
   ]),
   LoginRoute,
   RecoverPasswordRoute,
