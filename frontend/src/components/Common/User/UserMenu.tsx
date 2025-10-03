@@ -30,7 +30,7 @@ const UserMenu = () => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             data-testid="user-menu"
             className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
           >
