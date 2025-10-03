@@ -30,7 +30,7 @@ This dev container provides a complete development environment for both the Fast
    ```bash
    # Start both services
    dev
-   
+
    # Or start individually
    run-backend   # FastAPI on :8000
    run-frontend  # Vite on :5173

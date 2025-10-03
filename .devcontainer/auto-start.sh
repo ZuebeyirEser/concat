@@ -13,7 +13,7 @@ export POSTGRES_SERVER=db
 nohup uv run fastapi dev --reload app/main.py --host 0.0.0.0 > /tmp/backend.log 2>&1 &
 echo $! > /tmp/backend.pid
 
-# Start frontend in background  
+# Start frontend in background
 echo "🎨 Starting Vite frontend..."
 cd /workspace/frontend
 nohup yarn dev --host 0.0.0.0 --port 5173 > /tmp/frontend.log 2>&1 &
