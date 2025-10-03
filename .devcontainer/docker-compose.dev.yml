@@ -1,0 +1,67 @@
+services:
+  devcontainer:
+    image: mcr.microsoft.com/devcontainers/python:3.10-bullseye
+    volumes:
+      - ../:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+      - node_modules:/workspace/frontend/node_modules
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    working_dir: /workspace
+    command: sleep infinity
+    env_file:
+      - ../.env
+    environment:
+      - PYTHONPATH=/workspace/backend
+      - PATH=/workspace/backend/.venv/bin:$PATH
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+      - POSTGRES_SERVER=db
+    networks:
+      - default
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5173:5173"
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: postgres:12
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=changethis
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=app
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - ADMINER_DESIGN=pepa-linha-dark
+    ports:
+      - "8080:8080"
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+volumes:
+  node_modules:
+  app-db-data:
