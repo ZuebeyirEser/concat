@@ -15,21 +15,23 @@ export const ChartCard = ({
 }: ChartCardProps) => {
   const badgeColorClass =
     badgeColor === 'blue'
-      ? 'bg-blue-50 text-blue-700'
-      : 'bg-emerald-50 text-emerald-700'
+      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+      : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+    <div className="rounded-2xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-md">
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-xl font-semibold text-foreground">{title}</h3>
         <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${badgeColorClass}`}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium ${badgeColorClass}`}
         >
           {badgeText}
         </span>
       </div>
-      {children}
-      <div className="mt-4 grid grid-cols-2 gap-3">{stats}</div>
+      <div className="mb-6">
+        {children}
+      </div>
+      <div className="grid grid-cols-2 gap-4">{stats}</div>
     </div>
   )
 }

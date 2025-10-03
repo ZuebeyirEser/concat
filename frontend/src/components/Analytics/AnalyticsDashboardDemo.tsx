@@ -22,11 +22,11 @@ const mockData: ChartDataPoint[] = [
 
 export default function AnalyticsDashboard() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-7xl">
         <DashboardHeader />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <ChartCard
             title="User Growth"
             badgeText="6 months"

@@ -1,7 +1,8 @@
 import { Link } from '@tanstack/react-router'
-import { FiLogOut, FiUser, FiMoon, FiSun } from 'react-icons/fi'
 import { useTheme } from 'next-themes'
+import { FiLogOut, FiMoon, FiSun, FiUser } from 'react-icons/fi'
 
+import { Button } from '@/components/ui/button'
 import useAuth from '@/hooks/useAuth'
 import {
   DropdownMenu,
@@ -27,12 +28,14 @@ const UserMenu = () => {
     <div className="flex">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             data-testid="user-menu"
-            className="rounded-md border border-border/30 px-3 py-1.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-border/60 hover:bg-accent/50 hover:text-foreground/80"
+            className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
           >
             {user?.full_name || user?.email || 'User'}
-          </button>
+          </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent

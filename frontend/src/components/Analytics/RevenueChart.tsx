@@ -1,11 +1,11 @@
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts'
 import { AnalyticsToolTip } from './AnalyticsToolTip'
 
@@ -18,9 +18,9 @@ interface ChartDataPoint {
 export const RevenueChart = ({ data }: { data: ChartDataPoint[] }) => (
   <ResponsiveContainer width="100%" height={300}>
     <BarChart data={data}>
-      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-      <XAxis dataKey="month" stroke="#9ca3af" style={{ fontSize: '12px' }} />
-      <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
+      <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
+      <XAxis dataKey="month" className="stroke-muted-foreground" style={{ fontSize: '12px' }} />
+      <YAxis className="stroke-muted-foreground" style={{ fontSize: '12px' }} />
       <Tooltip content={<AnalyticsToolTip />} />
       <Bar
         dataKey="revenue"

@@ -5,75 +5,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* CSS Variables for theming */
-:root {
-  --background: linear-gradient(
-    135deg,
-    hsl(0, 0%, 100%) 0%,
-    hsl(262, 83%, 98%) 100%
-  );
-  --foreground: hsl(222.2, 84%, 4.9%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(222.2, 84%, 4.9%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(222.2, 84%, 4.9%);
-  --primary: hsl(262, 83%, 58%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(262, 40%, 96%);
-  --secondary-foreground: hsl(222.2, 84%, 4.9%);
-  --muted: hsl(262, 30%, 96%);
-  --muted-foreground: hsl(215.4, 16.3%, 46.9%);
-  --accent: hsl(262, 40%, 94%);
-  --accent-foreground: hsl(222.2, 84%, 4.9%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --border: hsl(262, 31.8%, 91.4%);
-  --input: hsl(262, 31.8%, 91.4%);
-  --ring: hsl(262, 83%, 58%);
-  --radius: 0.5rem;
-}
-
-.dark {
-  --background: linear-gradient(
-    135deg,
-    hsl(262, 84%, 8%) 0%,
-    hsl(222.2, 84%, 4.9%) 100%
-  );
-  --foreground: hsl(210, 40%, 98%);
-  --card: hsl(262, 50%, 10%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --popover: hsl(262, 50%, 10%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --primary: hsl(262, 91%, 70%);
-  --primary-foreground: hsl(222.2, 84%, 4.9%);
-  --secondary: hsl(262, 32%, 17%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --muted: hsl(262, 32%, 17%);
-  --muted-foreground: hsl(215, 20.2%, 65.1%);
-  --accent: hsl(262, 32%, 20%);
-  --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --border: hsl(262, 31.8%, 25%);
-  --input: hsl(262, 31.8%, 25%);
-  --ring: hsl(262, 76%, 80%);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  min-height: 100vh;
-}
-
-/* Ensure gradient backgrounds work properly */
-html {
-  background: linear-gradient(135deg, #f8fafc 0%, #faf5ff 100%);
-  min-height: 100vh;
-}
-
-html.dark {
-  background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-}
+/* Clean theme variables - using the @layer base definitions below */
 
 @layer base {
   :root {
