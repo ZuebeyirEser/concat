@@ -1,12 +1,12 @@
-import { cn } from '@/lib/utils'
+import { Body_login_login_access_token } from '@/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Logo from './ui/logo'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { Body_login_login_access_token } from '@/client'
-import { emailPattern, passwordRules } from '@/utils'
 import useAuth from '@/hooks/useAuth'
+import { cn } from '@/lib/utils'
+import { emailPattern, passwordRules } from '@/utils'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import Logo from './ui/logo'
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> {}
 
@@ -131,8 +131,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
       </form>
 
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
-        and <a href="#">Privacy Policy</a>.
+        Free to use. No tracking. No ads. No bullshit.{' '}
       </div>
     </div>
   )
