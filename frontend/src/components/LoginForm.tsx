@@ -104,7 +104,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
               <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-4 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+              <span className="bg-white px-4 text-gray-500 dark:bg-background dark:text-gray-400">
                 Or
               </span>
             </div>
