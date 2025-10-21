@@ -1,13 +1,12 @@
 import uuid
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
 
 # Shared properties
 class ItemBase(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    title: str | None = None
+    description: str | None = None
 
 
 # Properties to receive on item creation

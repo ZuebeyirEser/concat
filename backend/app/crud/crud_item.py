@@ -1,5 +1,4 @@
 import uuid
-# No typing imports needed for basic types in Python 3.12
 
 from sqlmodel import Session, select
 
@@ -28,7 +27,8 @@ class CRUDItem(CRUDBase[Item, ItemCreate, ItemUpdate]):
             .offset(skip)
             .limit(limit)
         )
-        return db.exec(statement).all()
+        result = db.exec(statement).all()
+        return list(result)
 
 
 item = CRUDItem(Item)

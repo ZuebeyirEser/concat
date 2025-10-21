@@ -1,4 +1,4 @@
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
@@ -9,8 +9,8 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType]):
+class CRUDBase[ModelType: SQLModel, CreateSchemaType: BaseModel, UpdateSchemaType: BaseModel]:
+    def __init__(self, model: type[ModelType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
 
@@ -29,11 +29,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> list[ModelType]:
         from sqlmodel import select
         statement = select(self.model).offset(skip).limit(limit)
-        return db.exec(statement).all()
+        return list(db.exec(statement).all())
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)  
+        db_obj = self.model(**obj_in_data)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -50,18 +50,17 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             update_data = obj_in
         else:
             update_data = obj_in.model_dump(exclude_unset=True)
-        
         for field, value in update_data.items():
             setattr(db_obj, field, value)
-        
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
-    def remove(self, db: Session, *, id: Any) -> ModelType:
+    def remove(self, db: Session, *, id: Any) -> ModelType | None:
         obj = db.get(self.model, id)
-        if obj:
+        if obj is not None:
             db.delete(obj)
             db.commit()
-        return obj
+            return obj
+        return None

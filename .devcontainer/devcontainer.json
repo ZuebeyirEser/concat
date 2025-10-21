@@ -7,15 +7,27 @@
 
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000"
+    }
   },
+
+  "remoteUser": "vscode",
 
 
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "ms-python.isort",
         "charliermarsh.ruff",
         "ms-python.mypy-type-checker",
         "bradlc.vscode-tailwindcss",
@@ -34,22 +46,29 @@
         "python.terminal.activateEnvironment": false,
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-          "source.organizeImports": "explicit"
+          "source.organizeImports": "never"
         },
+        "python.sortImports.args": [],
+        "isort.check": false,
         "[python]": {
-          "editor.formatOnSave": true,
+          "editor.formatOnSave": false,
           "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
+            "source.organizeImports": "never",
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
           }
         },
         "[typescript]": {
-          "editor.defaultFormatter": "vscode.typescript-language-features"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "[typescriptreact]": {
-          "editor.defaultFormatter": "vscode.typescript-language-features"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "[javascript]": {
-          "editor.defaultFormatter": "vscode.typescript-language-features"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "[json]": {
           "editor.defaultFormatter": "vscode.json-language-features"

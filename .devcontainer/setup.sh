@@ -5,7 +5,7 @@ echo "🚀 Setting up development environment..."
 
 # Fix workspace permissions
 echo "🔧 Fixing workspace permissions..."
-sudo chown -R $(whoami):$(whoami) /workspace
+sudo chown -R vscode:vscode /workspace
 
 # Install system dependencies
 echo "🔧 Installing system dependencies..."

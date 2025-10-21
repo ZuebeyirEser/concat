@@ -1,6 +1,6 @@
 services:
   devcontainer:
-    image: mcr.microsoft.com/devcontainers/python:3.10-bullseye
+    image: python:3.14-slim
     volumes:
       - ../:/workspace:cached
       - /var/run/docker.sock:/var/run/docker.sock

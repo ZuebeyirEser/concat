@@ -1,31 +1,30 @@
 import uuid
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 # Shared properties
 class UserBase(BaseModel):
-    email: Optional[EmailStr] = None
-    is_active: Optional[bool] = True
+    email: EmailStr | None = None
+    is_active: bool | None = True
     is_superuser: bool = False
-    full_name: Optional[str] = None
+    full_name: str | None = None
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     email: EmailStr
     password: str
-    is_superuser: Optional[bool] = False
+    is_superuser: bool = False
 
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
-    password: Optional[str] = None
+    password: str | None = None
 
 
 class UserInDBBase(UserBase):
-    id: Optional[uuid.UUID] = None
+    id: uuid.UUID | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -43,13 +42,13 @@ class UserInDB(UserInDBBase):
 class UserRegister(BaseModel):
     email: EmailStr
     password: str
-    confirm_password: Optional[str] = None
-    full_name: Optional[str] = None
+    confirm_password: str | None = None
+    full_name: str | None = None
 
 
 class UserUpdateMe(BaseModel):
-    full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    full_name: str | None = None
+    email: EmailStr | None = None
 
 
 class UpdatePassword(BaseModel):

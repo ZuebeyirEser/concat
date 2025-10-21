@@ -1,6 +1,6 @@
 # Concat Backend API
 
-FastAPI backend application with modern Python 3.12+ features.
+FastAPI backend application with modern Python 3.14+ features.
 
 ## Features
 

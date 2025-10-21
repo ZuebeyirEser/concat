@@ -5,7 +5,7 @@ This dev container provides a complete development environment for both the Fast
 ## What's Included
 
 ### Languages & Runtimes
-- Python 3.10 with uv package manager
+- Python 3.14 with uv package manager
 - Node.js 20 with Yarn
 - PostgreSQL 12 (via docker-compose)
 
