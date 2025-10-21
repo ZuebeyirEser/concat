@@ -1,12 +1,13 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:20 AS build-stage
+FROM node:22 AS build-stage
 
 WORKDIR /app
 
 # Copy package.json and yarn.lock for better caching
 COPY package.json yarn.lock /app/
 
-# Install dependencies using yarn
+# Enable Corepack and install dependencies using yarn
+RUN corepack enable
 RUN yarn install --frozen-lockfile
 
 # Copy the rest of the application

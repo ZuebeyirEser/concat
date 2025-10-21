@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 import CompactFooter from '@/components/Common/Layout/CompactFooter'
 import Navbar from '@/components/Common/Navigation/Navbar'
@@ -11,12 +11,9 @@ export const Route = createFileRoute('/_layout')({
 
 function Layout() {
   const { isUserLoading, user } = useAuth()
-  const routerState = useRouterState()
-
-  const showFooter = routerState.location.pathname === '/'
 
   if (!isLoggedIn()) {
-    window.location.href = '/login'
+    window.location.href = '/'
     return null
   }
 
@@ -33,7 +30,7 @@ function Layout() {
 
   if (!user) {
     localStorage.removeItem('access_token')
-    window.location.href = '/login'
+    window.location.href = '/'
     return null
   }
 
