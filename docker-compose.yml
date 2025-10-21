@@ -52,7 +52,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-        restart: true
     command: bash scripts/prestart.sh
     env_file:
       - .env
@@ -84,7 +83,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-        restart: true
       prestart:
         condition: service_completed_successfully
     env_file:
