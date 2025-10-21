@@ -22,13 +22,9 @@ class CRUDItem(CRUDBase[Item, ItemCreate, ItemUpdate]):
         self, db: Session, *, owner_id: uuid.UUID, skip: int = 0, limit: int = 100
     ) -> list[Item]:
         statement = (
-            select(Item)
-            .where(Item.owner_id == owner_id)
-            .offset(skip)
-            .limit(limit)
+            select(Item).where(Item.owner_id == owner_id).offset(skip).limit(limit)
         )
-        result = db.exec(statement).all()
-        return list(result)
+        return list(db.exec(statement).all())
 
 
 item = CRUDItem(Item)

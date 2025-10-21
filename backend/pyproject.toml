@@ -38,7 +38,7 @@ classifiers = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.3,<8.0.0",
-    "mypy>=1.8.0,<2.0.0", 
+    "mypy>=1.8.0,<2.0.0",
     "ruff>=0.2.2,<1.0.0",
     "pre-commit>=3.6.2,<4.0.0",
     "types-passlib>=1.7.7.20240106,<2.0.0.0",
@@ -57,7 +57,7 @@ strict = true
 exclude = ["venv", ".venv", "alembic"]
 
 [tool.ruff]
-target-version = "py314"
+target-version = "py313"
 exclude = ["alembic"]
 line-length = 88
 

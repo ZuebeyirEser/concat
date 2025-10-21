@@ -1,19 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Setting up development environment..."
+echo "Setting up development environment..."
 
 # Fix workspace permissions
-echo "🔧 Fixing workspace permissions..."
+echo "Fixing workspace permissions..."
 sudo chown -R vscode:vscode /workspace
 
 # Install system dependencies
-echo "🔧 Installing system dependencies..."
+echo "Installing system dependencies..."
 sudo apt-get update
 sudo apt-get install -y curl git build-essential pkg-config libpq-dev postgresql-client
 
 # Install Node.js 20
-echo "📦 Installing Node.js 20..."
+echo "Installing Node.js 20..."
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
@@ -22,7 +22,7 @@ echo "Node.js version: $(node --version)"
 echo "npm version: $(npm --version)"
 
 # Setup Yarn
-echo "📦 Setting up Yarn..."
+echo "Setting up Yarn..."
 echo "Node.js version: $(node --version)"
 echo "npm version: $(npm --version)"
 
@@ -46,11 +46,11 @@ sudo corepack prepare yarn@4.9.4 --activate
 echo "Final Yarn version: $(yarn --version)"
 
 # Install uv for Python package management
-echo "📦 Installing uv..."
+echo "Installing uv..."
 pip install uv
 
 # Setup backend
-echo "📦 Installing backend dependencies..."
+echo "Installing backend dependencies..."
 cd /workspace/backend
 
 # Remove any existing .venv with wrong permissions
@@ -67,7 +67,7 @@ echo "Checking installed packages..."
 uv run pip list | grep -E "(pre-commit|pytest|ruff)" || echo "Some dev packages may not be installed"
 
 # Setup frontend
-echo "🎨 Installing frontend dependencies..."
+echo "nstalling frontend dependencies..."
 cd /workspace/frontend
 echo "Yarn version: $(yarn --version)"
 yarn install
@@ -82,7 +82,7 @@ if uv run which pre-commit > /dev/null 2>&1; then
     uv run pre-commit install
     echo "Pre-commit hooks installed successfully!"
 else
-    echo "⚠️  Pre-commit not found in virtual environment, skipping hook installation"
+    echo "Pre-commit not found in virtual environment, skipping hook installation"
     echo "You can install it later with: cd backend && uv run pre-commit install"
 fi
 
@@ -112,8 +112,8 @@ alias logs-backend="tail -f /tmp/backend.log"
 alias logs-frontend="tail -f /tmp/frontend.log"
 alias status="ps aux | grep -E '(fastapi|yarn dev)' | grep -v grep"
 
-echo "🎯 Development environment ready!"
-echo "📝 Available commands:"
+echo "Development environment ready!"
+echo "Available commands:"
 echo "  - run-backend: Start FastAPI dev server"
 echo "  - run-frontend: Start Vite dev server"
 echo "  - dev: Start both services"
@@ -123,4 +123,4 @@ echo "  - format-backend/format-frontend: Format code"
 echo "  - db: Connect to PostgreSQL"
 EOF
 
-echo "✅ Setup complete!"
+echo "Setup complete!"
