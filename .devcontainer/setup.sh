@@ -59,7 +59,12 @@ if [ -d ".venv" ]; then
 fi
 
 # Create virtual environment and install dependencies
+echo "Creating virtual environment and installing dependencies..."
 uv sync --dev
+
+# Verify installation
+echo "Checking installed packages..."
+uv run pip list | grep -E "(pre-commit|pytest|ruff)" || echo "Some dev packages may not be installed"
 
 # Setup frontend
 echo "🎨 Installing frontend dependencies..."
@@ -69,8 +74,17 @@ yarn install
 
 # Setup pre-commit hooks
 echo "🔧 Setting up pre-commit hooks..."
-cd /workspace
-pre-commit install
+cd /workspace/backend
+
+# Check if pre-commit is available in the virtual environment
+if uv run which pre-commit > /dev/null 2>&1; then
+    echo "Installing pre-commit hooks..."
+    uv run pre-commit install
+    echo "Pre-commit hooks installed successfully!"
+else
+    echo "⚠️  Pre-commit not found in virtual environment, skipping hook installation"
+    echo "You can install it later with: cd backend && uv run pre-commit install"
+fi
 
 # Create useful aliases and scripts
 echo "⚡ Creating development aliases..."

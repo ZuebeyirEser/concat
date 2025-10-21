@@ -15,7 +15,21 @@ echo "✅ Database is ready!"
 # Run database migrations
 echo "🗄️ Running database migrations..."
 cd /workspace/backend
-uv run alembic upgrade head
+
+# Debug: Check if alembic is available
+echo "Checking alembic installation..."
+if uv run which alembic > /dev/null 2>&1; then
+    echo "✅ Alembic found, running migrations..."
+    uv run alembic upgrade head
+else
+    echo "❌ Alembic not found in virtual environment"
+    echo "Checking installed packages..."
+    uv run pip list | grep alembic || echo "Alembic not in pip list"
+    echo "Attempting to install alembic..."
+    uv add alembic==1.17.0
+    echo "Retrying migration..."
+    uv run alembic upgrade head || echo "⚠️ Migration failed, continuing without migrations"
+fi
 
 echo "🚀 Starting backend and frontend services..."
 
