@@ -67,16 +67,7 @@ services:
       - run
       - --reload
       - "app/main.py"
-    develop:
-      watch:
-        - path: ./backend
-          action: sync
-          target: /app
-          ignore:
-            - ./backend/.venv
-            - .venv
-        - path: ./backend/pyproject.toml
-          action: rebuild
+
     # TODO: remove once coverage is done locally
     volumes:
       - ./backend/htmlcov:/app/htmlcov
@@ -96,12 +87,12 @@ services:
     restart: "no"
     ports:
       - "5173:5173"
-    image: node:20
+    image: node:22
     working_dir: /app
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: ["sh", "-c", "yarn install && yarn dev --host 0.0.0.0"]
+    command: ["sh", "-c", "corepack enable && yarn install && yarn dev --host 0.0.0.0"]
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
