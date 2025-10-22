@@ -1,4 +1,4 @@
-import { type Page, expect } from '@playwright/test'
+import { type Page } from '@playwright/test'
 
 export async function signUpNewUser(
   page: Page,
@@ -19,17 +19,14 @@ export async function signUpNewUser(
 export async function logInUser(page: Page, email: string, password: string) {
   await page.goto('/login')
 
-  await page.getByPlaceholder('Email').fill(email)
+  await page.getByPlaceholder('m@example.com').fill(email)
   await page.getByPlaceholder('Password', { exact: true }).fill(password)
   await page.getByRole('button', { name: 'Log In' }).click()
-  await page.waitForURL('/')
-  await expect(
-    page.getByText('Welcome back, nice to see you again!')
-  ).toBeVisible()
+  await page.waitForURL('/items')
 }
 
 export async function logOutUser(page: Page) {
   await page.getByTestId('user-menu').click()
-  await page.getByRole('menuitem', { name: 'Log out' }).click()
-  await page.goto('/login')
+  await page.getByRole('menuitem', { name: 'Logout' }).click()
+  await page.waitForURL('/login')
 }

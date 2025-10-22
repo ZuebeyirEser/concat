@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🧹 Cleaning up development services..."
+echo  "Cleaning up development services..."
 
 # Kill background processes
 if [ -f /tmp/backend.pid ]; then
@@ -19,4 +19,4 @@ fi
 pkill -f 'fastapi dev' 2>/dev/null || true
 pkill -f 'yarn dev' 2>/dev/null || true
 
-echo "✅ Cleanup complete"
+echo "Cleanup complete"

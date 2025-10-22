@@ -46,7 +46,7 @@ sudo corepack prepare yarn@4.9.4 --activate
 echo "Final Yarn version: $(yarn --version)"
 
 # Install uv for Python package management
-echo "📦 Installing uv..."
+echo "Installing uv..."
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.cargo/env
 
@@ -73,10 +73,15 @@ echo "Checking installed packages..."
 uv run pip list | grep -E "(pre-commit|pytest|ruff)" || echo "Some dev packages may not be installed"
 
 # Setup frontend
-echo "nstalling frontend dependencies..."
+echo "Installing frontend dependencies..."
 cd /workspace/frontend
 echo "Yarn version: $(yarn --version)"
 yarn install
+
+# Install Playwright browsers and dependencies
+echo "Installing Playwright browsers..."
+npx playwright install
+sudo npx playwright install-deps
 
 # Setup pre-commit hooks
 echo "🔧 Setting up pre-commit hooks..."
@@ -99,4 +104,4 @@ echo "⚡ Creating development aliases..."
 echo "source /workspace/.devcontainer/aliases.sh" >> ~/.bashrc
 echo "source /workspace/.devcontainer/aliases.sh" >> ~/.zshrc
 
-echo "✅ Setup complete!"
+echo "Setup complete!"

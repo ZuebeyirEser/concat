@@ -17,17 +17,31 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Use multiple workers for faster execution */
+  workers: process.env.CI ? 1 : 2,
+  /* Global timeout for each test */
+  timeout: 15000, // 15 seconds instead of default 30s
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'blob' : 'html',
+  reporter: process.env.CI ? 'blob' : 'list',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:5173',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    
+    /* Faster timeouts for actions */
+    actionTimeout: 5000, // 5 seconds for clicks, fills, etc.
+    navigationTimeout: 10000, // 10 seconds for page navigation
+    
+    /* Only collect trace on failure, not retry */
+    trace: 'retain-on-failure',
+    
+    /* Use desktop viewport to ensure tab text is visible */
+    viewport: { width: 1280, height: 720 },
+    
+    /* Faster page load */
+    launchOptions: {
+      args: ['--disable-dev-shm-usage', '--no-sandbox'],
+    },
   },
 
   /* Configure projects for major browsers */
@@ -86,6 +100,6 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
   },
 })

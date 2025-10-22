@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "generate-client": "openapi-ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "playwright test",
+    "test:fast": "playwright test --workers=2 --timeout=10000"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
