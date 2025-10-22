@@ -152,7 +152,7 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
         password=user_in.password,
         full_name=user_in.full_name,
         is_superuser=False,
-        is_active=True
+        is_active=True,
     )
     user = crud.user.create(session, obj_in=user_create)
     return user

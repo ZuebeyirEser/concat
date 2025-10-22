@@ -9,7 +9,11 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase[ModelType: SQLModel, CreateSchemaType: BaseModel, UpdateSchemaType: BaseModel]:
+class CRUDBase[
+    ModelType: SQLModel,
+    CreateSchemaType: BaseModel,
+    UpdateSchemaType: BaseModel,
+]:
     def __init__(self, model: type[ModelType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -28,6 +32,7 @@ class CRUDBase[ModelType: SQLModel, CreateSchemaType: BaseModel, UpdateSchemaTyp
         self, db: Session, *, skip: int = 0, limit: int = 100
     ) -> list[ModelType]:
         from sqlmodel import select
+
         statement = select(self.model).offset(skip).limit(limit)
         return list(db.exec(statement).all())
 
@@ -44,7 +49,7 @@ class CRUDBase[ModelType: SQLModel, CreateSchemaType: BaseModel, UpdateSchemaTyp
         db: Session,
         *,
         db_obj: ModelType,
-        obj_in: UpdateSchemaType | dict[str, Any]
+        obj_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
         if isinstance(obj_in, dict):
             update_data = obj_in

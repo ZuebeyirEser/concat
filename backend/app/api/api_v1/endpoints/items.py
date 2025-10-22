@@ -34,7 +34,10 @@ def read_items(
             session, owner_id=current_user.id, skip=skip, limit=limit
         )
 
-    return ItemsPublic(data=[ItemPublic.model_validate(item.model_dump()) for item in items], count=count)
+    return ItemsPublic(
+        data=[ItemPublic.model_validate(item.model_dump()) for item in items],
+        count=count,
+    )
 
 
 @router.get("/{id}", response_model=ItemPublic)

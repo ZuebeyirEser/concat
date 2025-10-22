@@ -12,4 +12,5 @@ api_router.include_router(items.router, prefix="/items", tags=["items"])
 # Include private routes only in local environment
 if settings.ENVIRONMENT == "local":
     from app.api.api_v1.endpoints import private
+
     api_router.include_router(private.router, prefix="/private", tags=["private"])

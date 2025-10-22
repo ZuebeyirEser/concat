@@ -44,6 +44,9 @@
       "settings": {
         "python.defaultInterpreterPath": "/workspace/backend/.venv/bin/python",
         "python.terminal.activateEnvironment": false,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.cwd": "/workspace",
+        "terminal.integrated.shellArgs.linux": ["-c", "source /workspace/.devcontainer/aliases.sh && exec bash"],
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.organizeImports": "never"

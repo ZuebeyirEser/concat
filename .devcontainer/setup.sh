@@ -46,8 +46,14 @@ sudo corepack prepare yarn@4.9.4 --activate
 echo "Final Yarn version: $(yarn --version)"
 
 # Install uv for Python package management
-echo "Installing uv..."
-pip install uv
+echo "📦 Installing uv..."
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.cargo/env
+
+# Ensure uv is in PATH
+export PATH="$HOME/.cargo/bin:$PATH"
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
 
 # Setup backend
 echo "Installing backend dependencies..."
@@ -88,39 +94,9 @@ fi
 
 # Create useful aliases and scripts
 echo "⚡ Creating development aliases..."
-cat >> ~/.bashrc << 'EOF'
 
-# Development aliases
-alias be="cd /workspace/backend"
-alias fe="cd /workspace/frontend"
-alias run-backend="cd /workspace/backend && uv run fastapi dev --reload app/main.py --host 0.0.0.0"
-alias run-frontend="cd /workspace/frontend && yarn dev --host 0.0.0.0"
-alias run-tests-backend="cd /workspace/backend && uv run pytest"
-alias run-tests-frontend="cd /workspace/frontend && yarn test"
-alias lint-backend="cd /workspace/backend && uv run ruff check . && uv run mypy ."
-alias lint-frontend="cd /workspace/frontend && yarn lint"
-alias format-backend="cd /workspace/backend && uv run ruff format ."
-alias format-frontend="cd /workspace/frontend && yarn format"
+# Add source command to shell configs
+echo "source /workspace/.devcontainer/aliases.sh" >> ~/.bashrc
+echo "source /workspace/.devcontainer/aliases.sh" >> ~/.zshrc
 
-# Quick development commands
-alias dev="echo 'Starting both services...' && run-backend & run-frontend"
-alias logs="echo 'Use logs-backend or logs-frontend to view service logs'"
-alias db="psql -h db -p 5432 -U postgres -d app"
-alias stop-dev="pkill -f 'fastapi dev'; pkill -f 'yarn dev'; echo 'Development services stopped'"
-alias restart-dev="stop-dev && sleep 2 && bash .devcontainer/start-services.sh"
-alias logs-backend="tail -f /tmp/backend.log"
-alias logs-frontend="tail -f /tmp/frontend.log"
-alias status="ps aux | grep -E '(fastapi|yarn dev)' | grep -v grep"
-
-echo "Development environment ready!"
-echo "Available commands:"
-echo "  - run-backend: Start FastAPI dev server"
-echo "  - run-frontend: Start Vite dev server"
-echo "  - dev: Start both services"
-echo "  - be/fe: Navigate to backend/frontend"
-echo "  - lint-backend/lint-frontend: Run linting"
-echo "  - format-backend/format-frontend: Format code"
-echo "  - db: Connect to PostgreSQL"
-EOF
-
-echo "Setup complete!"
+echo "✅ Setup complete!"
