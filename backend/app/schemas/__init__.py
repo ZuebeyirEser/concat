@@ -12,6 +12,15 @@ from .user import (
     UserUpdate,
     UserUpdateMe,
 )
+from .pdf_document import (
+    PDFDocumentResponse,
+    PDFDocumentWithDataResponse,
+    PDFUploadResponse,
+    PDFProcessingStatus,
+    PDFSearchRequest,
+    PDFSearchResponse,
+    ExtractedDataResponse,
+)
 
 __all__ = [
     "Item",
@@ -33,4 +42,11 @@ __all__ = [
     "UsersPublic",
     "UserUpdate",
     "UserUpdateMe",
+    "PDFDocumentResponse",
+    "PDFDocumentWithDataResponse",
+    "PDFUploadResponse",
+    "PDFProcessingStatus",
+    "PDFSearchRequest",
+    "PDFSearchResponse",
+    "ExtractedDataResponse",
 ]

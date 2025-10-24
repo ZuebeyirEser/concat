@@ -48,12 +48,31 @@ echo "Final Yarn version: $(yarn --version)"
 # Install uv for Python package management
 echo "Installing uv..."
 curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.cargo/env
+
+# Check if cargo env exists before sourcing
+if [ -f "$HOME/.cargo/env" ]; then
+    source $HOME/.cargo/env
+    echo "Cargo environment loaded"
+else
+    echo "Cargo environment not found, checking if uv is in PATH..."
+    if command -v uv &> /dev/null; then
+        echo "uv is available in PATH"
+    else
+        echo "uv not found, trying alternative installation..."
+        # Try pip installation as fallback
+        pip install uv
+    fi
+fi
 
 # Ensure uv is in PATH
-export PATH="$HOME/.cargo/bin:$PATH"
-echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
-echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
+if [ -d "$HOME/.cargo/bin" ]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
+    echo "Added Cargo bin to PATH"
+else
+    echo "Cargo bin directory not found, uv might be installed elsewhere"
+fi
 
 # Setup backend
 echo "Installing backend dependencies..."
@@ -66,11 +85,23 @@ fi
 
 # Create virtual environment and install dependencies
 echo "Creating virtual environment and installing dependencies..."
-uv sync --dev
+if command -v uv &> /dev/null; then
+    uv sync --dev
+else
+    echo "uv not available, using pip with venv..."
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -e ".[dev]"
+fi
 
 # Verify installation
 echo "Checking installed packages..."
-uv run pip list | grep -E "(pre-commit|pytest|ruff)" || echo "Some dev packages may not be installed"
+if command -v uv &> /dev/null; then
+    uv run pip list | grep -E "(pre-commit|pytest|ruff)" || echo "Some dev packages may not be installed"
+else
+    source .venv/bin/activate
+    pip list | grep -E "(pre-commit|pytest|ruff)" || echo "Some dev packages may not be installed"
+fi
 
 # Setup frontend
 echo "Installing frontend dependencies..."
@@ -88,13 +119,25 @@ echo "🔧 Setting up pre-commit hooks..."
 cd /workspace/backend
 
 # Check if pre-commit is available in the virtual environment
-if uv run which pre-commit > /dev/null 2>&1; then
-    echo "Installing pre-commit hooks..."
-    uv run pre-commit install
-    echo "Pre-commit hooks installed successfully!"
+if command -v uv &> /dev/null; then
+    if uv run which pre-commit > /dev/null 2>&1; then
+        echo "Installing pre-commit hooks..."
+        uv run pre-commit install
+        echo "Pre-commit hooks installed successfully!"
+    else
+        echo "Pre-commit not found in virtual environment, skipping hook installation"
+        echo "You can install it later with: cd backend && uv run pre-commit install"
+    fi
 else
-    echo "Pre-commit not found in virtual environment, skipping hook installation"
-    echo "You can install it later with: cd backend && uv run pre-commit install"
+    # Fallback for pip installation
+    source .venv/bin/activate
+    if which pre-commit > /dev/null 2>&1; then
+        echo "Installing pre-commit hooks..."
+        pre-commit install
+        echo "Pre-commit hooks installed successfully!"
+    else
+        echo "Pre-commit not found, skipping hook installation"
+    fi
 fi
 
 # Create useful aliases and scripts

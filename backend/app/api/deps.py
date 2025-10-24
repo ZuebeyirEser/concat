@@ -50,6 +50,11 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
+def get_current_active_user(session: SessionDep, token: TokenDep) -> User:
+    """Get current active user - alias for get_current_user for compatibility."""
+    return get_current_user(session, token)
+
+
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.is_superuser:
         raise HTTPException(

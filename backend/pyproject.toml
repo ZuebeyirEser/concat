@@ -23,6 +23,7 @@ dependencies = [
     "jinja2==3.1.6",
     "httpx==0.28.1",
     "sentry-sdk[fastapi]==1.45.1",
+    "PyPDF2==3.0.1",
 ]
 authors = [
     {name = "Concat Team"}
@@ -55,6 +56,7 @@ packages = ["app"]
 [tool.mypy]
 strict = true
 exclude = ["venv", ".venv", "alembic"]
+ignore_missing_imports = true
 
 [tool.ruff]
 target-version = "py313"

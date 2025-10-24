@@ -7,6 +7,14 @@ from app.schemas import UserCreate
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
+# Create SessionLocal class
+SessionLocal = Session
+
+def get_db():
+    """Dependency to get database session."""
+    with Session(engine) as session:
+        yield session
+
 
 # make sure all SQLModel models are imported (app.models) before initializing DB
 # otherwise, SQLModel might fail to initialize relationships properly
