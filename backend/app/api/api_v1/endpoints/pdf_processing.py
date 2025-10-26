@@ -159,7 +159,7 @@ async def upload_pdf(
         raise HTTPException(status_code=500, detail="Error uploading PDF")
 
 
-@router.get("/documents", response_model=List[PDFDocumentResponse])
+@router.get("/documents", response_model=List[PDFDocumentWithDataResponse])
 def get_user_documents(
     *,
     db: Session = Depends(get_db),
@@ -168,12 +168,62 @@ def get_user_documents(
     limit: int = 100
 ) -> Any:
     """
-    Get all PDF documents for the current user.
+    Get all PDF documents for the current user with extracted data.
     """
     documents = crud.pdf_document.get_by_owner(
         db, owner_id=current_user.id, skip=skip, limit=limit
     )
-    return documents
+    
+    # Load extracted data for each document and convert to proper format
+    result = []
+    for document in documents:
+        # Load extracted data for this document
+        extracted_data = crud.extracted_data.get_by_document(db, document_id=document.id)
+        
+        # Convert to response format
+        response_data = {
+            "id": document.id,
+            "filename": document.filename,
+            "original_filename": document.original_filename,
+            "file_size": document.file_size,
+            "content_type": document.content_type,
+            "processed": document.processed,
+            "processing_error": document.processing_error,
+            "created_at": document.created_at,
+            "updated_at": document.updated_at,
+            "owner_id": document.owner_id,
+            "extracted_data": []
+        }
+        
+        # Convert extracted data to proper format
+        for data in extracted_data:
+            extracted_dict = {
+                "id": data.id,
+                "document_id": data.document_id,
+                "store_name": data.store_name,
+                "store_address": data.store_address,
+                "store_phone": data.store_phone,
+                "receipt_number": data.receipt_number,
+                "cashier_id": data.cashier_id,
+                "register_number": data.register_number,
+                "transaction_date": data.transaction_date.isoformat() if data.transaction_date else None,
+                "transaction_time": data.transaction_time,
+                "subtotal": data.subtotal,
+                "tax_amount": data.tax_amount,
+                "total_amount": data.total_amount,
+                "payment_method": data.payment_method,
+                "items": data.items,
+                "tax_breakdown": data.tax_breakdown,
+                "extraction_confidence": data.extraction_confidence,
+                "extra_metadata": data.extra_metadata,
+                "created_at": data.created_at,
+                "updated_at": data.updated_at
+            }
+            response_data["extracted_data"].append(extracted_dict)
+        
+        result.append(response_data)
+    
+    return result
 
 
 @router.get("/documents/{document_id}", response_model=PDFDocumentWithDataResponse)
@@ -198,7 +248,48 @@ def get_document_with_data(
         
         logger.info(f"Found document {document_id} with {len(document.extracted_data)} extracted data records")
         
-        return document
+        # Convert SQLModel to Pydantic-compatible dict
+        response_data = {
+            "id": document.id,
+            "filename": document.filename,
+            "original_filename": document.original_filename,
+            "file_size": document.file_size,
+            "content_type": document.content_type,
+            "processed": document.processed,
+            "processing_error": document.processing_error,
+            "created_at": document.created_at,
+            "updated_at": document.updated_at,
+            "owner_id": document.owner_id,
+            "extracted_data": []
+        }
+        
+        # Convert extracted data to proper format
+        for data in document.extracted_data:
+            extracted_dict = {
+                "id": data.id,
+                "document_id": data.document_id,
+                "store_name": data.store_name,
+                "store_address": data.store_address,
+                "store_phone": data.store_phone,
+                "receipt_number": data.receipt_number,
+                "cashier_id": data.cashier_id,
+                "register_number": data.register_number,
+                "transaction_date": data.transaction_date.isoformat() if data.transaction_date else None,
+                "transaction_time": data.transaction_time,
+                "subtotal": data.subtotal,
+                "tax_amount": data.tax_amount,
+                "total_amount": data.total_amount,
+                "payment_method": data.payment_method,
+                "items": data.items,
+                "tax_breakdown": data.tax_breakdown,
+                "extraction_confidence": data.extraction_confidence,
+                "extra_metadata": data.extra_metadata,
+                "created_at": data.created_at,
+                "updated_at": data.updated_at
+            }
+            response_data["extracted_data"].append(extracted_dict)
+        
+        return response_data
         
     except HTTPException:
         raise
