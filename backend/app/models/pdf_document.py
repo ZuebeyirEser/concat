@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -20,7 +21,7 @@ class PDFDocumentBase(SQLModel):
 
 class PDFDocument(PDFDocumentBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    owner_id: str = Field(foreign_key="user.id", nullable=False, index=True)
+    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -35,7 +36,7 @@ class PDFDocumentCreate(PDFDocumentBase):
 
 class PDFDocumentRead(PDFDocumentBase):
     id: int
-    owner_id: str
+    owner_id: uuid.UUID
     created_at: datetime
     updated_at: datetime
 

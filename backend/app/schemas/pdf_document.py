@@ -17,7 +17,7 @@ class PDFDocumentCreate(PDFDocumentBase):
 
 class PDFDocumentResponse(PDFDocumentBase):
     id: int
-    owner_id: str
+    owner_id: str  # We'll keep this as string in the API response for simplicity
     processed: bool
     processing_error: Optional[str] = None
     created_at: datetime

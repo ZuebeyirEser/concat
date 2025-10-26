@@ -1,8 +1,8 @@
-"""Add PDF document and extracted data tables
+"""Add PDF document and extracted data tables with UUID foreign keys
 
-Revision ID: 05c60bdf9d75
+Revision ID: 155751ad82b0
 Revises: 1a31ce608336
-Create Date: 2025-10-24 11:31:02.718193
+Create Date: 2025-10-24 13:24:49.187714
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlmodel.sql.sqltypes
 
 
 # revision identifiers, used by Alembic.
-revision = '05c60bdf9d75'
+revision = '155751ad82b0'
 down_revision = '1a31ce608336'
 branch_labels = None
 depends_on = None
@@ -28,7 +28,7 @@ def upgrade():
     sa.Column('processed', sa.Boolean(), nullable=False),
     sa.Column('processing_error', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('owner_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('owner_id', sa.Uuid(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),

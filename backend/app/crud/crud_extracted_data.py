@@ -1,3 +1,6 @@
+import uuid
+
+from sqlalchemy import desc
 from sqlmodel import Session, select
 
 from app.crud.base import CRUDBase
@@ -23,13 +26,13 @@ class CRUDExtractedData(CRUDBase[ExtractedData, ExtractedDataCreate, ExtractedDa
         statement = (
             select(ExtractedData)
             .where(ExtractedData.document_id == document_id)
-            .order_by(ExtractedData.created_at.desc())
+            .order_by(desc(ExtractedData.created_at))
             .limit(1)
         )
         return db.exec(statement).first()
 
     def search_by_store(
-        self, db: Session, *, store_name: str, owner_id: str, skip: int = 0, limit: int = 100
+        self, db: Session, *, store_name: str, owner_id: uuid.UUID, skip: int = 0, limit: int = 100
     ) -> list[ExtractedData]:
         """Search extracted data by store name for a specific owner."""
         statement = (
@@ -41,12 +44,12 @@ class CRUDExtractedData(CRUDBase[ExtractedData, ExtractedDataCreate, ExtractedDa
             )
             .offset(skip)
             .limit(limit)
-            .order_by(ExtractedData.created_at.desc())
+            .order_by(desc(ExtractedData.created_at))
         )
         return db.exec(statement).all()
 
     def get_by_date_range(
-        self, db: Session, *, owner_id: str, start_date: str, end_date: str,
+        self, db: Session, *, owner_id: uuid.UUID, start_date: str, end_date: str,
         skip: int = 0, limit: int = 100
     ) -> list[ExtractedData]:
         """Get extracted data by transaction date range for a specific owner."""
@@ -60,7 +63,7 @@ class CRUDExtractedData(CRUDBase[ExtractedData, ExtractedDataCreate, ExtractedDa
             )
             .offset(skip)
             .limit(limit)
-            .order_by(ExtractedData.transaction_date.desc())
+            .order_by(desc(ExtractedData.transaction_date))
         )
         return db.exec(statement).all()
 
