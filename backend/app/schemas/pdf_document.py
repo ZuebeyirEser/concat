@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 from decimal import Decimal
+import uuid
 
 
 class PDFDocumentBase(BaseModel):
@@ -17,7 +18,7 @@ class PDFDocumentCreate(PDFDocumentBase):
 
 class PDFDocumentResponse(PDFDocumentBase):
     id: int
-    owner_id: str  # We'll keep this as string in the API response for simplicity
+    owner_id: uuid.UUID
     processed: bool
     processing_error: Optional[str] = None
     created_at: datetime

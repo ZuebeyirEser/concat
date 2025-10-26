@@ -315,19 +315,29 @@ class GermanReceiptProcessor:
 
     def _extract_payment_method(self, text: str) -> Optional[str]:
         """Extract payment method."""
-        # Check for specific REWE payment patterns
+        # Check for specific REWE payment patterns from your receipt
         if 'Contactless' in text and 'DEBIT MASTERCARD' in text:
             return 'Contactless Debit Mastercard'
         elif 'DEBIT MASTERCARD' in text:
             return 'Debit Mastercard'
         elif 'Geg. Mastercard' in text:
             return 'Mastercard'
+        
+        # Look for card number patterns
+        card_pattern = r'Nr\.############(\d{4})'
+        card_match = re.search(card_pattern, text)
+        if card_match:
+            last_four = card_match.group(1)
+            if 'MASTERCARD' in text.upper():
+                return f'Mastercard ending in {last_four}'
+            elif 'VISA' in text.upper():
+                return f'Visa ending in {last_four}'
 
         payment_methods = {
-            'EC': ['EC-Karte', 'Girocard', 'Debitkarte'],
-            'Credit Card': ['Kreditkarte', 'VISA', 'Mastercard', 'AMEX'],
-            'Cash': ['Bar', 'Bargeld', 'Cash'],
-            'Contactless': ['Kontaktlos', 'NFC', 'Tap'],
+            'EC-Karte': ['EC-Karte', 'Girocard', 'Debitkarte'],
+            'Kreditkarte': ['Kreditkarte', 'VISA', 'Mastercard', 'AMEX'],
+            'Bargeld': ['Bar', 'Bargeld', 'Cash'],
+            'Kontaktlos': ['Kontaktlos', 'NFC', 'Tap', 'Contactless'],
         }
 
         text_upper = text.upper()
@@ -342,84 +352,124 @@ class GermanReceiptProcessor:
         """Extract individual items from receipt."""
         items = []
 
-        # The text appears to be concatenated, so let's use regex to find item patterns
-        # Pattern: ITEM_NAME PRICE TAX_CODE
-        item_pattern = r'([A-ZÄÖÜ][A-ZÄÖÜ\s\.\!]+?)\s+(\d+[,\.]\d{2})\s+([AB])'
-
-        # Find all potential items
-        matches = re.findall(item_pattern, text)
-
-        for match in matches:
-            item_name = match[0].strip()
-            price_str = match[1].replace(',', '.')
-            tax_code = match[2]
-
-            # Skip if this looks like a summary line
-            if any(skip in item_name.upper() for skip in ['SUMME', 'GESAMT', 'STEUER', 'NETTO', 'BRUTTO', 'GESAMTBETRAG']):
+        # Split text into lines for better parsing
+        lines = text.split('\n')
+        
+        # Find the start and end of items section
+        start_idx = 0
+        end_idx = len(lines)
+        
+        for i, line in enumerate(lines):
+            # Look for start of items (after store info)
+            if 'EUR' in line and any(char.isdigit() for char in line):
+                start_idx = max(0, i - 5)  # Start a bit before first price
+                break
+        
+        for i, line in enumerate(lines):
+            # Look for end of items (before summary)
+            if any(keyword in line.upper() for keyword in ['SUMME', '======', '------', 'GESAMTBETRAG']):
+                end_idx = i
+                break
+        
+        # Process lines in the items section
+        for i in range(start_idx, end_idx):
+            line = lines[i].strip()
+            if not line:
                 continue
-
-            # Skip address/header info
-            if any(skip in item_name.upper() for skip in ['HOCHZOLLER', 'AUGSBURG', 'UID NR']):
+                
+            # Skip header/address lines
+            if any(skip in line.upper() for skip in ['HOCHZOLLER', 'AUGSBURG', 'UID NR', 'REWE MARKT']):
                 continue
+                
+            # Pattern for REWE items: "ITEM_NAME PRICE TAX_CODE"
+            # Handle cases like "SW-NACKEN. PAPRI3,99 B" or "AVOCADO VORGER.1,29 B"
+            item_match = re.match(r'^([A-ZÄÖÜ][A-ZÄÖÜ\s\.\!\-\/]+?)(\d+[,\.]\d{2})\s*([AB])$', line)
+            
+            if item_match:
+                item_name = item_match.group(1).strip()
+                price_str = item_match.group(2).replace(',', '.')
+                tax_code = item_match.group(3)
+                
+                # Clean up item name (remove trailing dots, etc.)
+                item_name = re.sub(r'[\.\s]+$', '', item_name)
+                
+                try:
+                    price = Decimal(price_str)
+                    
+                    # Check for discount lines (negative prices)
+                    is_discount = False
+                    if i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        if 'rabatt' in next_line.lower() and '-' in next_line:
+                            discount_match = re.search(r'-(\d+[,\.]\d{2})', next_line)
+                            if discount_match:
+                                discount_amount = float(discount_match.group(1).replace(',', '.'))
+                                # Add discount as separate item
+                                items.append({
+                                    'name': f"{item_name} - Rabatt",
+                                    'price': -discount_amount,
+                                    'quantity': 1,
+                                    'tax_code': tax_code,
+                                    'unit_type': 'discount',
+                                    'is_discount': True
+                                })
+                    
+                    item = {
+                        'name': item_name,
+                        'price': float(price),
+                        'quantity': 1,
+                        'tax_code': tax_code,
+                        'unit_type': 'pieces',
+                        'is_discount': False
+                    }
+                    
+                    items.append(item)
+                    
+                except (InvalidOperation, ValueError):
+                    continue
+            
+            # Handle special cases like "PFAND 0,25 EURO0,25 A"
+            elif 'PFAND' in line.upper():
+                pfand_match = re.search(r'PFAND.*?(\d+[,\.]\d{2})\s*([AB])', line)
+                if pfand_match:
+                    price_str = pfand_match.group(1).replace(',', '.')
+                    tax_code = pfand_match.group(2)
+                    
+                    try:
+                        price = Decimal(price_str)
+                        items.append({
+                            'name': 'Pfand',
+                            'price': float(price),
+                            'quantity': 1,
+                            'tax_code': tax_code,
+                            'unit_type': 'deposit'
+                        })
+                    except (InvalidOperation, ValueError):
+                        continue
 
-            try:
-                price = Decimal(price_str)
-                item = {
-                    'name': item_name,
-                    'price': float(price),
-                    'quantity': 1,
-                    'tax_code': tax_code,
-                    'unit_type': 'pieces'
-                }
+        # Post-process to handle discounts that appear on separate lines
+        processed_items = []
+        i = 0
+        while i < len(items):
+            item = items[i]
+            
+            # Check if next item is a discount for this item
+            if (i + 1 < len(items) and 
+                'rabatt' in items[i + 1]['name'].lower() and 
+                items[i + 1]['price'] < 0):
+                
+                # Combine the item with its discount
+                discount_item = items[i + 1]
+                item['original_price'] = item['price']
+                item['discount_amount'] = abs(discount_item['price'])
+                item['price'] = item['price'] + discount_item['price']  # discount_item['price'] is negative
+                processed_items.append(item)
+                i += 2  # Skip the discount item
+            else:
+                processed_items.append(item)
+                i += 1
 
-                items.append(item)
-
-            except (InvalidOperation, ValueError):
-                continue
-
-        # Now try to match weight and quantity information
-        # Look for weight patterns: "0,744 kg x 1,99 EUR/kg"
-        weight_pattern = r'(\d+[,\.]\d+)\s*kg\s*x\s*(\d+[,\.]\d+)\s*EUR/kg'
-        weight_matches = re.findall(weight_pattern, text)
-
-        # Look for quantity patterns: "2 Stk x 1,79"
-        qty_pattern = r'(\d+)\s*Stk\s*x\s*(\d+[,\.]\d+)'
-        qty_matches = re.findall(qty_pattern, text)
-
-        # Try to match additional info to items (this is approximate)
-        weight_idx = 0
-        qty_idx = 0
-
-        for item in items:
-            # Check if this item might have weight info
-            if weight_idx < len(weight_matches):
-                weight_info = weight_matches[weight_idx]
-                weight = float(weight_info[0].replace(',', '.'))
-                price_per_kg = float(weight_info[1].replace(',', '.'))
-
-                # If the calculated price is close to the item price, assign weight info
-                calculated_price = weight * price_per_kg
-                if abs(calculated_price - item['price']) < 0.01:
-                    item['weight_kg'] = weight
-                    item['price_per_kg'] = price_per_kg
-                    item['unit_type'] = 'weight'
-                    weight_idx += 1
-
-            # Check if this item might have quantity info
-            elif qty_idx < len(qty_matches):
-                qty_info = qty_matches[qty_idx]
-                quantity = int(qty_info[0])
-                unit_price = float(qty_info[1].replace(',', '.'))
-
-                # If the calculated price is close to the item price, assign quantity info
-                calculated_price = quantity * unit_price
-                if abs(calculated_price - item['price']) < 0.01:
-                    item['quantity'] = quantity
-                    item['unit_price'] = unit_price
-                    item['unit_type'] = 'pieces'
-                    qty_idx += 1
-
-        return items
+        return processed_items
 
     def _calculate_confidence(self, text: str) -> float:
         """Calculate extraction confidence based on found elements."""

@@ -42,9 +42,18 @@ class Settings(BaseSettings):
 
     @computed_field
     def all_cors_origins(self) -> list[str]:
-        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
+        origins = [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
             self.FRONTEND_HOST
         ]
+        # Add common development origins
+        if self.ENVIRONMENT == "local":
+            origins.extend([
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://0.0.0.0:5173"
+            ])
+        return list(set(origins))  # Remove duplicates
 
     PROJECT_NAME: str = ""
     SENTRY_DSN: HttpUrl | None = None

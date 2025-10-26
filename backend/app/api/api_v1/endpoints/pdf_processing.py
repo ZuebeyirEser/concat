@@ -25,41 +25,40 @@ router = APIRouter()
 
 async def process_pdf_background(document_id: int, file_path: str):
     """Background task to process PDF and extract data."""
-    from app.core.db import SessionLocal
+    from app.core.db import engine
+    from sqlmodel import Session
     
-    db = SessionLocal()
-    try:
-        # Get the document
-        document = crud.pdf_document.get(db, id=document_id)
-        if not document:
-            logger.error(f"Document {document_id} not found")
-            return
-        
-        # Read the PDF file
-        pdf_content = file_storage.read_file(file_path)
-        
-        # Process the PDF
-        extracted_info = pdf_processor.process_receipt(pdf_content)
-        
-        # Save extracted data
-        extracted_data_create = {
-            "document_id": document_id,
-            **extracted_info
-        }
-        
-        crud.extracted_data.create(db, obj_in=extracted_data_create)
-        
-        # Mark document as processed
-        crud.pdf_document.mark_as_processed(db, document_id=document_id)
-        
-        logger.info(f"Successfully processed PDF document {document_id}")
-        
-    except Exception as e:
-        logger.error(f"Error processing PDF {document_id}: {e}")
-        # Mark document as processed with error
-        crud.pdf_document.mark_as_processed(db, document_id=document_id, error=str(e))
-    finally:
-        db.close()
+    with Session(engine) as db:
+        try:
+            # Get the document
+            document = crud.pdf_document.get(db, id=document_id)
+            if not document:
+                logger.error(f"Document {document_id} not found")
+                return
+            
+            # Read the PDF file
+            pdf_content = file_storage.read_file(file_path)
+            
+            # Process the PDF
+            extracted_info = pdf_processor.process_receipt(pdf_content)
+            
+            # Save extracted data
+            extracted_data_create = {
+                "document_id": document_id,
+                **extracted_info
+            }
+            
+            crud.extracted_data.create(db, obj_in=extracted_data_create)
+            
+            # Mark document as processed
+            crud.pdf_document.mark_as_processed(db, document_id=document_id)
+            
+            logger.info(f"Successfully processed PDF document {document_id}")
+            
+        except Exception as e:
+            logger.error(f"Error processing PDF {document_id}: {e}")
+            # Mark document as processed with error
+            crud.pdf_document.mark_as_processed(db, document_id=document_id, error=str(e))
 
 
 @router.post("/upload", response_model=PDFUploadResponse)

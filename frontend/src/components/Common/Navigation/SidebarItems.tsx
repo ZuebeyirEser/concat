@@ -1,6 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { Link as RouterLink } from '@tanstack/react-router'
-import { FiBarChart, FiBriefcase, FiSettings, FiUpload, FiUsers } from 'react-icons/fi'
+import {
+  FiBarChart,
+  FiBriefcase,
+  FiFileText,
+  FiSettings,
+  FiUpload,
+  FiUsers,
+} from 'react-icons/fi'
 import type { IconType } from 'react-icons/lib'
 
 import type { UserPublic } from '@/client'
@@ -8,6 +15,7 @@ import type { UserPublic } from '@/client'
 const items = [
   { icon: FiBriefcase, title: 'Items', path: '/items' },
   { icon: FiUpload, title: 'PDF Upload', path: '/pdf-upload' },
+  { icon: FiFileText, title: 'Documents', path: '/documents' },
   { icon: FiSettings, title: 'User Settings', path: '/settings' },
   { icon: FiBarChart, title: 'Analyics', path: '/analytics' },
 ]

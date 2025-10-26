@@ -1,6 +1,6 @@
+import { PdfUploadSimple } from '@/components/PdfUpload/PdfUploadSimple'
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PdfUpload } from '@/components/PdfUpload/PdfUpload'
 
 export const Route = createFileRoute('/_layout/pdf-upload')({
   component: PdfUploadPage,
@@ -13,7 +13,7 @@ function PdfUploadPage() {
       <p className="text-muted-foreground mb-6">
         Upload and manage your PDF documents
       </p>
-      <PdfUpload />
+      <PdfUploadSimple />
     </div>
   )
 }
