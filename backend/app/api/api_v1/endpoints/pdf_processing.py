@@ -27,20 +27,58 @@ async def process_pdf_background(document_id: int, file_path: str):
     """Background task to process PDF and extract data."""
     from app.core.db import engine
     from sqlmodel import Session
+    import traceback
     
     with Session(engine) as db:
         try:
+            logger.info(f"Starting background processing for document {document_id}")
+            
             # Get the document
             document = crud.pdf_document.get(db, id=document_id)
             if not document:
                 logger.error(f"Document {document_id} not found")
                 return
             
+            logger.info(f"Found document: {document.original_filename}")
+            
             # Read the PDF file
+            logger.info(f"Reading PDF file from: {file_path}")
             pdf_content = file_storage.read_file(file_path)
+            logger.info(f"PDF file size: {len(pdf_content)} bytes")
             
             # Process the PDF
-            extracted_info = pdf_processor.process_receipt(pdf_content)
+            logger.info("Starting PDF processing...")
+            try:
+                extracted_info = pdf_processor.process_receipt(pdf_content)
+                logger.info(f"PDF processing completed. Extracted {len(extracted_info)} fields")
+                logger.info(f"Sample extracted data: {list(extracted_info.keys())}")
+            except Exception as process_error:
+                logger.error(f"PDF processing failed: {process_error}")
+                logger.error(f"PDF processing traceback: {traceback.format_exc()}")
+                raise process_error
+            
+            # Convert date objects to strings for database storage
+            if extracted_info.get('transaction_date') and hasattr(extracted_info['transaction_date'], 'isoformat'):
+                extracted_info['transaction_date'] = extracted_info['transaction_date'].isoformat()
+                logger.info(f"Converted transaction_date to string: {extracted_info['transaction_date']}")
+            
+            # Convert Decimal objects to float for JSON serialization
+            for key in ['subtotal', 'tax_amount', 'total_amount']:
+                if extracted_info.get(key) is not None:
+                    try:
+                        extracted_info[key] = float(extracted_info[key])
+                        logger.info(f"Converted {key} to float: {extracted_info[key]}")
+                    except (TypeError, ValueError) as e:
+                        logger.warning(f"Could not convert {key} to float: {e}")
+                        extracted_info[key] = None
+            
+            # Ensure items is a list
+            if extracted_info.get('items') is None:
+                extracted_info['items'] = []
+            
+            # Ensure tax_breakdown is a dict
+            if extracted_info.get('tax_breakdown') is None:
+                extracted_info['tax_breakdown'] = {}
             
             # Save extracted data
             extracted_data_create = {
@@ -48,17 +86,35 @@ async def process_pdf_background(document_id: int, file_path: str):
                 **extracted_info
             }
             
-            crud.extracted_data.create(db, obj_in=extracted_data_create)
+            logger.info(f"Creating extracted data record...")
+            logger.info(f"Items count: {len(extracted_info.get('items', []))}")
+            logger.info(f"Store name: {extracted_info.get('store_name')}")
+            logger.info(f"Total amount: {extracted_info.get('total_amount')}")
+            
+            try:
+                extracted_data_record = crud.extracted_data.create(db, obj_in=extracted_data_create)
+                logger.info(f"Created extracted data record with ID: {extracted_data_record.id}")
+            except Exception as db_error:
+                logger.error(f"Database error creating extracted data: {db_error}")
+                logger.error(f"Database error traceback: {traceback.format_exc()}")
+                logger.error(f"Data being saved: {extracted_data_create}")
+                raise db_error
             
             # Mark document as processed
             crud.pdf_document.mark_as_processed(db, document_id=document_id)
+            logger.info(f"Marked document {document_id} as processed")
             
             logger.info(f"Successfully processed PDF document {document_id}")
             
         except Exception as e:
             logger.error(f"Error processing PDF {document_id}: {e}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             # Mark document as processed with error
-            crud.pdf_document.mark_as_processed(db, document_id=document_id, error=str(e))
+            try:
+                crud.pdf_document.mark_as_processed(db, document_id=document_id, error=str(e))
+                logger.info(f"Marked document {document_id} as processed with error")
+            except Exception as mark_error:
+                logger.error(f"Failed to mark document as processed with error: {mark_error}")
 
 
 @router.post("/upload", response_model=PDFUploadResponse)
@@ -130,14 +186,26 @@ def get_document_with_data(
     """
     Get a specific PDF document with its extracted data.
     """
-    document = crud.pdf_document.get_with_extracted_data(
-        db, document_id=document_id, owner_id=current_user.id
-    )
-    
-    if not document:
-        raise HTTPException(status_code=404, detail="Document not found")
-    
-    return document
+    try:
+        logger.info(f"Getting document {document_id} for user {current_user.id}")
+        document = crud.pdf_document.get_with_extracted_data(
+            db, document_id=document_id, owner_id=current_user.id
+        )
+        
+        if not document:
+            logger.warning(f"Document {document_id} not found for user {current_user.id}")
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        logger.info(f"Found document {document_id} with {len(document.extracted_data)} extracted data records")
+        
+        return document
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting document {document_id}: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.get("/documents/{document_id}/status", response_model=PDFProcessingStatus)
@@ -150,22 +218,35 @@ def get_processing_status(
     """
     Get processing status of a PDF document.
     """
-    document = crud.pdf_document.get_by_owner_and_id(
-        db, owner_id=current_user.id, document_id=document_id
-    )
-    
-    if not document:
-        raise HTTPException(status_code=404, detail="Document not found")
-    
-    # Get latest extracted data for confidence score
-    extracted_data = crud.extracted_data.get_latest_by_document(db, document_id=document_id)
-    
-    return PDFProcessingStatus(
-        document_id=document.id,
-        processed=document.processed,
-        processing_error=document.processing_error,
-        extraction_confidence=extracted_data.extraction_confidence if extracted_data else None
-    )
+    try:
+        logger.info(f"Getting status for document {document_id} for user {current_user.id}")
+        document = crud.pdf_document.get_by_owner_and_id(
+            db, owner_id=current_user.id, document_id=document_id
+        )
+        
+        if not document:
+            logger.warning(f"Document {document_id} not found for user {current_user.id}")
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        logger.info(f"Document {document_id} status: processed={document.processed}, error={document.processing_error}")
+        
+        # Get latest extracted data for confidence score
+        extracted_data = crud.extracted_data.get_latest_by_document(db, document_id=document_id)
+        logger.info(f"Found extracted data: {extracted_data is not None}")
+        
+        return PDFProcessingStatus(
+            document_id=document.id,
+            processed=document.processed,
+            processing_error=document.processing_error,
+            extraction_confidence=extracted_data.extraction_confidence if extracted_data else None
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting status for document {document_id}: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.post("/search", response_model=PDFSearchResponse)

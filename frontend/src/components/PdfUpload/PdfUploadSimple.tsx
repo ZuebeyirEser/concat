@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
-import { usePdfDocument, usePdfProcessingStatus, usePdfUpload } from '@/hooks/usePdfQueries'
+import { getPdfDocumentQueryOptions, usePdfProcessingStatus, usePdfUpload } from '@/hooks/usePdfQueries'
+import { useQuery } from '@tanstack/react-query'
 import { ExtractedDataView } from './ExtractedDataView'
 
 interface UploadingFile {
@@ -23,6 +24,8 @@ export function PdfUploadSimple() {
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
   
   const uploadMutation = usePdfUpload()
+  
+
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     // Handle rejected files
@@ -228,17 +231,19 @@ function UploadingFileItem({
   formatDate 
 }: UploadingFileItemProps) {
   // Use processing status query if we have a document ID
-  const { data: statusData, isLoading: statusLoading } = usePdfProcessingStatus(
+  const { data: statusData, isLoading: statusLoading, error: statusError } = usePdfProcessingStatus(
     file.documentId!,
     !!file.documentId
   )
   
   // Use document query to get full data when processing is complete
-  const { data: documentData } = usePdfDocument(
-    file.documentId!,
-    // Only fetch when processing is complete
-    { enabled: !!file.documentId && statusData?.processed }
-  )
+  const { data: documentData, error: documentError } = useQuery({
+    ...getPdfDocumentQueryOptions(file.documentId!),
+    enabled: !!file.documentId && statusData?.processed
+  })
+  
+  // Reprocess mutation - temporarily disabled
+  // const reprocessMutation = usePdfReprocess()
 
   const getStatus = () => {
     if (!file.documentId) return 'uploading'
@@ -309,12 +314,46 @@ function UploadingFileItem({
         <Progress value={progress} className="w-full" />
       )}
 
-      {/* Error message */}
+      {/* Error message or stuck processing */}
       {status === 'error' && statusData?.processing_error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{statusData.processing_error}</AlertDescription>
+          <AlertDescription>
+            {statusData.processing_error}
+            {file.documentId && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-2"
+                onClick={() => {
+                  // Temporarily disabled - reprocessMutation.mutate(file.documentId!)
+                  console.log('Reprocess clicked for document:', file.documentId)
+                }}
+                disabled={false}
+              >
+                Retry
+              </Button>
+            )}
+          </AlertDescription>
         </Alert>
+      )}
+      
+      {/* Show reprocess option if stuck in processing for too long */}
+      {status === 'processing' && file.documentId && (
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>Processing is taking longer than usual...</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Temporarily disabled - reprocessMutation.mutate(file.documentId!)
+              console.log('Retry processing clicked for document:', file.documentId)
+            }}
+            disabled={false}
+          >
+            Retry Processing
+          </Button>
+        </div>
       )}
 
       {/* Extracted data preview */}

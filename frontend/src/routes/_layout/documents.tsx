@@ -24,12 +24,43 @@ interface Document {
   created_at: string
   updated_at: string
   extracted_data?: Array<{
+    id: number
+    document_id: number
     store_name?: string
-    total_amount?: number
+    store_address?: string
+    store_phone?: string
+    receipt_number?: string
+    cashier_id?: string
+    register_number?: string
     transaction_date?: string
+    transaction_time?: string
+    subtotal?: number
+    tax_amount?: number
+    total_amount?: number
     payment_method?: string
-    items?: any[]
-    [key: string]: any
+    items?: Array<{
+      name: string
+      price: number
+      quantity?: number
+      tax_code?: string
+      weight_kg?: number
+      price_per_kg?: number
+      unit_type?: string
+      is_discount?: boolean
+      original_price?: number
+      discount_amount?: number
+    }>
+    tax_breakdown?: Record<string, {
+      code: string
+      rate_percent: number
+      net_amount: number
+      tax_amount: number
+      gross_amount: number
+    }>
+    extraction_confidence?: number
+    extra_metadata?: Record<string, any>
+    created_at: string
+    updated_at: string
   }>
 }
 
@@ -37,7 +68,7 @@ function DocumentsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
 
-  const { data: documents = [], isLoading: loading, error } = usePdfDocuments()
+  const { data: documents = [], isLoading: loading } = usePdfDocuments()
   const deleteMutation = usePdfDelete()
 
   const deleteDocument = (documentId: number) => {
@@ -216,16 +247,16 @@ function DocumentsPage() {
                   </div>
 
                   <div className="flex items-center gap-2 ml-4">
-                    {document.processed && document.extracted_data?.[0] && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedDocument(document)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </Button>
-                    )}
+                    {/* Always show View button for debugging */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedDocument(document)}
+                      disabled={!document.processed}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      {document.processed ? 'View' : 'Processing...'}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -250,8 +281,45 @@ function DocumentsPage() {
               Document Details - {selectedDocument?.original_filename}
             </DialogTitle>
           </DialogHeader>
-          {selectedDocument?.extracted_data?.[0] && (
+          {selectedDocument?.extracted_data?.[0] ? (
             <ExtractedDataView data={selectedDocument.extracted_data[0]} />
+          ) : (
+            <div className="p-8 text-center">
+              <div className="space-y-4">
+                <div className="text-muted-foreground">
+                  {!selectedDocument?.processed ? (
+                    <>
+                      <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <p>Document is still being processed...</p>
+                      <p className="text-sm">Please wait while we extract the data from your PDF.</p>
+                    </>
+                  ) : selectedDocument?.processing_error ? (
+                    <>
+                      <p className="text-red-600">Processing failed</p>
+                      <p className="text-sm">{selectedDocument.processing_error}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>No extracted data available</p>
+                      <p className="text-sm">The document was processed but no data could be extracted.</p>
+                    </>
+                  )}
+                </div>
+                
+                {/* Debug info */}
+                <details className="text-left text-xs text-muted-foreground">
+                  <summary className="cursor-pointer">Debug Info</summary>
+                  <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto">
+                    {JSON.stringify({
+                      processed: selectedDocument?.processed,
+                      processing_error: selectedDocument?.processing_error,
+                      has_extracted_data: !!selectedDocument?.extracted_data?.length,
+                      extracted_data_count: selectedDocument?.extracted_data?.length || 0
+                    }, null, 2)}
+                  </pre>
+                </details>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>

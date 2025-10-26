@@ -14,12 +14,43 @@ interface PDFDocument {
   created_at: string
   updated_at: string
   extracted_data?: Array<{
+    id: number
+    document_id: number
     store_name?: string
-    total_amount?: number
+    store_address?: string
+    store_phone?: string
+    receipt_number?: string
+    cashier_id?: string
+    register_number?: string
     transaction_date?: string
+    transaction_time?: string
+    subtotal?: number
+    tax_amount?: number
+    total_amount?: number
     payment_method?: string
-    items?: any[]
-    [key: string]: any
+    items?: Array<{
+      name: string
+      price: number
+      quantity?: number
+      tax_code?: string
+      weight_kg?: number
+      price_per_kg?: number
+      unit_type?: string
+      is_discount?: boolean
+      original_price?: number
+      discount_amount?: number
+    }>
+    tax_breakdown?: Record<string, {
+      code: string
+      rate_percent: number
+      net_amount: number
+      tax_amount: number
+      gross_amount: number
+    }>
+    extraction_confidence?: number
+    extra_metadata?: Record<string, any>
+    created_at: string
+    updated_at: string
   }>
 }
 
@@ -77,6 +108,16 @@ export function getPdfProcessingStatusQueryOptions(documentId: number) {
     refetchInterval: (query: Query<PDFProcessingStatus, Error>) => {
       // Stop polling if processed or error
       const data = query.state.data as PDFProcessingStatus | undefined
+      
+      // Stop polling after 5 minutes using dataUpdatedAt
+      const dataUpdatedAt = query.state.dataUpdatedAt || 0
+      const now = Date.now()
+      const timeElapsed = now - dataUpdatedAt
+      
+      if (timeElapsed > 5 * 60 * 1000) { // 5 minutes
+        return false
+      }
+      
       return data?.processed ? false : 2000 // Poll every 2 seconds
     },
   }
@@ -167,3 +208,5 @@ export function usePdfReprocess() {
     },
   })
 }
+
+

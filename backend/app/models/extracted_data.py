@@ -30,7 +30,10 @@ class ExtractedDataBase(SQLModel):
     payment_method: str | None = None
 
     # Items data (stored as JSON)
-    items: dict[str, Any] | None = Field(default=None, sa_column=Column(JSON))
+    items: list[dict[str, Any]] | None = Field(default=None, sa_column=Column(JSON))
+    
+    # Tax breakdown data (stored as JSON)
+    tax_breakdown: dict[str, Any] | None = Field(default=None, sa_column=Column(JSON))
 
     # Raw extracted text
     raw_text: str | None = None
