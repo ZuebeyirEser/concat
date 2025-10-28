@@ -1,9 +1,12 @@
-import { OpenAPI } from '@/client/core/OpenAPI'
-import { request } from '@/client/core/request'
 import { Query, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-// Types for PDF operations
+import { type ApiError } from '@/client'
+import { OpenAPI } from '@/client/core/OpenAPI'
+import { request } from '@/client/core/request'
+import { handleError } from '@/utils'
+
+
 interface PDFDocument {
   id: number
   filename: string
@@ -104,21 +107,19 @@ export function getPdfProcessingStatusQueryOptions(documentId: number) {
         url: `/api/v1/pdf/documents/${documentId}/status`,
       })
     },
-    staleTime: 0, // Always fresh for status checks
+    staleTime: 0,
     refetchInterval: (query: Query<PDFProcessingStatus, Error>) => {
-      // Stop polling if processed or error
       const data = query.state.data as PDFProcessingStatus | undefined
       
-      // Stop polling after 5 minutes using dataUpdatedAt
       const dataUpdatedAt = query.state.dataUpdatedAt || 0
       const now = Date.now()
       const timeElapsed = now - dataUpdatedAt
       
-      if (timeElapsed > 5 * 60 * 1000) { // 5 minutes
+      if (timeElapsed > 5 * 60 * 1000) { // 5 min
         return false
       }
       
-      return data?.processed ? false : 2000 // Poll every 2 seconds
+      return data?.processed ? false : 2000 
     },
   }
 }
@@ -156,11 +157,10 @@ export function usePdfUpload() {
     },
     onSuccess: (data) => {
       toast.success(`${data.filename} uploaded successfully and is being processed.`)
-      // Invalidate documents list to show the new document
       queryClient.invalidateQueries({ queryKey: ['pdf-documents'] })
     },
-    onError: (error) => {
-      toast.error(`Upload failed: ${error.message}`)
+    onError: (err: ApiError) => {
+      handleError(err)
     },
   })
 }
@@ -177,11 +177,10 @@ export function usePdfDelete() {
     },
     onSuccess: () => {
       toast.success('Document deleted successfully')
-      // Invalidate documents list to remove the deleted document
       queryClient.invalidateQueries({ queryKey: ['pdf-documents'] })
     },
-    onError: (error) => {
-      toast.error(`Failed to delete document: ${error.message}`)
+    onError: (err: ApiError) => {
+      handleError(err)
     },
   })
 }
@@ -198,13 +197,12 @@ export function usePdfReprocess() {
     },
     onSuccess: (_, documentId) => {
       toast.success('Document queued for reprocessing')
-      // Invalidate specific document and status queries
       queryClient.invalidateQueries({ queryKey: ['pdf-document', documentId] })
       queryClient.invalidateQueries({ queryKey: ['pdf-processing-status', documentId] })
       queryClient.invalidateQueries({ queryKey: ['pdf-documents'] })
     },
-    onError: (error) => {
-      toast.error(`Failed to reprocess document: ${error.message}`)
+    onError: (err: ApiError) => {
+      handleError(err)
     },
   })
 }

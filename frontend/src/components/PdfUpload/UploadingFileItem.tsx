@@ -27,13 +27,13 @@ export function UploadingFileItem({
   onViewDetails
 }: UploadingFileItemProps) {
   // Use processing status query if we have a document ID
-  const { data: statusData, isLoading: statusLoading, error: statusError } = usePdfProcessingStatus(
+  const { data: statusData, isLoading: statusLoading } = usePdfProcessingStatus(
     file.documentId!,
     !!file.documentId
   )
 
   // Use document query to get full data when processing is complete
-  const { data: documentData, error: documentError } = useQuery({
+  const { data: documentData } = useQuery({
     ...getPdfDocumentQueryOptions(file.documentId!),
     enabled: !!file.documentId && statusData?.processed
   })
@@ -105,12 +105,10 @@ export function UploadingFileItem({
         </div>
       </div>
 
-      {/* Progress bar */}
       {status !== 'completed' && status !== 'error' && (
         <Progress value={progress} className="w-full" />
       )}
 
-      {/* Error message or stuck processing */}
       {status === 'error' && statusData?.processing_error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -134,7 +132,6 @@ export function UploadingFileItem({
         </Alert>
       )}
       
-      {/* Show reprocess option if stuck in processing for too long */}
       {status === 'processing' && file.documentId && (
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>Processing is taking longer than usual...</span>
@@ -152,7 +149,6 @@ export function UploadingFileItem({
         </div>
       )}
 
-      {/* Extracted data preview */}
       {status === 'completed' && documentData?.extracted_data?.[0] && (
         <div className="bg-muted/50 rounded-lg p-3 space-y-2">
           <div className="flex items-center justify-between">
