@@ -1,4 +1,4 @@
-# PDF Processing System
+# Grocery Receipt Tracker(Concat)
 
 Full-stack application for automated PDF receipt processing and data extraction.
 
