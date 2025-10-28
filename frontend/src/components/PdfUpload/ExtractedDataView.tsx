@@ -1,7 +1,16 @@
-import { Calendar, CreditCard, MapPin, Phone, Receipt, ShoppingCart, Store } from 'lucide-react'
+import {
+  Calendar,
+  CreditCard,
+  MapPin,
+  Phone,
+  Receipt,
+  ShoppingCart,
+  Store,
+} from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatCurrency, formatWeight } from '@/utils/formatters'
 
 interface ExtractedDataViewProps {
   data: {
@@ -24,19 +33,21 @@ interface ExtractedDataViewProps {
       price_per_kg?: number
       unit_type?: string
     }>
-    tax_breakdown?: Record<string, {
-      code: string
-      rate_percent: number
-      net_amount: number
-      tax_amount: number
-      gross_amount: number
-    }>
+    tax_breakdown?: Record<
+      string,
+      {
+        code: string
+        rate_percent: number
+        net_amount: number
+        tax_amount: number
+        gross_amount: number
+      }
+    >
     extraction_confidence?: number
   }
 }
 
 export function ExtractedDataView({ data }: ExtractedDataViewProps) {
-
   return (
     <div className="space-y-6">
       {/* Store Information */}
@@ -57,7 +68,7 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
               </div>
             </div>
           )}
-          
+
           {data.store_address && (
             <div className="flex items-center gap-3">
               <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -67,7 +78,7 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
               </div>
             </div>
           )}
-          
+
           {data.store_phone && (
             <div className="flex items-center gap-3">
               <Phone className="h-4 w-4 text-muted-foreground" />
@@ -99,7 +110,7 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
                 </div>
               </div>
             )}
-            
+
             {data.transaction_date && (
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -112,13 +123,15 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
                 </div>
               </div>
             )}
-            
+
             {data.payment_method && (
               <div className="flex items-center gap-3">
                 <CreditCard className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">{data.payment_method}</p>
-                  <p className="text-sm text-muted-foreground">Payment Method</p>
+                  <p className="text-sm text-muted-foreground">
+                    Payment Method
+                  </p>
                 </div>
               </div>
             )}
@@ -135,21 +148,27 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
           <div className="grid grid-cols-3 gap-4">
             {data.subtotal && (
               <div className="text-center">
-                <p className="text-2xl font-bold">{formatCurrency(data.subtotal)}</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(data.subtotal)}
+                </p>
                 <p className="text-sm text-muted-foreground">Subtotal</p>
               </div>
             )}
-            
+
             {data.tax_amount && (
               <div className="text-center">
-                <p className="text-2xl font-bold">{formatCurrency(data.tax_amount)}</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(data.tax_amount)}
+                </p>
                 <p className="text-sm text-muted-foreground">Tax</p>
               </div>
             )}
-            
+
             {data.total_amount && (
               <div className="text-center">
-                <p className="text-3xl font-bold text-primary">{formatCurrency(data.total_amount)}</p>
+                <p className="text-3xl font-bold text-primary">
+                  {formatCurrency(data.total_amount)}
+                </p>
                 <p className="text-sm text-muted-foreground">Total</p>
               </div>
             )}
@@ -158,12 +177,17 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
           {/* Tax Breakdown */}
           {data.tax_breakdown && Object.keys(data.tax_breakdown).length > 0 && (
             <div className="space-y-2">
-              <div className="h-px bg-border w-full" />
+              <div className="h-px w-full bg-border" />
               <h4 className="font-medium">Tax Breakdown</h4>
               <div className="space-y-2">
                 {Object.entries(data.tax_breakdown).map(([key, tax]) => (
-                  <div key={key} className="flex justify-between items-center text-sm">
-                    <span>Tax {tax.code} ({tax.rate_percent}%)</span>
+                  <div
+                    key={key}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span>
+                      Tax {tax.code} ({tax.rate_percent}%)
+                    </span>
                     <div className="text-right">
                       <p>{formatCurrency(tax.tax_amount)}</p>
                       <p className="text-xs text-muted-foreground">
@@ -190,9 +214,12 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
           <CardContent>
             <div className="space-y-3">
               {data.items.map((item, index) => (
-                <div key={index} className="flex justify-between items-start p-3 border rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-start justify-between rounded-lg border p-3"
+                >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="mb-1 flex items-center gap-2">
                       <p className="font-medium">{item.name}</p>
                       {item.tax_code && (
                         <Badge variant="outline" className="text-xs">
@@ -200,20 +227,20 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
                         </Badge>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       {item.quantity && item.quantity > 1 && (
                         <span>Qty: {item.quantity}</span>
                       )}
-                      
+
                       {item.weight_kg && (
                         <span>Weight: {formatWeight(item.weight_kg)}</span>
                       )}
-                      
+
                       {item.price_per_kg && (
                         <span>€{item.price_per_kg.toFixed(2)}/kg</span>
                       )}
-                      
+
                       {item.unit_type && (
                         <Badge variant="secondary" className="text-xs">
                           {item.unit_type}
@@ -221,7 +248,7 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="text-right">
                     <p className="font-bold">{formatCurrency(item.price)}</p>
                     {item.quantity && item.quantity > 1 && (
@@ -242,11 +269,13 @@ export function ExtractedDataView({ data }: ExtractedDataViewProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Extraction Confidence</span>
+              <span className="text-sm text-muted-foreground">
+                Extraction Confidence
+              </span>
               <div className="flex items-center gap-2">
-                <div className="w-32 bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                <div className="h-2 w-32 rounded-full bg-muted">
+                  <div
+                    className="h-2 rounded-full bg-primary transition-all duration-300"
                     style={{ width: `${data.extraction_confidence * 100}%` }}
                   />
                 </div>
