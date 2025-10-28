@@ -31,7 +31,7 @@ class ExtractedDataBase(SQLModel):
 
     # Items data (stored as JSON)
     items: list[dict[str, Any]] | None = Field(default=None, sa_column=Column(JSON))
-    
+
     # Tax breakdown data (stored as JSON)
     tax_breakdown: dict[str, Any] | None = Field(default=None, sa_column=Column(JSON))
 

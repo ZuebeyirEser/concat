@@ -36,16 +36,6 @@ interface ExtractedDataViewProps {
 }
 
 export function ExtractedDataView({ data }: ExtractedDataViewProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(amount)
-  }
-
-  const formatWeight = (weight: number) => {
-    return `${weight.toFixed(3)} kg`
-  }
 
   return (
     <div className="space-y-6">

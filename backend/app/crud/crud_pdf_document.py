@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy import desc
-from sqlmodel import Session, select
+from sqlalchemy import text
+from sqlmodel import Session, col, select
 
 from app.crud.base import CRUDBase
 from app.models.extracted_data import ExtractedData
@@ -18,9 +18,9 @@ class CRUDPDFDocument(CRUDBase[PDFDocument, PDFDocumentCreate, PDFDocumentUpdate
             .where(PDFDocument.owner_id == owner_id)
             .offset(skip)
             .limit(limit)
-            .order_by(desc(PDFDocument.created_at))
+            .order_by(text("created_at DESC"))
         )
-        return db.exec(statement).all()
+        return list(db.exec(statement).all())
 
     def get_by_owner_and_id(
         self, db: Session, *, owner_id: uuid.UUID, document_id: int
@@ -38,11 +38,11 @@ class CRUDPDFDocument(CRUDBase[PDFDocument, PDFDocumentCreate, PDFDocumentUpdate
         """Get unprocessed PDF documents for batch processing."""
         statement = (
             select(PDFDocument)
-            .where(PDFDocument.processed == False)
+            .where(not PDFDocument.processed)
             .limit(limit)
-            .order_by(PDFDocument.created_at.asc())
+            .order_by(text("created_at ASC"))
         )
-        return db.exec(statement).all()
+        return list(db.exec(statement).all())
 
     def mark_as_processed(
         self, db: Session, *, document_id: int, error: str | None = None
@@ -77,6 +77,29 @@ class CRUDPDFDocument(CRUDBase[PDFDocument, PDFDocumentCreate, PDFDocumentUpdate
             )
             document.extracted_data = list(db.exec(extracted_statement).all())
         return document
+
+    def get_multiple_with_extracted_data(
+        self, db: Session, *, document_ids: list[int], owner_id: uuid.UUID
+    ) -> list[PDFDocument]:
+        """Get multiple documents with their extracted data."""
+        statement = (
+            select(PDFDocument)
+            .where(
+                col(PDFDocument.id).in_(document_ids),
+                PDFDocument.owner_id == owner_id
+            )
+            .order_by(text("created_at DESC"))
+        )
+        documents = list(db.exec(statement).all())
+
+        # Load extracted data for all documents
+        for document in documents:
+            extracted_statement = select(ExtractedData).where(
+                ExtractedData.document_id == document.id
+            )
+            document.extracted_data = list(db.exec(extracted_statement).all())
+
+        return documents
 
 
 pdf_document = CRUDPDFDocument(PDFDocument)
