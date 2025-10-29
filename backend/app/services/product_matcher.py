@@ -172,17 +172,21 @@ class ProductMatcher:
         # Estimate typical weight based on category and price
         typical_weight = self._estimate_weight(category, price, extracted_qty, unit)
         
-        product_data = {
-            'name': item_name.title(),
-            'normalized_name': normalized_name,
-            'category': category,
-            'typical_unit': unit or 'piece',
-            'typical_weight_g': typical_weight,
-            'data_source': 'receipt_auto',
-            'confidence_score': 0.6  # Medium confidence for auto-created products
-        }
+        from app.models.product import Product
         
-        new_product = product.create(db, obj_in=product_data)
+        new_product = Product(
+            name=item_name.title(),
+            normalized_name=normalized_name,
+            category=category,
+            typical_unit=unit or 'piece',
+            typical_weight_g=typical_weight,
+            data_source='receipt_auto',
+            confidence_score=0.6  # Medium confidence for auto-created products
+        )
+        
+        db.add(new_product)
+        db.commit()
+        db.refresh(new_product)
         return new_product
 
     def _estimate_weight(

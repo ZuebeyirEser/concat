@@ -1,4 +1,6 @@
 import logging
+import traceback
+import uuid
 from datetime import datetime
 from typing import Dict, List
 
@@ -19,7 +21,7 @@ class ProductIntegrationService:
         self, 
         db: Session, 
         extracted_data: ExtractedData, 
-        user_id: str,
+        user_id: uuid.UUID,
         auto_create_products: bool = True
     ) -> Dict[str, any]:
         """
@@ -43,7 +45,7 @@ class ProductIntegrationService:
             'match_rate': 0.0
         }
         
-        if not extracted_data.items:
+        if not extracted_data.items or not isinstance(extracted_data.items, list):
             logger.info(f"No items found in extracted data {extracted_data.id}")
             return results
         
@@ -51,6 +53,7 @@ class ProductIntegrationService:
         
         for item in extracted_data.items:
             try:
+                logger.info(f"Processing item: {item.get('name', 'unknown')} - Price: {item.get('price', 0.0)} - Quantity: {item.get('quantity', 1.0)}")
                 item_result = self._process_single_item(
                     db, item, extracted_data, user_id, auto_create_products
                 )
@@ -67,6 +70,7 @@ class ProductIntegrationService:
                     
             except Exception as e:
                 logger.error(f"Error processing item {item.get('name', 'unknown')}: {e}")
+                logger.error(f"Item processing traceback: {traceback.format_exc()}")
                 results['unmatched_items'].append({
                     'item': item,
                     'error': str(e),
@@ -89,7 +93,7 @@ class ProductIntegrationService:
         db: Session, 
         item: Dict, 
         extracted_data: ExtractedData, 
-        user_id: str,
+        user_id: uuid.UUID,
         auto_create_products: bool
     ) -> Dict[str, any]:
         """Process a single receipt item."""
@@ -106,9 +110,11 @@ class ProductIntegrationService:
             }
         
         # Try to find matching product
+        logger.info(f"Looking for existing product match for: {item_name}")
         matched_product, confidence = product_matcher.find_best_match(
-            db, item_name=item_name, confidence_threshold=0.7
+            db, item_name=item_name, confidence_threshold=0.8  # Higher threshold to create more new products
         )
+        logger.info(f"Match result: product={matched_product.name if matched_product else None}, confidence={confidence}")
         
         result = {
             'item': item,
@@ -119,20 +125,28 @@ class ProductIntegrationService:
         
         if matched_product:
             # Create purchase record
-            purchase = self._create_purchase_record(
-                db, matched_product.id, item, extracted_data, user_id
-            )
-            result.update({
-                'product': matched_product,
-                'purchase': purchase
-            })
+            try:
+                purchase = self._create_purchase_record(
+                    db, matched_product.id, item, extracted_data, user_id
+                )
+                result.update({
+                    'product': matched_product,
+                    'purchase': purchase
+                })
+            except Exception as e:
+                logger.error(f"Failed to create purchase record for {item_name}: {e}")
+                logger.error(f"Purchase creation traceback: {traceback.format_exc()}")
+                db.rollback()
+                result['error'] = f"Failed to create purchase record: {str(e)}"
             
         elif auto_create_products:
             # Create new product and purchase record
+            logger.info(f"Attempting to create new product for item: {item_name}")
             try:
                 new_product = product_matcher.create_product_from_item(
                     db, item_name=item_name, price=price, quantity=quantity
                 )
+                logger.info(f"Successfully created product: {new_product.name} (ID: {new_product.id})")
                 
                 purchase = self._create_purchase_record(
                     db, new_product.id, item, extracted_data, user_id
@@ -150,6 +164,9 @@ class ProductIntegrationService:
                 
             except Exception as e:
                 logger.error(f"Failed to create product for {item_name}: {e}")
+                logger.error(f"Product creation traceback: {traceback.format_exc()}")
+                # Rollback the transaction to prevent it from being aborted
+                db.rollback()
                 result['error'] = f"Failed to create product: {str(e)}"
         
         return result
@@ -160,7 +177,7 @@ class ProductIntegrationService:
         product_id: int, 
         item: Dict, 
         extracted_data: ExtractedData, 
-        user_id: str
+        user_id: uuid.UUID
     ) -> ProductPurchase:
         """Create a purchase record linking the product to the receipt."""
         
@@ -176,16 +193,16 @@ class ProductIntegrationService:
             'weight_kg': item.get('weight_kg'),
             'match_confidence': 0.8,  # Default confidence for matched items
             'is_manual_match': False,
-            'purchase_date': extracted_data.created_at or datetime.utcnow()
+            'purchase_date': extracted_data.created_at if extracted_data.created_at else datetime.utcnow()
         }
         
         purchase = crud.product_purchase.create_purchase(
-            db, purchase_data=purchase_data, user_id=user_id
+            db, purchase_data=purchase_data
         )
         
         return purchase
     
-    def get_user_product_insights(self, db: Session, user_id: str) -> Dict[str, any]:
+    def get_user_product_insights(self, db: Session, user_id: uuid.UUID) -> Dict[str, any]:
         """Get insights about user's product purchases."""
         
         purchases = crud.product_purchase.get_by_user(db, user_id=user_id, limit=1000)

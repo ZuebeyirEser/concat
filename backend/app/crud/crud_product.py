@@ -141,10 +141,10 @@ class CRUDProductPurchase(CRUDBase[ProductPurchase, dict, dict]):
         return []
 
     def create_purchase(
-        self, db: Session, *, purchase_data: dict, user_id: uuid.UUID
+        self, db: Session, *, purchase_data: dict
     ) -> ProductPurchase:
         """Create a new product purchase record."""
-        purchase = ProductPurchase(**purchase_data, user_id=user_id)
+        purchase = ProductPurchase(**purchase_data)
         db.add(purchase)
         db.commit()
         db.refresh(purchase)

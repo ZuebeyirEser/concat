@@ -19,6 +19,7 @@ from app.schemas.pdf_document import (
 )
 from app.services.file_storage import file_storage
 from app.services.pdf_processor import pdf_processor
+from app.services.product_integration import product_integration
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -103,9 +104,34 @@ async def process_pdf_background(document_id: int, file_path: str):
                 logger.error(f"Data being saved: {extracted_data_create}")
                 raise db_error
 
+            # Process products from receipt items
+            logger.info("Starting product matching and creation...")
+            try:
+                product_results = product_integration.process_receipt_items(
+                    db, extracted_data_record, document.owner_id, auto_create_products=True
+                )
+                logger.info(f"Product processing results: {product_results['total_items']} items, "
+                           f"{len(product_results['matched_items'])} matched, "
+                           f"{len(product_results['created_products'])} new products created")
+            except Exception as product_error:
+                logger.error(f"Product processing failed: {product_error}")
+                logger.error(f"Product processing traceback: {traceback.format_exc()}")
+                # Continue processing even if product matching fails
+                logger.info("Continuing with document processing despite product matching failure")
+            
             # Mark document as processed
-            crud.pdf_document.mark_as_processed(db, document_id=document_id)
-            logger.info(f"Marked document {document_id} as processed")
+            try:
+                crud.pdf_document.mark_as_processed(db, document_id=document_id)
+                logger.info(f"Marked document {document_id} as processed")
+            except Exception as mark_error:
+                logger.error(f"Failed to mark document as processed: {mark_error}")
+                # Rollback and try again with a fresh transaction
+                db.rollback()
+                try:
+                    crud.pdf_document.mark_as_processed(db, document_id=document_id)
+                    logger.info(f"Marked document {document_id} as processed after rollback")
+                except Exception as final_error:
+                    logger.error(f"Final attempt to mark document failed: {final_error}")
 
             logger.info(f"Successfully processed PDF document {document_id}")
 
@@ -114,10 +140,18 @@ async def process_pdf_background(document_id: int, file_path: str):
             logger.error(f"Traceback: {traceback.format_exc()}")
             # Mark document as processed with error
             try:
+                db.rollback()  # Rollback any failed transaction first
                 crud.pdf_document.mark_as_processed(db, document_id=document_id, error=str(e))
                 logger.info(f"Marked document {document_id} as processed with error")
             except Exception as mark_error:
                 logger.error(f"Failed to mark document as processed with error: {mark_error}")
+                # Try one more time with a completely fresh session
+                try:
+                    with Session(engine) as fresh_db:
+                        crud.pdf_document.mark_as_processed(fresh_db, document_id=document_id, error=str(e))
+                        logger.info(f"Marked document {document_id} as processed with error using fresh session")
+                except Exception as final_mark_error:
+                    logger.error(f"Final attempt to mark document with error failed: {final_mark_error}")
 
 
 @router.post("/upload", response_model=PDFUploadResponse)
@@ -507,6 +541,7 @@ async def reprocess_document(
     document.processing_error = None
     db.add(document)
     db.commit()
+    db.refresh(document)
 
     # Ensure document ID is not None
     if document.id is None:
@@ -516,3 +551,66 @@ async def reprocess_document(
     background_tasks.add_task(process_pdf_background, document.id, document.file_path)
 
     return {"message": "Document queued for reprocessing"}
+
+
+@router.post("/documents/{document_id}/mark-processed")
+async def mark_document_processed(
+    *,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+    document_id: int
+) -> Any:
+    """
+    Manually mark a document as processed (for debugging stuck documents).
+    """
+    document = crud.pdf_document.get_by_owner_and_id(
+        db, owner_id=current_user.id, document_id=document_id
+    )
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    # Mark as processed
+    crud.pdf_document.mark_as_processed(db, document_id=document_id)
+
+    return {"message": "Document marked as processed"}
+
+
+@router.post("/documents/{document_id}/create-products")
+async def create_products_from_document(
+    *,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+    document_id: int
+) -> Any:
+    """
+    Manually create products from a processed document's items.
+    """
+    document = crud.pdf_document.get_by_owner_and_id(
+        db, owner_id=current_user.id, document_id=document_id
+    )
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    # Get extracted data
+    extracted_data_list = crud.extracted_data.get_by_document(db, document_id=document_id)
+    
+    if not extracted_data_list:
+        raise HTTPException(status_code=404, detail="No extracted data found for this document")
+    
+    extracted_data = extracted_data_list[0]  # Get the first (and usually only) extracted data record
+    
+    # Process products
+    try:
+        product_results = product_integration.process_receipt_items(
+            db, extracted_data, current_user.id, auto_create_products=True
+        )
+        
+        return {
+            "message": "Products created successfully",
+            "results": product_results
+        }
+    except Exception as e:
+        logger.error(f"Error creating products from document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error creating products: {str(e)}")
