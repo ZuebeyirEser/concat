@@ -7,71 +7,40 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useProductCategories, useProducts } from '@/hooks/useProductQueries'
 
 export const Route = createFileRoute('/_layout/products')({
   component: ProductsPage,
 })
 
-// Mock data - will be replaced with real API calls
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Bananen',
-    category: 'fruits',
-    brand: null,
-    typical_unit: 'kg',
-    calories_per_100g: 89,
-    is_organic: false,
-    purchase_count: 15,
-    last_purchased: '2024-01-15',
-    avg_price: 1.99
-  },
-  {
-    id: 2,
-    name: 'Vollmilch 3.5%',
-    category: 'dairy',
-    brand: 'REWE Bio',
-    typical_unit: 'liter',
-    calories_per_100g: 64,
-    is_organic: true,
-    purchase_count: 8,
-    last_purchased: '2024-01-12',
-    avg_price: 1.29
-  },
-  {
-    id: 3,
-    name: 'Spaghetti',
-    category: 'pantry',
-    brand: 'Barilla',
-    typical_unit: 'pack',
-    calories_per_100g: 371,
-    is_organic: false,
-    purchase_count: 5,
-    last_purchased: '2024-01-10',
-    avg_price: 1.49
-  }
-]
-
-const categories = [
-  { value: 'all', label: 'All Categories' },
-  { value: 'fruits', label: 'Fruits' },
-  { value: 'vegetables', label: 'Vegetables' },
-  { value: 'dairy', label: 'Dairy' },
-  { value: 'meat_fish', label: 'Meat & Fish' },
-  { value: 'bakery', label: 'Bakery' },
-  { value: 'pantry', label: 'Pantry' },
-  { value: 'beverages', label: 'Beverages' },
-  { value: 'snacks', label: 'Snacks' },
-  { value: 'frozen', label: 'Frozen' },
-  { value: 'household', label: 'Household' },
-  { value: 'personal_care', label: 'Personal Care' },
-  { value: 'other', label: 'Other' }
-]
+const categoryLabels = {
+  'fruits': 'Fruits',
+  'vegetables': 'Vegetables', 
+  'dairy': 'Dairy',
+  'meat_fish': 'Meat & Fish',
+  'bakery': 'Bakery',
+  'pantry': 'Pantry',
+  'beverages': 'Beverages',
+  'snacks': 'Snacks',
+  'frozen': 'Frozen',
+  'household': 'Household',
+  'personal_care': 'Personal Care',
+  'other': 'Other'
+}
 
 function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState('name')
+
+  // Fetch products and categories from API
+  const { data: products = [], isLoading: productsLoading } = useProducts({
+    search: searchTerm || undefined,
+    category: selectedCategory !== 'all' ? selectedCategory : undefined,
+    limit: 100
+  })
+  
+  const { data: availableCategories = [] } = useProductCategories()
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('de-DE', {
@@ -106,12 +75,47 @@ function ProductsPage() {
     return colors[category as keyof typeof colors] || colors.other
   }
 
-  const filteredProducts = mockProducts.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.brand?.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory
-    return matchesSearch && matchesCategory
+  // Sort products based on selected criteria
+  const sortedProducts = [...products].sort((a, b) => {
+    switch (sortBy) {
+      case 'name':
+        return a.name.localeCompare(b.name)
+      case 'category':
+        return a.category.localeCompare(b.category)
+      case 'created_at':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      default:
+        return 0
+    }
   })
+
+  // Create categories list for dropdown
+  const categories = [
+    { value: 'all', label: 'All Categories' },
+    ...availableCategories.map(cat => ({
+      value: cat,
+      label: categoryLabels[cat as keyof typeof categoryLabels] || cat
+    }))
+  ]
+
+  if (productsLoading) {
+    return (
+      <div className="w-full max-w-full">
+        <h1 className="pt-12 text-2xl font-bold">Product Catalog</h1>
+        <p className="text-muted-foreground mb-6">Loading your products...</p>
+        <div className="grid gap-4">
+          {[1, 2, 3].map(i => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-6">
+                <div className="h-4 bg-muted rounded w-1/3 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full max-w-full">
@@ -119,12 +123,12 @@ function ProductsPage() {
         <div>
           <h1 className="text-2xl font-bold">Product Catalog</h1>
           <p className="text-muted-foreground">
-            Manage your product database and purchase history
+            Products automatically created from your receipts
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary">
-            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+            {sortedProducts.length} product{sortedProducts.length !== 1 ? 's' : ''}
           </Badge>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
@@ -165,16 +169,14 @@ function ProductsPage() {
           <SelectContent>
             <SelectItem value="name">Name</SelectItem>
             <SelectItem value="category">Category</SelectItem>
-            <SelectItem value="purchase_count">Purchase Count</SelectItem>
-            <SelectItem value="last_purchased">Last Purchased</SelectItem>
-            <SelectItem value="avg_price">Average Price</SelectItem>
+            <SelectItem value="created_at">Recently Added</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Products Grid */}
       <div className="grid gap-4">
-        {filteredProducts.length === 0 ? (
+        {sortedProducts.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -184,19 +186,19 @@ function ProductsPage() {
               <p className="text-muted-foreground mb-4">
                 {searchTerm || selectedCategory !== 'all' 
                   ? 'Try adjusting your search or filters'
-                  : 'Products will appear here as you process receipts'
+                  : 'Upload some receipts to automatically create your product catalog'
                 }
               </p>
               {!searchTerm && selectedCategory === 'all' && (
-                <Button>
+                <Button onClick={() => window.location.href = '/pdf-upload'}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Product
+                  Upload Your First Receipt
                 </Button>
               )}
             </CardContent>
           </Card>
         ) : (
-          filteredProducts.map(product => (
+          sortedProducts.map(product => (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
@@ -212,7 +214,7 @@ function ProductsPage() {
                         <h3 className="font-medium truncate">{product.name}</h3>
                         <Badge className={getCategoryColor(product.category)}>
                           <Tag className="h-3 w-3 mr-1" />
-                          {categories.find(c => c.value === product.category)?.label}
+                          {categoryLabels[product.category as keyof typeof categoryLabels] || product.category}
                         </Badge>
                         {product.is_organic && (
                           <Badge variant="outline" className="text-green-600 border-green-600">
@@ -228,23 +230,33 @@ function ProductsPage() {
                             <p>{product.brand}</p>
                           </div>
                         )}
+                        {product.typical_unit && (
+                          <div>
+                            <span className="font-medium">Unit:</span>
+                            <p>{product.typical_unit}</p>
+                          </div>
+                        )}
+                        {product.calories_per_100g && (
+                          <div>
+                            <span className="font-medium">Calories:</span>
+                            <p>{product.calories_per_100g} kcal/100g</p>
+                          </div>
+                        )}
                         <div>
-                          <span className="font-medium">Unit:</span>
-                          <p>{product.typical_unit}</p>
+                          <span className="font-medium">Source:</span>
+                          <p>{product.data_source === 'receipt_auto' ? 'From Receipt' : 'Manual'}</p>
                         </div>
                         <div>
-                          <span className="font-medium">Calories:</span>
-                          <p>{product.calories_per_100g} kcal/100g</p>
-                        </div>
-                        <div>
-                          <span className="font-medium">Avg Price:</span>
-                          <p>{formatCurrency(product.avg_price)}</p>
+                          <span className="font-medium">Added:</span>
+                          <p>{formatDate(product.created_at)}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Purchased {product.purchase_count} times</span>
-                        <span>Last: {formatDate(product.last_purchased)}</span>
+                        <span>Confidence: {Math.round(product.confidence_score * 100)}%</span>
+                        {product.data_source === 'receipt_auto' && (
+                          <span>Auto-created from receipt</span>
+                        )}
                       </div>
                     </div>
                   </div>

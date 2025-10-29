@@ -1,4 +1,5 @@
 import logging
+import traceback
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -35,16 +36,21 @@ def get_products(
     """
     Get products with optional filtering.
     """
-    if search:
-        products = crud.product.search_by_name(db, query=search, limit=limit)
-    elif category:
-        products = crud.product.get_by_category(
-            db, category=category, skip=skip, limit=limit
-        )
-    else:
-        products = crud.product.get_multi(db, skip=skip, limit=limit)
-    
-    return products
+    try:
+        if search:
+            products = crud.product.search_by_name(db, query=search, limit=limit)
+        elif category:
+            products = crud.product.get_by_category(
+                db, category=category, skip=skip, limit=limit
+            )
+        else:
+            products = crud.product.get_multi(db, skip=skip, limit=limit)
+        
+        return products
+    except Exception as e:
+        logger.error(f"Error fetching products: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Error fetching products: {str(e)}")
 
 
 @router.post("/", response_model=ProductRead)
