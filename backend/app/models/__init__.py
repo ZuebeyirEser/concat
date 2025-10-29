@@ -11,6 +11,16 @@ from .pdf_document import (
     PDFDocumentRead,
     PDFDocumentUpdate,
 )
+from .product import (
+    Product,
+    ProductAlias,
+    ProductCategory,
+    ProductCreate,
+    ProductPurchase,
+    ProductPurchaseRead,
+    ProductRead,
+    ProductUpdate,
+)
 from .user import User
 
 __all__ = [
@@ -23,5 +33,13 @@ __all__ = [
     "ExtractedData",
     "ExtractedDataCreate",
     "ExtractedDataRead",
-    "ExtractedDataUpdate"
+    "ExtractedDataUpdate",
+    "Product",
+    "ProductAlias",
+    "ProductCategory",
+    "ProductCreate",
+    "ProductPurchase",
+    "ProductPurchaseRead",
+    "ProductRead",
+    "ProductUpdate",
 ]

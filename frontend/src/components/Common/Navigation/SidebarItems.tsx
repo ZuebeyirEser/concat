@@ -4,6 +4,7 @@ import {
   FiBarChart,
   FiBriefcase,
   FiFileText,
+  FiPackage,
   FiSettings,
   FiUpload,
   FiUsers,
@@ -16,6 +17,7 @@ const items = [
   { icon: FiBriefcase, title: 'Items', path: '/items' },
   { icon: FiUpload, title: 'PDF Upload', path: '/pdf-upload' },
   { icon: FiFileText, title: 'Documents', path: '/documents' },
+  { icon: FiPackage, title: 'Products', path: '/products' },
   { icon: FiSettings, title: 'User Settings', path: '/settings' },
   { icon: FiBarChart, title: 'Analyics', path: '/analytics' },
 ]
