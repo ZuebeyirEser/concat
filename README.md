@@ -1,6 +1,6 @@
 # Grocery Receipt Tracker(Concat)
 
-Full-stack application for automated PDF receipt processing and data extraction.
+Full-stack application for tracking and analyzing grocery receipts from multiple supermarkets to support healthier shopping habits.
 
 ## Features
 
