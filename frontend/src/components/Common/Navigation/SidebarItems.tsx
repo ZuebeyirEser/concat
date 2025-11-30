@@ -6,8 +6,9 @@ import {
   FiFileText,
   FiPackage,
   FiSettings,
+  FiShoppingCart,
   FiUpload,
-  FiUsers,
+  FiUsers
 } from 'react-icons/fi'
 import type { IconType } from 'react-icons/lib'
 
@@ -17,6 +18,7 @@ const items = [
   { icon: FiBriefcase, title: 'Items', path: '/items' },
   { icon: FiUpload, title: 'PDF Upload', path: '/pdf-upload' },
   { icon: FiFileText, title: 'Documents', path: '/documents' },
+  { icon: FiShoppingCart, title: 'Purchases', path: '/purchases' },
   { icon: FiPackage, title: 'Products', path: '/products' },
   { icon: FiSettings, title: 'User Settings', path: '/settings' },
   { icon: FiBarChart, title: 'Analyics', path: '/analytics' },

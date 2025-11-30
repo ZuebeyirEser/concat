@@ -38,6 +38,7 @@ interface Product {
 interface ProductPurchase {
   id: number
   product_id: number
+  extracted_data_id: number
   receipt_item_name: string
   quantity: number
   unit_price: number
@@ -49,6 +50,26 @@ interface ProductPurchase {
   purchase_date: string
   created_at: string
   product: Product
+}
+
+interface ExtractedData {
+  id: number
+  document_id: number
+  store_name?: string
+  store_address?: string
+  receipt_number?: string
+  transaction_date?: string
+  transaction_time?: string
+  subtotal?: number
+  tax_amount?: number
+  total_amount?: number
+  payment_method?: string
+  created_at: string
+  updated_at: string
+}
+
+interface ProductPurchaseWithBill extends ProductPurchase {
+  extracted_data?: ExtractedData
 }
 
 interface ProductCreate {
@@ -145,14 +166,16 @@ export function getPopularProductsQueryOptions(limit: number = 20) {
 export function getUserPurchasesQueryOptions(params?: {
   skip?: number
   limit?: number
+  include_bill?: boolean
 }) {
   const searchParams = new URLSearchParams()
   if (params?.skip) searchParams.append('skip', params.skip.toString())
   if (params?.limit) searchParams.append('limit', params.limit.toString())
+  if (params?.include_bill) searchParams.append('include_bill', 'true')
 
   return {
     queryKey: ['user-purchases', params],
-    queryFn: async (): Promise<ProductPurchase[]> => {
+    queryFn: async (): Promise<ProductPurchaseWithBill[]> => {
       return request(OpenAPI, {
         method: 'GET',
         url: `/api/v1/products/purchases/?${searchParams.toString()}`,
@@ -200,9 +223,13 @@ export function usePopularProducts(limit: number = 20) {
 export function useUserPurchases(params?: {
   skip?: number
   limit?: number
+  include_bill?: boolean
 }) {
   return useQuery(getUserPurchasesQueryOptions(params))
 }
+
+// Export types for use in components
+export type { ExtractedData, Product, ProductPurchase, ProductPurchaseWithBill }
 
 export function useProductPurchases(productId: number) {
   return useQuery(getProductPurchasesQueryOptions(productId))
@@ -219,7 +246,7 @@ export function useCreateProduct() {
         body: productData,
       })
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(`Product "${data.name}" created successfully`)
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['popular-products'] })
@@ -234,9 +261,12 @@ export function useUpdateProduct() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ productId, productData }: { 
+    mutationFn: async ({
+      productId,
+      productData,
+    }: {
       productId: number
-      productData: Partial<ProductCreate> 
+      productData: Partial<ProductCreate>
     }): Promise<Product> => {
       return request(OpenAPI, {
         method: 'PUT',
@@ -244,7 +274,7 @@ export function useUpdateProduct() {
         body: productData,
       })
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(`Product "${data.name}" updated successfully`)
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['product', data.id] })
@@ -278,18 +308,18 @@ export function useDeleteProduct() {
 
 export function useMatchProduct() {
   return useMutation({
-    mutationFn: async ({ 
-      itemName, 
-      confidenceThreshold = 0.7 
-    }: { 
+    mutationFn: async ({
+      itemName,
+      confidenceThreshold = 0.7,
+    }: {
       itemName: string
-      confidenceThreshold?: number 
+      confidenceThreshold?: number
     }): Promise<ProductMatchResult> => {
       const searchParams = new URLSearchParams({
         item_name: itemName,
-        confidence_threshold: confidenceThreshold.toString()
+        confidence_threshold: confidenceThreshold.toString(),
       })
-      
+
       return request(OpenAPI, {
         method: 'POST',
         url: `/api/v1/products/match/?${searchParams.toString()}`,
@@ -305,27 +335,27 @@ export function useCreateProductFromItem() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ 
-      itemName, 
-      price, 
-      quantity = 1.0 
-    }: { 
+    mutationFn: async ({
+      itemName,
+      price,
+      quantity = 1.0,
+    }: {
       itemName: string
       price: number
-      quantity?: number 
+      quantity?: number
     }): Promise<Product> => {
       const searchParams = new URLSearchParams({
         item_name: itemName,
         price: price.toString(),
-        quantity: quantity.toString()
+        quantity: quantity.toString(),
       })
-      
+
       return request(OpenAPI, {
         method: 'POST',
         url: `/api/v1/products/create-from-item/?${searchParams.toString()}`,
       })
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(`Product "${data.name}" created from receipt item`)
       queryClient.invalidateQueries({ queryKey: ['products'] })
     },
@@ -339,14 +369,14 @@ export function useCreateProductAlias() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ 
-      productId, 
-      aliasName, 
-      storeSpecific 
-    }: { 
+    mutationFn: async ({
+      productId,
+      aliasName,
+      storeSpecific,
+    }: {
       productId: number
       aliasName: string
-      storeSpecific?: string 
+      storeSpecific?: string
     }): Promise<void> => {
       const searchParams = new URLSearchParams({
         alias_name: aliasName,
@@ -354,7 +384,7 @@ export function useCreateProductAlias() {
       if (storeSpecific) {
         searchParams.append('store_specific', storeSpecific)
       }
-      
+
       return request(OpenAPI, {
         method: 'POST',
         url: `/api/v1/products/${productId}/aliases/?${searchParams.toString()}`,
