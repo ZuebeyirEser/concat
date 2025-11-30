@@ -171,6 +171,7 @@ class ExtractedDataSummary(SQLModel):
     tax_amount: float | None
     total_amount: float | None
     payment_method: str | None
+    document_filename: str | None  # Add filename for fallback
     created_at: datetime
     updated_at: datetime
 

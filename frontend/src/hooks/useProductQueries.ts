@@ -64,6 +64,7 @@ interface ExtractedData {
   tax_amount?: number
   total_amount?: number
   payment_method?: string
+  document_filename?: string
   created_at: string
   updated_at: string
 }

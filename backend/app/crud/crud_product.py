@@ -114,11 +114,16 @@ class CRUDProductPurchase(CRUDBase[ProductPurchase, dict, dict]):
     ) -> list[ProductPurchase]:
         """Get user's product purchases."""
         from sqlalchemy.orm import selectinload
+        from app.models.extracted_data import ExtractedData
+        from app.models.pdf_document import PDFDocument
 
         statement = (
             select(ProductPurchase)
             .where(ProductPurchase.user_id == user_id)
-            .options(selectinload(ProductPurchase.extracted_data))
+            .options(
+                selectinload(ProductPurchase.extracted_data).selectinload(ExtractedData.document),
+                selectinload(ProductPurchase.product)
+            )
             .offset(skip)
             .limit(limit)
             .order_by(ProductPurchase.purchase_date.desc())

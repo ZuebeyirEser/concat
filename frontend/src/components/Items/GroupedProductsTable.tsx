@@ -23,6 +23,33 @@ interface GroupedProductsTableProps {
   isLoading?: boolean
 }
 
+// Helper function to extract store name from filename
+function extractStoreFromFilename(filename?: string): string | null {
+  if (!filename) return null
+  
+  // Common store patterns in German receipts
+  const storePatterns = [
+    /REWE/i,
+    /EDEKA/i,
+    /ALDI/i,
+    /LIDL/i,
+    /PENNY/i,
+    /NETTO/i,
+    /KAUFLAND/i,
+    /DM/i,
+    /ROSSMANN/i,
+  ]
+  
+  for (const pattern of storePatterns) {
+    const match = filename.match(pattern)
+    if (match) {
+      return match[0].toUpperCase()
+    }
+  }
+  
+  return null
+}
+
 export function GroupedProductsTable({
   purchases,
   isLoading = false,
@@ -206,7 +233,7 @@ function BillGroup({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-semibold">
-                {group.bill?.store_name || 'Unknown Store'}
+                {group.bill?.store_name || extractStoreFromFilename(group.bill?.document_filename) || 'Unknown Store'}
               </h3>
               {group.bill?.receipt_number && (
                 <Badge variant="outline" className="text-xs">

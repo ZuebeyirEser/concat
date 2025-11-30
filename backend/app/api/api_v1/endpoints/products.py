@@ -236,10 +236,14 @@ def get_user_purchases(
     """
     Get user's product purchases, optionally with bill information.
     """
+    
+    logger.info(f"Fetching purchases for user {current_user.id}, include_bill={include_bill}")
 
     purchases = crud.product_purchase.get_by_user(
         db, user_id=current_user.id, skip=skip, limit=limit
     )
+    
+    logger.info(f"Found {len(purchases)} purchases")
 
     if include_bill:
         # Return with bill information
@@ -266,6 +270,13 @@ def get_user_purchases(
             # Load extracted data if available
             if hasattr(purchase, "extracted_data") and purchase.extracted_data:
                 ed = purchase.extracted_data
+                logger.info(f"Found extracted_data for purchase {purchase.id}: store_name={ed.store_name}")
+                
+                # Get document filename for fallback
+                document_filename = None
+                if hasattr(ed, "document") and ed.document:
+                    document_filename = ed.document.original_filename
+                
                 purchase_dict["extracted_data"] = {
                     "id": ed.id,
                     "document_id": ed.document_id,
@@ -280,9 +291,12 @@ def get_user_purchases(
                     "tax_amount": float(ed.tax_amount) if ed.tax_amount else None,
                     "total_amount": float(ed.total_amount) if ed.total_amount else None,
                     "payment_method": ed.payment_method,
+                    "document_filename": document_filename,
                     "created_at": ed.created_at,
                     "updated_at": ed.updated_at,
                 }
+            else:
+                logger.warning(f"No extracted_data found for purchase {purchase.id}, extracted_data_id={purchase.extracted_data_id}")
 
             result.append(purchase_dict)
         return result

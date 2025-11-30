@@ -26,6 +26,13 @@ function PurchasesPage() {
     include_bill: true,
   })
 
+  // Debug: Log the purchases data
+  console.log('Purchases data:', purchases)
+  if (purchases.length > 0) {
+    console.log('First purchase:', purchases[0])
+    console.log('First purchase extracted_data:', purchases[0].extracted_data)
+  }
+
   if (isLoading) {
     return (
       <div className="w-full max-w-full">
