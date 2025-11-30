@@ -70,7 +70,7 @@ echo $FRONTEND_PID > /tmp/frontend.pid
 sleep 5
 
 # Verify services are running
-echo "🔍 Verifying services..."
+echo "Verifying services..."
 if ps -p $BACKEND_PID > /dev/null 2>&1; then
     echo "Backend is running (PID: $BACKEND_PID)"
 else

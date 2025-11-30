@@ -22,14 +22,14 @@ done
 echo "Database is ready!"
 
 # Run database migrations
-echo "🗄️ Running database migrations..."
+echo "Running database migrations..."
 cd /workspace/backend
 source /workspace/.env
 export POSTGRES_SERVER=db
 uv run alembic upgrade head
 
 # Start backend in screen session
-echo "📡 Starting FastAPI backend in screen session..."
+echo "Starting FastAPI backend in screen session..."
 cd /workspace/backend
 screen -dmS backend bash -c "source /workspace/.env && export POSTGRES_SERVER=db && uv run fastapi dev --reload app/main.py --host 0.0.0.0; exec bash"
 

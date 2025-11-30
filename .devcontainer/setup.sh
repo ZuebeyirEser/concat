@@ -115,7 +115,7 @@ npx playwright install
 sudo npx playwright install-deps
 
 # Setup pre-commit hooks
-echo "🔧 Setting up pre-commit hooks..."
+echo " Setting up pre-commit hooks..."
 cd /workspace/backend
 
 # Check if pre-commit is available in the virtual environment
