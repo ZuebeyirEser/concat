@@ -10,7 +10,6 @@ from app.api import deps
 from app.core.db import get_db
 from app.models import User
 from app.models.product import (
-    Product,
     ProductCategory,
     ProductCreate,
     ProductPurchaseRead,
@@ -27,7 +26,7 @@ router = APIRouter()
 def get_products(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     skip: int = 0,
     limit: int = Query(default=100, le=1000),
     category: ProductCategory | None = None,
@@ -45,19 +44,21 @@ def get_products(
             )
         else:
             products = crud.product.get_multi(db, skip=skip, limit=limit)
-        
+
         return products
     except Exception as e:
         logger.error(f"Error fetching products: {e}")
         logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Error fetching products: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error fetching products: {str(e)}"
+        )
 
 
 @router.post("/", response_model=ProductRead)
 def create_product(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     product_in: ProductCreate,
 ) -> Any:
     """
@@ -65,18 +66,19 @@ def create_product(
     """
     # Normalize the name for better matching
     product_data = product_in.model_dump()
-    product_data['normalized_name'] = product_matcher.normalize_product_name(product_in.name)
-    
+    product_data["normalized_name"] = product_matcher.normalize_product_name(
+        product_in.name
+    )
+
     # Check if product with same normalized name already exists
     existing = crud.product.get_by_normalized_name(
-        db, normalized_name=product_data['normalized_name']
+        db, normalized_name=product_data["normalized_name"]
     )
     if existing:
         raise HTTPException(
-            status_code=400,
-            detail="A product with this name already exists"
+            status_code=400, detail="A product with this name already exists"
         )
-    
+
     product = crud.product.create(db, obj_in=product_data)
     return product
 
@@ -85,7 +87,7 @@ def create_product(
 def get_product(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     product_id: int,
 ) -> Any:
     """
@@ -101,7 +103,7 @@ def get_product(
 def update_product(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     product_id: int,
     product_in: ProductUpdate,
 ) -> Any:
@@ -111,14 +113,14 @@ def update_product(
     product = crud.product.get(db, id=product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     # Update normalized name if name is being changed
     update_data = product_in.model_dump(exclude_unset=True)
-    if 'name' in update_data:
-        update_data['normalized_name'] = product_matcher.normalize_product_name(
-            update_data['name']
+    if "name" in update_data:
+        update_data["normalized_name"] = product_matcher.normalize_product_name(
+            update_data["name"]
         )
-    
+
     product = crud.product.update(db, db_obj=product, obj_in=update_data)
     return product
 
@@ -127,7 +129,7 @@ def update_product(
 def delete_product(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     product_id: int,
 ) -> Any:
     """
@@ -136,7 +138,7 @@ def delete_product(
     product = crud.product.get(db, id=product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     crud.product.remove(db, id=product_id)
     return {"message": "Product deleted successfully"}
 
@@ -169,7 +171,7 @@ def get_popular_products(
 def match_product(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     item_name: str,
     confidence_threshold: float = Query(default=0.7, ge=0.0, le=1.0),
 ) -> Any:
@@ -179,13 +181,9 @@ def match_product(
     matched_product, confidence = product_matcher.find_best_match(
         db, item_name=item_name, confidence_threshold=confidence_threshold
     )
-    
+
     if matched_product:
-        return {
-            "product": matched_product,
-            "confidence": confidence,
-            "matched": True
-        }
+        return {"product": matched_product, "confidence": confidence, "matched": True}
     else:
         # Suggest category and potential new product
         predicted_category = product_matcher.predict_category(item_name)
@@ -194,7 +192,7 @@ def match_product(
             "confidence": 0.0,
             "matched": False,
             "suggested_category": predicted_category.value,
-            "normalized_name": product_matcher.normalize_product_name(item_name)
+            "normalized_name": product_matcher.normalize_product_name(item_name),
         }
 
 
@@ -202,7 +200,7 @@ def match_product(
 def create_product_from_item(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     item_name: str,
     price: float,
     quantity: float = 1.0,
@@ -213,34 +211,84 @@ def create_product_from_item(
     # Check if product already exists
     normalized_name = product_matcher.normalize_product_name(item_name)
     existing = crud.product.get_by_normalized_name(db, normalized_name=normalized_name)
-    
+
     if existing:
         return existing
-    
+
     # Create new product
     new_product = product_matcher.create_product_from_item(
         db, item_name=item_name, price=price, quantity=quantity
     )
-    
+
     logger.info(f"Created new product from receipt item: {new_product.name}")
     return new_product
 
 
-@router.get("/purchases/", response_model=list[ProductPurchaseRead])
+@router.get("/purchases/")
 def get_user_purchases(
     *,
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_active_user),
     skip: int = 0,
     limit: int = Query(default=100, le=1000),
+    include_bill: bool = Query(default=False),
 ) -> Any:
     """
-    Get user's product purchases.
+    Get user's product purchases, optionally with bill information.
     """
+
     purchases = crud.product_purchase.get_by_user(
         db, user_id=current_user.id, skip=skip, limit=limit
     )
-    return purchases
+
+    if include_bill:
+        # Return with bill information
+        result = []
+        for purchase in purchases:
+            purchase_dict = {
+                "id": purchase.id,
+                "product_id": purchase.product_id,
+                "extracted_data_id": purchase.extracted_data_id,
+                "receipt_item_name": purchase.receipt_item_name,
+                "quantity": purchase.quantity,
+                "unit_price": purchase.unit_price,
+                "total_price": purchase.total_price,
+                "unit_type": purchase.unit_type,
+                "weight_kg": purchase.weight_kg,
+                "match_confidence": purchase.match_confidence,
+                "is_manual_match": purchase.is_manual_match,
+                "purchase_date": purchase.purchase_date,
+                "created_at": purchase.created_at,
+                "product": purchase.product,
+                "extracted_data": None,
+            }
+
+            # Load extracted data if available
+            if hasattr(purchase, "extracted_data") and purchase.extracted_data:
+                ed = purchase.extracted_data
+                purchase_dict["extracted_data"] = {
+                    "id": ed.id,
+                    "document_id": ed.document_id,
+                    "store_name": ed.store_name,
+                    "store_address": ed.store_address,
+                    "receipt_number": ed.receipt_number,
+                    "transaction_date": str(ed.transaction_date)
+                    if ed.transaction_date
+                    else None,
+                    "transaction_time": ed.transaction_time,
+                    "subtotal": float(ed.subtotal) if ed.subtotal else None,
+                    "tax_amount": float(ed.tax_amount) if ed.tax_amount else None,
+                    "total_amount": float(ed.total_amount) if ed.total_amount else None,
+                    "payment_method": ed.payment_method,
+                    "created_at": ed.created_at,
+                    "updated_at": ed.updated_at,
+                }
+
+            result.append(purchase_dict)
+        return result
+    else:
+        # Return without bill information
+        return purchases
 
 
 @router.get("/{product_id}/purchases/", response_model=list[ProductPurchaseRead])
@@ -256,7 +304,7 @@ def get_product_purchases(
     product = crud.product.get(db, id=product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     purchases = crud.product_purchase.get_by_product(
         db, product_id=product_id, user_id=current_user.id
     )
@@ -267,7 +315,7 @@ def get_product_purchases(
 def create_product_alias(
     *,
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_active_user),
+    current_user: User = Depends(deps.get_current_active_user),  # noqa: ARG001
     product_id: int,
     alias_name: str,
     store_specific: str | None = None,
@@ -278,9 +326,9 @@ def create_product_alias(
     product = crud.product.get(db, id=product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     alias = crud.product_alias.create_alias(
         db, product_id=product_id, alias_name=alias_name, store_specific=store_specific
     )
-    
+
     return {"message": "Alias created successfully", "alias": alias}

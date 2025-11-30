@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 
 from sqlalchemy import text
 from sqlmodel import Session, col, select
@@ -16,29 +15,33 @@ from app.models.product import (
 
 
 class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
-    def get_by_name(self, db: Session, *, name: str) -> Optional[Product]:
+    def get_by_name(self, db: Session, *, name: str) -> Product | None:
         """Get product by exact name match."""
         statement = select(Product).where(Product.name == name)
         return db.exec(statement).first()
 
-    def get_by_normalized_name(self, db: Session, *, normalized_name: str) -> Optional[Product]:
+    def get_by_normalized_name(
+        self, db: Session, *, normalized_name: str
+    ) -> Product | None:
         """Get product by normalized name for fuzzy matching."""
         statement = select(Product).where(Product.normalized_name == normalized_name)
         return db.exec(statement).first()
 
-    def get_by_barcode(self, db: Session, *, barcode: str) -> Optional[Product]:
+    def get_by_barcode(self, db: Session, *, barcode: str) -> Product | None:
         """Get product by barcode."""
         statement = select(Product).where(Product.barcode == barcode)
         return db.exec(statement).first()
 
-    def search_by_name(self, db: Session, *, query: str, limit: int = 10) -> list[Product]:
+    def search_by_name(
+        self, db: Session, *, query: str, limit: int = 10
+    ) -> list[Product]:
         """Search products by name with fuzzy matching."""
         # Use ILIKE for case-insensitive partial matching
         statement = (
             select(Product)
             .where(
-                col(Product.name).ilike(f"%{query}%") |
-                col(Product.normalized_name).ilike(f"%{query}%")
+                col(Product.name).ilike(f"%{query}%")
+                | col(Product.normalized_name).ilike(f"%{query}%")
             )
             .limit(limit)
         )
@@ -58,39 +61,38 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
         return list(db.exec(statement).all())
 
     def get_popular_products(
-        self, db: Session, *, user_id: Optional[uuid.UUID] = None, limit: int = 20
+        self, db: Session, *, user_id: uuid.UUID | None = None, limit: int = 20
     ) -> list[Product]:
         """Get most frequently purchased products."""
         statement = select(Product).join(ProductPurchase)
-        
+
         if user_id:
             statement = statement.where(ProductPurchase.user_id == user_id)
-        
+
         statement = (
-            statement
-            .group_by(Product.id)
+            statement.group_by(Product.id)
             .order_by(text("COUNT(productpurchase.id) DESC"))
             .limit(limit)
         )
         return list(db.exec(statement).all())
 
     def find_similar_products(
-        self, db: Session, *, product_name: str, category: Optional[ProductCategory] = None
+        self, db: Session, *, product_name: str, category: ProductCategory | None = None
     ) -> list[Product]:
         """Find products with similar names for matching suggestions."""
         # Simple similarity search - can be enhanced with more sophisticated algorithms
         words = product_name.lower().split()
         conditions = []
-        
+
         for word in words:
             if len(word) > 2:  # Skip very short words
                 conditions.append(col(Product.normalized_name).ilike(f"%{word}%"))
-        
+
         if not conditions:
             return []
-        
+
         statement = select(Product)
-        
+
         # Combine conditions with OR
         if len(conditions) == 1:
             statement = statement.where(conditions[0])
@@ -98,10 +100,10 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
             statement = statement.where(conditions[0])
             for condition in conditions[1:]:
                 statement = statement.where(condition)
-        
+
         if category:
             statement = statement.where(Product.category == category)
-        
+
         statement = statement.limit(10)
         return list(db.exec(statement).all())
 
@@ -111,9 +113,12 @@ class CRUDProductPurchase(CRUDBase[ProductPurchase, dict, dict]):
         self, db: Session, *, user_id: uuid.UUID, skip: int = 0, limit: int = 100
     ) -> list[ProductPurchase]:
         """Get user's product purchases."""
+        from sqlalchemy.orm import selectinload
+
         statement = (
             select(ProductPurchase)
             .where(ProductPurchase.user_id == user_id)
+            .options(selectinload(ProductPurchase.extracted_data))
             .offset(skip)
             .limit(limit)
             .order_by(ProductPurchase.purchase_date.desc())
@@ -121,14 +126,16 @@ class CRUDProductPurchase(CRUDBase[ProductPurchase, dict, dict]):
         return list(db.exec(statement).all())
 
     def get_by_product(
-        self, db: Session, *, product_id: int, user_id: Optional[uuid.UUID] = None
+        self, db: Session, *, product_id: int, user_id: uuid.UUID | None = None
     ) -> list[ProductPurchase]:
         """Get purchases for a specific product."""
-        statement = select(ProductPurchase).where(ProductPurchase.product_id == product_id)
-        
+        statement = select(ProductPurchase).where(
+            ProductPurchase.product_id == product_id
+        )
+
         if user_id:
             statement = statement.where(ProductPurchase.user_id == user_id)
-        
+
         statement = statement.order_by(ProductPurchase.purchase_date.desc())
         return list(db.exec(statement).all())
 
@@ -140,9 +147,7 @@ class CRUDProductPurchase(CRUDBase[ProductPurchase, dict, dict]):
         # For now, return empty list
         return []
 
-    def create_purchase(
-        self, db: Session, *, purchase_data: dict
-    ) -> ProductPurchase:
+    def create_purchase(self, db: Session, *, purchase_data: dict) -> ProductPurchase:
         """Create a new product purchase record."""
         purchase = ProductPurchase(**purchase_data)
         db.add(purchase)
@@ -157,7 +162,7 @@ class CRUDProductAlias(CRUDBase[ProductAlias, dict, dict]):
         statement = select(ProductAlias).where(ProductAlias.product_id == product_id)
         return list(db.exec(statement).all())
 
-    def find_product_by_alias(self, db: Session, *, alias_name: str) -> Optional[Product]:
+    def find_product_by_alias(self, db: Session, *, alias_name: str) -> Product | None:
         """Find product by alias name."""
         statement = (
             select(Product)
@@ -167,7 +172,12 @@ class CRUDProductAlias(CRUDBase[ProductAlias, dict, dict]):
         return db.exec(statement).first()
 
     def create_alias(
-        self, db: Session, *, product_id: int, alias_name: str, store_specific: Optional[str] = None
+        self,
+        db: Session,
+        *,
+        product_id: int,
+        alias_name: str,
+        store_specific: str | None = None,
     ) -> ProductAlias:
         """Create a new product alias."""
         normalized_alias = alias_name.lower().strip()
@@ -175,7 +185,7 @@ class CRUDProductAlias(CRUDBase[ProductAlias, dict, dict]):
             product_id=product_id,
             alias_name=alias_name,
             normalized_alias=normalized_alias,
-            store_specific=store_specific
+            store_specific=store_specific,
         )
         db.add(alias)
         db.commit()
