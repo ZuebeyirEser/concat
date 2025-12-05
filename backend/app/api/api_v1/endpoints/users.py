@@ -61,7 +61,7 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
         )
 
     user = crud.user.create(session, obj_in=user_in)
-    if settings.emails_enabled and user_in.email:
+    if settings.emails_enabled() and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.email, password=user_in.password
         )
