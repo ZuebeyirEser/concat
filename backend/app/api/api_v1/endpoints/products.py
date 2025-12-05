@@ -1,5 +1,4 @@
 import logging
-import traceback
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -47,8 +46,6 @@ def get_products(
 
         return products
     except Exception as e:
-        logger.error(f"Error fetching products: {e}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=500, detail=f"Error fetching products: {str(e)}"
         )
@@ -65,21 +62,25 @@ def create_product(
     Create new product.
     """
     # Normalize the name for better matching
-    product_data = product_in.model_dump()
-    product_data["normalized_name"] = product_matcher.normalize_product_name(
-        product_in.name
-    )
+    normalized_name = product_matcher.normalize_product_name(product_in.name)
 
     # Check if product with same normalized name already exists
     existing = crud.product.get_by_normalized_name(
-        db, normalized_name=product_data["normalized_name"]
+        db, normalized_name=normalized_name
     )
     if existing:
         raise HTTPException(
             status_code=400, detail="A product with this name already exists"
         )
 
-    product = crud.product.create(db, obj_in=product_data)
+    # Create product with normalized name
+    from app.models.product import Product
+    product_data = product_in.model_dump()
+    product_data["normalized_name"] = normalized_name
+    product = Product(**product_data)
+    db.add(product)
+    db.commit()
+    db.refresh(product)
     return product
 
 
@@ -114,7 +115,6 @@ def update_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # Update normalized name if name is being changed
     update_data = product_in.model_dump(exclude_unset=True)
     if "name" in update_data:
         update_data["normalized_name"] = product_matcher.normalize_product_name(
@@ -185,7 +185,6 @@ def match_product(
     if matched_product:
         return {"product": matched_product, "confidence": confidence, "matched": True}
     else:
-        # Suggest category and potential new product
         predicted_category = product_matcher.predict_category(item_name)
         return {
             "product": None,
@@ -208,19 +207,16 @@ def create_product_from_item(
     """
     Create a new product from a receipt item.
     """
-    # Check if product already exists
     normalized_name = product_matcher.normalize_product_name(item_name)
     existing = crud.product.get_by_normalized_name(db, normalized_name=normalized_name)
 
     if existing:
         return existing
 
-    # Create new product
     new_product = product_matcher.create_product_from_item(
         db, item_name=item_name, price=price, quantity=quantity
     )
 
-    logger.info(f"Created new product from receipt item: {new_product.name}")
     return new_product
 
 
@@ -236,17 +232,12 @@ def get_user_purchases(
     """
     Get user's product purchases, optionally with bill information.
     """
-    
-    logger.info(f"Fetching purchases for user {current_user.id}, include_bill={include_bill}")
 
     purchases = crud.product_purchase.get_by_user(
         db, user_id=current_user.id, skip=skip, limit=limit
     )
-    
-    logger.info(f"Found {len(purchases)} purchases")
 
     if include_bill:
-        # Return with bill information
         result = []
         for purchase in purchases:
             purchase_dict = {
@@ -267,16 +258,11 @@ def get_user_purchases(
                 "extracted_data": None,
             }
 
-            # Load extracted data if available
             if hasattr(purchase, "extracted_data") and purchase.extracted_data:
                 ed = purchase.extracted_data
-                logger.info(f"Found extracted_data for purchase {purchase.id}: store_name={ed.store_name}")
-                
-                # Get document filename for fallback
                 document_filename = None
                 if hasattr(ed, "document") and ed.document:
                     document_filename = ed.document.original_filename
-                
                 purchase_dict["extracted_data"] = {
                     "id": ed.id,
                     "document_id": ed.document_id,
@@ -295,13 +281,10 @@ def get_user_purchases(
                     "created_at": ed.created_at,
                     "updated_at": ed.updated_at,
                 }
-            else:
-                logger.warning(f"No extracted_data found for purchase {purchase.id}, extracted_data_id={purchase.extracted_data_id}")
 
             result.append(purchase_dict)
         return result
     else:
-        # Return without bill information
         return purchases
 
 

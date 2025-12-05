@@ -33,45 +33,32 @@ async def process_pdf_background(document_id: int, file_path: str):
 
     with Session(engine) as db:
         try:
-            logger.info(f"Starting background processing for document {document_id}")
 
             # Get the document
             document = crud.pdf_document.get(db, id=document_id)
             if not document:
-                logger.error(f"Document {document_id} not found")
                 return
 
-            logger.info(f"Found document: {document.original_filename}")
 
             # Read the PDF file
-            logger.info(f"Reading PDF file from: {file_path}")
             pdf_content = file_storage.read_file(file_path)
-            logger.info(f"PDF file size: {len(pdf_content)} bytes")
 
             # Process the PDF
-            logger.info("Starting PDF processing...")
             try:
                 extracted_info = pdf_processor.process_receipt(pdf_content)
-                logger.info(f"PDF processing completed. Extracted {len(extracted_info)} fields")
-                logger.info(f"Sample extracted data: {list(extracted_info.keys())}")
             except Exception as process_error:
-                logger.error(f"PDF processing failed: {process_error}")
-                logger.error(f"PDF processing traceback: {traceback.format_exc()}")
                 raise process_error
 
             # Convert date objects to strings for database storage
             if extracted_info.get('transaction_date') and hasattr(extracted_info['transaction_date'], 'isoformat'):
                 extracted_info['transaction_date'] = extracted_info['transaction_date'].isoformat()
-                logger.info(f"Converted transaction_date to string: {extracted_info['transaction_date']}")
 
             # Convert Decimal objects to float for JSON serialization
             for key in ['subtotal', 'tax_amount', 'total_amount']:
                 if extracted_info.get(key) is not None:
                     try:
                         extracted_info[key] = float(extracted_info[key])
-                        logger.info(f"Converted {key} to float: {extracted_info[key]}")
                     except (TypeError, ValueError) as e:
-                        logger.warning(f"Could not convert {key} to float: {e}")
                         extracted_info[key] = None
 
             # Ensure items is a list
@@ -90,68 +77,45 @@ async def process_pdf_background(document_id: int, file_path: str):
                 **extracted_info
             )
 
-            logger.info("Creating extracted data record...")
-            logger.info(f"Items count: {len(extracted_info.get('items', []))}")
-            logger.info(f"Store name: {extracted_info.get('store_name')}")
-            logger.info(f"Total amount: {extracted_info.get('total_amount')}")
 
             try:
                 extracted_data_record = crud.extracted_data.create(db, obj_in=extracted_data_create)
-                logger.info(f"Created extracted data record with ID: {extracted_data_record.id}")
             except Exception as db_error:
-                logger.error(f"Database error creating extracted data: {db_error}")
-                logger.error(f"Database error traceback: {traceback.format_exc()}")
-                logger.error(f"Data being saved: {extracted_data_create}")
                 raise db_error
 
             # Process products from receipt items
-            logger.info("Starting product matching and creation...")
             try:
-                product_results = product_integration.process_receipt_items(
+                _product_results = product_integration.process_receipt_items(
                     db, extracted_data_record, document.owner_id, auto_create_products=True
                 )
-                logger.info(f"Product processing results: {product_results['total_items']} items, "
-                           f"{len(product_results['matched_items'])} matched, "
-                           f"{len(product_results['created_products'])} new products created")
-            except Exception as product_error:
-                logger.error(f"Product processing failed: {product_error}")
-                logger.error(f"Product processing traceback: {traceback.format_exc()}")
+            except Exception:
                 # Continue processing even if product matching fails
-                logger.info("Continuing with document processing despite product matching failure")
+                pass
             
             # Mark document as processed
             try:
                 crud.pdf_document.mark_as_processed(db, document_id=document_id)
-                logger.info(f"Marked document {document_id} as processed")
-            except Exception as mark_error:
-                logger.error(f"Failed to mark document as processed: {mark_error}")
+            except Exception:
                 # Rollback and try again with a fresh transaction
                 db.rollback()
                 try:
                     crud.pdf_document.mark_as_processed(db, document_id=document_id)
-                    logger.info(f"Marked document {document_id} as processed after rollback")
-                except Exception as final_error:
-                    logger.error(f"Final attempt to mark document failed: {final_error}")
+                except Exception:
+                    pass
 
-            logger.info(f"Successfully processed PDF document {document_id}")
 
         except Exception as e:
-            logger.error(f"Error processing PDF {document_id}: {e}")
-            logger.error(f"Traceback: {traceback.format_exc()}")
             # Mark document as processed with error
             try:
                 db.rollback()  # Rollback any failed transaction first
                 crud.pdf_document.mark_as_processed(db, document_id=document_id, error=str(e))
-                logger.info(f"Marked document {document_id} as processed with error")
-            except Exception as mark_error:
-                logger.error(f"Failed to mark document as processed with error: {mark_error}")
+            except Exception:
                 # Try one more time with a completely fresh session
                 try:
                     with Session(engine) as fresh_db:
                         crud.pdf_document.mark_as_processed(fresh_db, document_id=document_id, error=str(e))
-                        logger.info(f"Marked document {document_id} as processed with error using fresh session")
-                except Exception as final_mark_error:
-                    logger.error(f"Final attempt to mark document with error failed: {final_mark_error}")
+                except Exception:
+                    pass
 
 
 @router.post("/upload", response_model=PDFUploadResponse)
@@ -200,7 +164,6 @@ async def upload_pdf(
         )
 
     except Exception as e:
-        logger.error(f"Error uploading PDF: {e}")
         raise HTTPException(status_code=500, detail="Error uploading PDF")
 
 
@@ -285,16 +248,13 @@ def get_document_with_data(
     Get a specific PDF document with its extracted data.
     """
     try:
-        logger.info(f"Getting document {document_id} for user {current_user.id}")
         document = crud.pdf_document.get_with_extracted_data(
             db, document_id=document_id, owner_id=current_user.id
         )
 
         if not document:
-            logger.warning(f"Document {document_id} not found for user {current_user.id}")
             raise HTTPException(status_code=404, detail="Document not found")
 
-        logger.info(f"Found document {document_id} with {len(document.extracted_data)} extracted data records")
 
         # Convert SQLModel to Pydantic-compatible dict
         response_data: dict[str, Any] = {
@@ -342,8 +302,6 @@ def get_document_with_data(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting document {document_id}: {e}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
@@ -358,20 +316,16 @@ def get_processing_status(
     Get processing status of a PDF document.
     """
     try:
-        logger.info(f"Getting status for document {document_id} for user {current_user.id}")
         document = crud.pdf_document.get_by_owner_and_id(
             db, owner_id=current_user.id, document_id=document_id
         )
 
         if not document:
-            logger.warning(f"Document {document_id} not found for user {current_user.id}")
             raise HTTPException(status_code=404, detail="Document not found")
 
-        logger.info(f"Document {document_id} status: processed={document.processed}, error={document.processing_error}")
 
         # Get latest extracted data for confidence score
         extracted_data = crud.extracted_data.get_latest_by_document(db, document_id=document_id)
-        logger.info(f"Found extracted data: {extracted_data is not None}")
 
         return PDFProcessingStatus(
             document_id=document_id,  # Use the parameter instead of document.id
@@ -383,8 +337,6 @@ def get_processing_status(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting status for document {document_id}: {e}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
@@ -612,5 +564,4 @@ async def create_products_from_document(
             "results": product_results
         }
     except Exception as e:
-        logger.error(f"Error creating products from document {document_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Error creating products: {str(e)}")
