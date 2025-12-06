@@ -126,12 +126,10 @@ class FileStorageService:
         try:
             stat = path.stat()
         except Exception as e:
-            # only raise real internal errors
             raise HTTPException(
                 status_code=500, detail=f"Failed to read file info: {e}"
             )
 
-        # Now size-check AFTER successful stat()
         if stat.st_size > self.MAX_FILE_SIZE:
             raise HTTPException(
                 status_code=413,
