@@ -30,27 +30,22 @@ class ExtractedDataResponse(BaseModel):
     id: int
     document_id: int
 
-    # Store information
     store_name: str | None = None
     store_address: str | None = None
     store_phone: str | None = None
 
-    # Receipt information
     receipt_number: str | None = None
     cashier_id: str | None = None
     register_number: str | None = None
 
-    # Date and time
     transaction_date: str | None = None
     transaction_time: str | None = None
 
-    # Financial totals
     subtotal: Decimal | None = None
     tax_amount: Decimal | None = None
     total_amount: Decimal | None = None
     payment_method: str | None = None
 
-    # Items and metadata
     items: list[dict[str, Any]] | None = None
     tax_breakdown: dict[str, Any] | None = None
     extraction_confidence: float | None = None

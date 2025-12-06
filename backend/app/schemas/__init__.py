@@ -1,5 +1,14 @@
 from .common import Message
 from .item import Item, ItemCreate, ItemInDB, ItemPublic, ItemsPublic, ItemUpdate
+from .pdf_document import (
+    ExtractedDataResponse,
+    PDFDocumentResponse,
+    PDFDocumentWithDataResponse,
+    PDFProcessingStatus,
+    PDFSearchRequest,
+    PDFSearchResponse,
+    PDFUploadResponse,
+)
 from .token import NewPassword, Token, TokenPayload
 from .user import (
     UpdatePassword,
@@ -11,15 +20,6 @@ from .user import (
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
-)
-from .pdf_document import (
-    PDFDocumentResponse,
-    PDFDocumentWithDataResponse,
-    PDFUploadResponse,
-    PDFProcessingStatus,
-    PDFSearchRequest,
-    PDFSearchResponse,
-    ExtractedDataResponse,
 )
 
 __all__ = [
